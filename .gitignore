@@ -87,3 +87,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Editor stuff
+*.swp
+*.swo
+
+# Django
+percms/settings.py
