@@ -1,0 +1,36 @@
+{% extends "common/base.html" %}
+{% load core %}
+{% load staticfiles %}
+{# Displays Component Pages #}
+
+
+{% block html_head %}
+  {# Validator scripts #}
+  {% if validators %}
+  <script src="{% static 'common/form_validator.js' %}"></script>
+  {% for js_validator in validators %}
+    <script src="{% static js_validator %}"></script>
+  {% endfor %}
+  {% endif %}
+{% endblock %}
+
+
+{% block html_body %}
+  {% for panel in panels %} {% open_box %}
+    {# Panel #}
+    {% if 'title' in panel %} <h2>{{ panel.title }}</h2> {% endif %}
+
+    {% for com in panel.components %}
+      {# Component #}
+      {% if com.type == 'text' %}
+        {# Text field #}
+        <p>
+        {% if com.model == 'raw' %}
+          {{ com.src }}
+        {% endif %}
+        </p>
+      {% endif %}
+
+    {% endfor %}
+  {% close_box %}{% endfor %}
+{% endblock %}

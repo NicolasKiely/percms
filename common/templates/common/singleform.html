@@ -1,0 +1,60 @@
+{% extends "common/base.html" %}
+{% load core %}
+{% load staticfiles %}
+{# Generic single-form page #}
+
+{% block html_head %}
+  {# Validator scripts #}
+  {% if validators %}
+  <script src="{% static 'common/form_validator.js' %}"></script>
+  {% for js_validator in validators %}
+    <script src="{% static js_validator %}"></script>
+  {% endfor %}
+  {% endif %}
+{% endblock %}
+
+{% block html_body %}
+  {% open_box %}
+    <h2>{{ title }}</h2>
+    <form
+        {% if formid %} id="{{ formid }}" {% else %} id="form" {% endif %}
+        class="form-horizontal" role="form"
+        action="{{ action }}" method="post"
+    > {% csrf_token %}
+      {# Input fields #}
+      {% for f in form %}
+      <div class="form-group">
+        <label class="col-sm-3 control-label">{{ f.label }}</label>
+        <div class="col-sm-8">
+          <input
+              class="form-control" type="{{ f.type }}" id="{{ f.id }}"
+              {% if 'name' in f %} name="{{ f.name }}" {% endif %}
+          >
+        </div>
+      </div>
+      {% endfor %}
+
+      {# Helpful error message logging #}
+      <div class="row"><div class="col-sm-offset-3 col-sm-8">
+        {% if error %}
+        <div class="panel panel-danger log-panel"
+            {% if logid %}id="{{ logid }}"{% endif %}
+        >
+          <div class="panel-heading">{{ error }}</div>
+        </div>
+        {% else %}
+        <div class="panel panel-default log-panel"
+            {% if logid %}id="{{ logid }}"{% endif %}
+        >
+          <div class="panel-heading"></div>
+        </div>
+        {% endif %}
+      </div></div>
+
+      {# Submit button #}
+      <button type="submit" class="btn btn-primary pull-right">
+        Submit
+      </button>
+    </form>
+  {% close_box %}
+{% endblock %}

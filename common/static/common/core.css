@@ -1,0 +1,26 @@
+.navbar-default {
+  background-color: #EEF;
+}
+
+
+body {
+  background-color: #DDD;
+}
+
+
+div.content-box {
+  background-color: #FFF;
+  border-style: groove;
+  border-radius: 8px;
+  padding-bottom: 10px;
+}
+
+
+div.outer-content-box {
+  margin-bottom: 15px;
+}
+
+
+div.content-box h2 {
+  text-align: center;
+}
