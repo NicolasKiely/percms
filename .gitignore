@@ -95,3 +95,4 @@ ENV/
 # Django
 percms/settings.py
 *.sqlite3
+manage.py
