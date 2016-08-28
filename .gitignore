@@ -91,9 +91,11 @@ ENV/
 # Editor stuff
 *.swp
 *.swo
+*.vim
 
 # Django
 percms/settings.py
 *.sqlite3
 manage.py
 wsgi.py
+migrations/
