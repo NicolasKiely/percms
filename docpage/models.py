@@ -15,7 +15,11 @@ class ViewType(models.Model):
 
 class DocPage(models.Model):
     ''' Generic multi-component page '''
+    name = models.CharField("Page URL Title", max_length=32)
     title = models.CharField("Page Title", max_length=255)
+    category = models.CharField('Page Category', max_length=255, default='home')
+    dt_published = models.DateTimeField('Data Published')
+    dt_editted = models.DateTimeField('Date Last Editted')
 
 
 class Panel(models.Model):
