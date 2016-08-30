@@ -19,6 +19,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^percms/account/', include('login.urls', namespace='login')),
+    url(r'^percms/docpage/', include('docpage.urls', namespace='docpage')),
     url(r'^$', include('home.urls')),
     url(r'^percms/admin/', include(admin.site.urls)),
 ]
