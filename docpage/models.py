@@ -24,6 +24,7 @@ class DocPage(models.Model):
 
 class Panel(models.Model):
     ''' Stylistic panel on a page '''
+    title = models.CharField('Panel Header', max_length=255, default='')
     page = models.ForeignKey(DocPage, on_delete=models.CASCADE)
 
 
