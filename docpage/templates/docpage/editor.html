@@ -5,10 +5,48 @@
 
 
 {% block html_head %}
+  {# Validator scripts #}
+  {% if validators %}
+  <script src="{% static 'common/form_validator.js' %}"></script>
+  {% for js_validator in validators %}
+    <script src="{% static js_validator %}"></script>
+  {% endfor %}
+  {% endif %}
 {% endblock %}
 
 {% block html_body %}
   {% open_box %}
-    {# #}
+    {# General Page Info #}
+    <h2>Doc Page Header</h2>
+    <form id="form_edit_header" class="form-horizontal" role="form"
+        action="{% url 'docpage:edit_header' %}" method="post"
+    >{% csrf_token %}
+      <div class="form-group">
+        {# Category field #}
+        <label class="col-sm-3 control-label">Category</label>
+        <div class="col-sm-8"><input class="form-control" type="text"
+            id="edit_cat" name="category" value="{{ docpage.category }}"
+        ></div>
+
+        {# Title field #}
+        <label class="col-sm-3 control-label">Title</label>
+        <div class="col-sm-8"><input class="form-control" type="text"
+            id="edit_title" name="title" value="{{ docpage.title }}"
+        ></div>
+
+        {# ID (hidden) #}
+        <div class="col-sm-8"><input class="form-control" type="hidden"
+            id="edit_id" name="pk" value="{{ docpage.id }}"
+        ></div>
+
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+
+    <br />
+    <p>Date Created: <u>{{ docpage.dt_published }}</u></p>
+    <p>Last Editted: <u>{{ docpage.dt_editted }}</u></p>
+
   {% close_box %}
 {% endblock %}
