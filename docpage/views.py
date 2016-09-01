@@ -9,3 +9,7 @@ def editor(request):
     context = {
     }
     return core.render(request, 'docpage/editor_list.html', *context)
+
+
+def add_page(request):
+    ''' Post handle for adding a new page '''

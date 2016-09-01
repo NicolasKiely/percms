@@ -18,6 +18,32 @@
 
 {% block html_body %}
   {% open_box %}
+    <h2>Add New Page</h2>
+
+    {# Form for adding new docpages #}
+    <form id="form_add_new" class="form-horizontal" role="form"
+        action="{% url 'docpage:add_page' %}" method="post"
+    >{% csrf_token %}
+      <div class="form-group">
+        {# Category field #}
+        <label class="col-sm-3 control-label">Category</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" id="add_cat" name="category">
+        </div>
+
+        {# Title field #}
+        <label class="col-sm-3 control-label">Title</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" id="add_title" name="title">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary pull-right">Add New</button>
+    </form>
+  {% close_box %}
+
+
+  {% open_box %}
     <h2>Doc Pages</h2>
     {# Lists entries #}
 
@@ -29,9 +55,6 @@
         <th>URL</th>
       </tr>
     </table>
-
-
-    <button class="button" id='add_new'>Add New</button>
 
   {% close_box %}
 {% endblock %}
