@@ -50,10 +50,17 @@
     <table class="table table-striped">
       {# Header #}
       <tr>
-        <th>Category</th>
-        <th>Title</th>
+        <th>Page Name</th>
         <th>URL</th>
       </tr>
+      {% for page in docpages %}
+      <tr>
+        <td>{{ page.category }} : {{ page.title }}</td>
+        <td>
+          <a href="{% url 'docpage:editor_page' page.id %}">Edit Page</a>
+        </td>
+      </tr>
+      {% endfor %}
     </table>
 
   {% close_box %}

@@ -9,7 +9,11 @@ from common import core
 @login_required
 def editor_list(request):
     ''' Top-level editor page for docs '''
-    return core.render(request, 'docpage/editor_list.html')
+    context = {
+        'docpages': DocPage.objects.order_by('-dt_editted')
+    }
+
+    return core.render(request, 'docpage/editor_list.html', **context)
 
 
 @login_required
