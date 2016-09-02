@@ -20,9 +20,7 @@ def editor_list(request):
 def editor_page(request, pk):
     ''' Editor for a doc page '''
     docPage = get_object_or_404(DocPage, pk=pk)
-    context = {
-        'docpage': docPage
-    }
+    context = { 'docpage': docPage }
     return core.render(request, 'docpage/editor.html', **context)
 
 
@@ -42,6 +40,9 @@ def edit_header(request):
 
 def view_page(request, pk):
     ''' Displays public page '''
+    docPage = get_object_or_404(DocPage, pk=pk)
+    context = { 'docpage': docPage }
+    return core.render(request, 'docpage/docpage.html', **context)
 
 
 @login_required
