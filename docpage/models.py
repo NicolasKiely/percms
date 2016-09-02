@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 
 
 class ModelType(models.Model):
@@ -20,6 +21,11 @@ class DocPage(models.Model):
     category = models.CharField('Page Category', max_length=255, default='home')
     dt_published = models.DateTimeField('Data Published')
     dt_editted = models.DateTimeField('Date Last Editted')
+
+    def get_view_url(self):
+        ''' Returns view url '''
+        url = reverse('docpage:view_page', args=(self.id,)) 
+        return url + self.get_normalized_name()
 
     def get_normalized_name(self):
         ''' Returns url-friendly normalized name '''

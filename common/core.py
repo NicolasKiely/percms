@@ -18,7 +18,6 @@ __CORE_PAGE_CONFIG = {
         # Drop-down menu for logged in users
         'user_menu': [
             ('login:account', 'My Dashboard'),
-            #('user:settings', 'My Settings'),
             ('index', 'Site Home'),
             ('login:logout', 'Logout')
         ],

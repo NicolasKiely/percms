@@ -1,0 +1,29 @@
+{% extends "common/base.html" %}
+{% load core %}
+{% load staticfiles %}
+
+{# User account dashboard #}
+{% block html_body %}
+  {% open_box %}
+    <h2>Account Dashboard</h2>
+  {% close_box %}
+
+  {% open_box %}
+    <h2>Recent Doc Pages</h2>
+
+    <table class="table table-striped">
+      <tr>
+        <th>Page</th>
+        <th>Edit Page</th>
+        <th>View Page</th>
+      </tr>
+      {% for page in docpages %}
+      <tr>
+        <td>{{ page.category }} : {{ page.title }}</td>
+        <td><a href="{% url 'docpage:editor_page' page.id %}">Edit Page</a></td>
+        <td><a href="{{page.get_view_url}}">View Page</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% close_box %}
+{% endblock %}

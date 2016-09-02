@@ -99,3 +99,7 @@ percms/settings.py
 manage.py
 wsgi.py
 migrations/
+
+# Project utility stuff
+dj.txt
+startserver.sh

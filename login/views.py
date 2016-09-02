@@ -1,23 +1,33 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from common import core
 from . import forms
+from docpage.models import DocPage
 
 
 def user_account(request):
     ''' User account page, or login page '''
-    # Login page
-    context = {
-        'form': forms.login,
-        'formid': 'login-form',
-        'logid': 'login-log',
-        'action': '/percms/account/login',
-        'validators': ['login/login_validator.js'],
-        'title': 'Editor Log In'
-    }
-    return core.renderform(request, context)
+    if request.user.is_authenticated():
+        # Account dashboard
+        context = {
+            'docpages': DocPage.objects.order_by('-dt_editted')[:5]
+        }
+        return core.render(request, 'login/dashboard.html', **context)
+
+    else:
+        # Login page
+        context = {
+            'form': forms.login,
+            'formid': 'login-form',
+            'logid': 'login-log',
+            'action': '/percms/account/login',
+            'validators': ['login/login_validator.js'],
+            'title': 'Editor Log In'
+        }
+        return core.renderform(request, context)
 
 
 def user_login(request):
