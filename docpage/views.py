@@ -38,7 +38,10 @@ def edit_header(request):
     return HttpResponseRedirect(
         reverse('docpage:editor_page', args=(pk,))
     )
-    
+
+
+def view_page(request, pk):
+    ''' Displays public page '''
 
 
 @login_required

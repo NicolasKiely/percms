@@ -51,13 +51,18 @@
       {# Header #}
       <tr>
         <th>Page Name</th>
+        <th>Last Editted</th>
         <th>URL</th>
       </tr>
       {% for page in docpages %}
       <tr>
         <td>{{ page.category }} : {{ page.title }}</td>
+        <td>{{ page.dt_editted }}</td>
         <td>
-          <a href="{% url 'docpage:editor_page' page.id %}">Edit Page</a>
+          <a href="{% url 'docpage:editor_page' page.id %}">Edit Page</a> |
+          <a
+              href="{% url 'docpage:view_page' page.id %}{{ page.get_normalized_name }}"
+          >View Page</a>
         </td>
       </tr>
       {% endfor %}

@@ -25,7 +25,7 @@ class DocPage(models.Model):
         ''' Returns url-friendly normalized name '''
         underscore = False
         normalized = ''
-        for c in self.name.lower():
+        for c in self.title.lower():
             if 'a'<=c<='z' or '0'<=c<='9':
                 normalized += c
                 underscore = True

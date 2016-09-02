@@ -18,6 +18,9 @@
   {% open_box %}
     {# General Page Info #}
     <h2>Doc Page Header</h2>
+    <div class="text-center"><a href="{% url 'docpage:editor_list' %}">
+      Back to Doc Page List
+    </a></div><br />
     <form id="form_edit_header" class="form-horizontal" role="form"
         action="{% url 'docpage:edit_header' %}" method="post"
     >{% csrf_token %}
