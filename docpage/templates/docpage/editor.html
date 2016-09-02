@@ -6,6 +6,7 @@
 
 {% block html_head %}
   {# Validator scripts #}
+  <script src="{% static 'docpage/editor.js' %}"></script>
   {% if validators %}
   <script src="{% static 'common/form_validator.js' %}"></script>
   {% for js_validator in validators %}
@@ -51,5 +52,8 @@
     <p>Date Created: <u>{{ docpage.dt_published }}</u></p>
     <p>Last Editted: <u>{{ docpage.dt_editted }}</u></p>
 
+    <button type="button" class="btn" id="btn-add-panel-0">Add Panel</button>
   {% close_box %}
+
+
 {% endblock %}
