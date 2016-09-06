@@ -28,10 +28,22 @@ function add_panel(button){
   var form = [{'type': 'text', 'label': 'Header:', 'name': 'header'}]
   newBox.appendChild(JQ_create_form(form)[0]);
 
+  /* TODO: Add new panel button */
+  /* TODO: Add form fields buton */
+  /* TODO: Send page config back */
+
   $(prevPanel).after(newPanel);
 }
 
 
+/**
+ * Creates form JQ element
+ * @param form: list of description objects for form fields,
+ *    'label': required name of label input label
+ *    'type': optional type of input, defaults to text
+ *    'name': optional name of input field, defaults to label
+ * @return Root jquery object of form
+ */
 function JQ_create_form(form){
   /* Create initial form */
   var formEl = $('<form>')
