@@ -1,9 +1,20 @@
 'use strict'
 
+/** Setup Module Namespace for docpage editor */
+var ns = ns || {};
+ns.docpage = {};
+
+
+
+/**********************\
+|* Callback Functions *|
+\**********************/
+var callback = {};
+
 /**
- * Insert panel
+ * Insert panel after element
  */
-function add_panel(button){
+callback.add_panel = function (button){
   /* Fetch panel to insert after */
   var prevBox = button.parentElement;
 
@@ -26,13 +37,49 @@ function add_panel(button){
   /* Create panel elements */
   newBox.appendChild($('<h2>').text('Panel')[0]);
   var form = [{'type': 'text', 'label': 'Header:', 'name': 'header'}]
-  newBox.appendChild(JQ_create_form(form)[0]);
+  $(newBox)
+    .append(ns.docpage.jq.create_form(form))
+    .append(ns.docpage.jq.panel_add_field_button())
+    .append($('<hr>'));
 
   /* TODO: Add new panel button */
   /* TODO: Add form fields buton */
   /* TODO: Send page config back */
 
   $(prevPanel).after(newPanel);
+};
+
+
+/**
+ * Callback function for adding component in panel
+ */
+callback.add_component = function(){
+  var btn = $(this);
+  console.log(btn.parent().parent());
+}
+
+
+ns.docpage.cb = callback;
+
+
+
+/***********************\
+|* Jquery Constructors *|
+\***********************/
+var jq = {};
+
+
+/**
+ * Creates the "Add Component" button in panels
+ * @return Root jquery ovject of button
+ */
+jq.panel_add_field_button = function(){
+  return $('<div>')
+    .append($('<button>')
+      .click(ns.docpage.cb.add_component)
+      .addClass('btn btn-primary')
+      .text('Add Component')
+    );
 }
 
 
@@ -44,7 +91,7 @@ function add_panel(button){
  *    'name': optional name of input field, defaults to label
  * @return Root jquery object of form
  */
-function JQ_create_form(form){
+jq.create_form = function (form){
   /* Create initial form */
   var formEl = $('<form>')
     .addClass('form-horizontal')
@@ -53,7 +100,6 @@ function JQ_create_form(form){
     );
 
   for (var i in form){
-    console.log(i)
     var f = form[i];
     var ftype = f.type || 'text';
     var fname = f.name || f.label;
@@ -72,3 +118,5 @@ function JQ_create_form(form){
   }
   return formEl;
 }
+
+ns.docpage.jq = jq;
