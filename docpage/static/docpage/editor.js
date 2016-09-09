@@ -40,7 +40,9 @@ callback.add_panel = function (button){
   $(newBox)
     .append(ns.docpage.jq.create_form(form))
     .append(ns.docpage.jq.panel_add_field_button())
-    .append($('<hr>'));
+    .append($('<hr>') /* Horizontal rule immediately preceeding components */
+      .addClass('component-term')
+    );
 
   /* TODO: Add new panel button */
   /* TODO: Add form fields buton */
@@ -54,9 +56,12 @@ callback.add_panel = function (button){
  * Callback function for adding component in panel
  */
 callback.add_component = function(){
-  var btn = $(this);
-  console.log(btn.parent().parent());
-}
+  /* Get component terminator immediately after this button */
+  var hr_term = $(this).siblings('hr.component-term')[0];
+
+  /* Append new component form */
+  $(hr_term).after(ns.docpage.jq.create_component_form());
+};
 
 
 ns.docpage.cb = callback;
@@ -74,12 +79,10 @@ var jq = {};
  * @return Root jquery ovject of button
  */
 jq.panel_add_field_button = function(){
-  return $('<div>')
-    .append($('<button>')
+  return $('<button>')
       .click(ns.docpage.cb.add_component)
       .addClass('btn btn-primary')
-      .text('Add Component')
-    );
+      .text('Add Component');
 }
 
 
@@ -118,5 +121,21 @@ jq.create_form = function (form){
   }
   return formEl;
 }
+
+
+/**
+ * Creates form for editing docpage component
+ * @return Root jquery object of form
+ */
+jq.create_component_form = function(){
+  var formFields = [
+    {'label': 'Field Type', 'name': 'view'},
+    {'label': 'Data Model Type', 'name': 'model'},
+    {'label': 'Source', 'name': 'source'}
+  ];
+  return $('div')
+    .append($('<h3>').text('Component'))
+    .append(ns.docpage.jq.create_form(formFields));
+};
 
 ns.docpage.jq = jq;
