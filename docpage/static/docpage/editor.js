@@ -40,9 +40,8 @@ callback.add_panel = function (button){
   $(newBox)
     .append(ns.docpage.jq.create_form(form))
     .append(ns.docpage.jq.panel_add_field_button())
-    .append($('<hr>') /* Horizontal rule immediately preceeding components */
-      .addClass('component-term')
-    );
+    .append(ns.docpage.jq.component_terminator())
+  ;
 
   /* TODO: Add new panel button */
   /* TODO: Add form fields buton */
@@ -133,9 +132,19 @@ jq.create_component_form = function(){
     {'label': 'Data Model Type', 'name': 'model'},
     {'label': 'Source', 'name': 'source'}
   ];
-  return $('div')
+  return $('<div>')
     .append($('<h3>').text('Component'))
-    .append(ns.docpage.jq.create_form(formFields));
+    .append(ns.docpage.jq.create_form(formFields))
+    .append(ns.docpage.jq.panel_add_field_button())
+    .append(ns.docpage.jq.component_terminator());
+};
+
+
+/**
+ * Creates component terminator element
+ */
+jq.component_terminator = function(){
+  return $('<hr>').addClass('component-term');
 };
 
 ns.docpage.jq = jq;
