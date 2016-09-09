@@ -1,19 +1,31 @@
 import django.shortcuts
+import percms.settings
 from django.http import HttpResponse
 
 __GOOGLE_API = 'https://ajax.googleapis.com/ajax'
 __BOOTSTRAP =  'http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5'
+
+# Resolve local vs cdn assets
+if percms.settings.USE_LOCAL_ASSETS:
+    __jquery_js = '/static/common/jquery-1.11.3.min.js'
+    __bootst_js = '/static/common/bootstrap.min.js'
+    __bootst_css = '/static/common/bootstrap.min.css'
+else:
+    __jquery_js = __GOOGLE_API + '/libs/jquery/1.11.3/jquery.min.js'
+    __bootst_js = __BOOTSTRAP_API + '/js/bootstrap.min.js'
+    __bootst_css = __BOOTSTRAP_API + '/css/bootstrap.min.css'
+
 
 __CORE_PAGE_CONFIG = {
     'page': {
         'site': 'PerCMS Portfolio',
         'title': '',
         'js': {
-            'jquery': __GOOGLE_API + '/libs/jquery/1.11.3/jquery.min.js',
-            'bootstrap': __BOOTSTRAP + '/js/bootstrap.min.js'
+            'jquery': __jquery_js,
+            'bootstrap': __bootst_js
         },
         'css': {
-            'bootstrap': __BOOTSTRAP + '/css/bootstrap.min.css'
+            'bootstrap': __bootst_css
         },
         # Drop-down menu for logged in users
         'user_menu': [
