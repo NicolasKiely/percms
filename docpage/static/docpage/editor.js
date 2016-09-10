@@ -38,13 +38,18 @@ callback.add_panel = function (button){
   newBox.appendChild($('<h2>').text('Panel')[0]);
   var form = [{'type': 'text', 'label': 'Header:', 'name': 'header'}]
   $(newBox)
-    .append(ns.docpage.jq.create_form(form))
-    .append(ns.docpage.jq.panel_add_field_button())
+    .append($('<div>')
+      .addClass('row')
+      .append(ns.docpage.jq.create_form(form))
+    )
+    .append($('<div>')
+      .addClass('row')
+      .append(ns.docpage.jq.add_component_button())
+    )
     .append(ns.docpage.jq.component_terminator())
   ;
 
   /* TODO: Add new panel button */
-  /* TODO: Add form fields buton */
   /* TODO: Send page config back */
 
   $(prevPanel).after(newPanel);
@@ -56,7 +61,7 @@ callback.add_panel = function (button){
  */
 callback.add_component = function(){
   /* Get component terminator immediately after this button */
-  var hr_term = $(this).siblings('hr.component-term')[0];
+  var hr_term = $(this).parent().parent().siblings('hr.component-term')[0];
 
   /* Append new component form */
   $(hr_term).after(ns.docpage.jq.create_component_form());
@@ -71,18 +76,6 @@ ns.docpage.cb = callback;
 |* Jquery Constructors *|
 \***********************/
 var jq = {};
-
-
-/**
- * Creates the "Add Component" button in panels
- * @return Root jquery ovject of button
- */
-jq.panel_add_field_button = function(){
-  return $('<button>')
-      .click(ns.docpage.cb.add_component)
-      .addClass('btn btn-primary')
-      .text('Add Component');
-}
 
 
 /**
@@ -119,7 +112,7 @@ jq.create_form = function (form){
     );
   }
   return formEl;
-}
+};
 
 
 /**
@@ -133,18 +126,64 @@ jq.create_component_form = function(){
     {'label': 'Source', 'name': 'source'}
   ];
   return $('<div>')
-    .append($('<h3>').text('Component'))
-    .append(ns.docpage.jq.create_form(formFields))
-    .append(ns.docpage.jq.panel_add_field_button())
-    .append(ns.docpage.jq.component_terminator());
+    .addClass('container-fluid')
+    .append($('<div>')
+      .addClass('row')
+      .append($('<h3>').text('Component'))
+    )
+    .append($('<div>')
+      .addClass('row')
+      .append(ns.docpage.jq.create_form(formFields))
+    )
+    .append($('<br>'))
+    .append($('<div>')
+      .addClass('row')
+      .append(ns.docpage.jq.add_component_button())
+      .append(ns.docpage.jq.delete_component_button())
+    )
+    .append(ns.docpage.jq.component_terminator())
+  ;
 };
 
 
 /**
  * Creates component terminator element
+ * @return Root jquery object of <hr>
  */
 jq.component_terminator = function(){
   return $('<hr>').addClass('component-term');
 };
+
+
+/**
+ * Creates the "Add Component" button in panels
+ * @return Root jquery ovject of button
+ */
+jq.add_component_button = function(){
+  return $('<div>')
+    .addClass('col-lg-2')
+    .append($('<button>')
+      .click(ns.docpage.cb.add_component)
+      .addClass('btn btn-primary')
+      .text('Add Component')
+    )
+  ;
+}
+
+
+/**
+ * Creates "delete component" button
+ * @return Root jquery object of <button>
+ */
+jq.delete_component_button = function(){
+  return $('<div>')
+    .addClass('col-lg-2')
+    .append($('<button>')
+      .addClass('btn btn-primary')
+      .text('Delete Component')
+    )
+  ;
+};
+
 
 ns.docpage.jq = jq;
