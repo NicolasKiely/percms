@@ -72,11 +72,25 @@ callback.delete_component = function(){
 };
 
 
-/**
- * Moves component up in panel
- */
+/** Moves component up in panel */
 callback.move_component_up = function(){
-  console.log('Moving component up')
+  /* Get current component */
+  var current = $(this).parent().parent().parent();
+  /* Get list of components in this form */
+  var components = current.parent().children('div.component-form')
+  /* Get current component index. Make sure not first element */
+  var i = components.index(current);
+  if (i<=0)
+    return;
+  /* Get preceeding component and attach current to before */
+  components.eq(i-1).before(current);
+
+};
+
+
+/** Moves component down in panel */
+callback.move_component_down = function(){
+  console.log('Moving component down');
 };
 
 
@@ -226,6 +240,7 @@ jq.component_down_button = function(){
   return $('<div>')
     .addClass('pull-right')
     .append($('<button>')
+      .click(ns.docpage.cb.move_component_down)
       .addClass('btn btn-primary')
       .append($('<span>')
         .addClass('glyphicon glyphicon-arrow-down')
