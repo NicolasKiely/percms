@@ -5,11 +5,11 @@ var ns = ns || {};
 ns.docpage = {};
 
 
-
 /**********************\
 |* Callback Functions *|
 \**********************/
 var callback = {};
+
 
 /**
  * Insert panel after element
@@ -39,14 +39,11 @@ callback.add_panel = function (button){
   var form = [{'type': 'text', 'label': 'Header:', 'name': 'header'}]
   $(newBox)
     .append($('<div>')
-      .addClass('row')
-      .append(ns.docpage.jq.create_form(form))
+      .addClass('container-fluid')
+      .appendRow(ns.docpage.jq.create_form(form))
+      .appendRow(ns.docpage.jq.add_component_button())
+      .append(ns.docpage.jq.component_terminator())
     )
-    .append($('<div>')
-      .addClass('row')
-      .append(ns.docpage.jq.add_component_button())
-    )
-    .append(ns.docpage.jq.component_terminator())
   ;
 
   /* TODO: Add new panel button */
@@ -56,15 +53,30 @@ callback.add_panel = function (button){
 };
 
 
-/**
- * Callback function for adding component in panel
- */
+/** Callback function for adding component in panel */
 callback.add_component = function(){
   /* Get component terminator immediately after this button */
-  var hr_term = $(this).parent().parent().siblings('hr.component-term')[0];
+  var component = $(this).parent().parent();
+  var hr_term = component.siblings('hr.component-term')[0];
 
   /* Append new component form */
-  $(hr_term).after(ns.docpage.jq.create_component_form());
+  $(hr_term).parent().after(ns.docpage.jq.create_component_form());
+};
+
+
+/** Callback function for deleting component */
+callback.delete_component = function(){
+  /* Get component root dom node and delete */
+  var component = $(this).parent().parent().parent();
+  component.remove()
+};
+
+
+/**
+ * Moves component up in panel
+ */
+callback.move_component_up = function(){
+  console.log('Moving component up')
 };
 
 
@@ -76,6 +88,17 @@ ns.docpage.cb = callback;
 |* Jquery Constructors *|
 \***********************/
 var jq = {};
+
+/** Similar to jquery's append() function, but wraps div.row around node */
+$.fn.appendRow = function(children){
+  this
+    .append($('<div>')
+      .addClass('row')
+      .append(children)
+    )
+  ;
+  return this;
+};
 
 
 /**
@@ -126,21 +149,16 @@ jq.create_component_form = function(){
     {'label': 'Source', 'name': 'source'}
   ];
   return $('<div>')
-    .addClass('container-fluid')
-    .append($('<div>')
-      .addClass('row')
-      .append($('<h3>').text('Component'))
-    )
-    .append($('<div>')
-      .addClass('row')
-      .append(ns.docpage.jq.create_form(formFields))
-    )
+    .addClass('container-fluid component-form')
+    .appendRow($('<h3>').addClass('text-center').text('Component'))
+    .appendRow(ns.docpage.jq.create_form(formFields))
     .append($('<br>'))
-    .append($('<div>')
-      .addClass('row')
-      .append(ns.docpage.jq.add_component_button())
-      .append(ns.docpage.jq.delete_component_button())
-    )
+    .appendRow([
+      ns.docpage.jq.add_component_button(),
+      ns.docpage.jq.delete_component_button(),
+      ns.docpage.jq.component_down_button(),
+      ns.docpage.jq.component_up_button()
+    ])
     .append(ns.docpage.jq.component_terminator())
   ;
 };
@@ -153,6 +171,7 @@ jq.create_component_form = function(){
 jq.component_terminator = function(){
   return $('<hr>').addClass('component-term');
 };
+
 
 
 /**
@@ -179,11 +198,42 @@ jq.delete_component_button = function(){
   return $('<div>')
     .addClass('col-lg-2')
     .append($('<button>')
-      .addClass('btn btn-primary')
+      .click(ns.docpage.cb.delete_component)
+      .addClass('btn btn-danger')
       .text('Delete Component')
     )
   ;
 };
+
+
+/** Creates up arrow button for component*/
+jq.component_up_button = function(){
+  return $('<div>')
+    .addClass('pull-right')
+    .append($('<button>')
+      .click(ns.docpage.cb.move_component_up)
+      .addClass('btn btn-primary')
+      .append($('<span>')
+        .addClass('glyphicon glyphicon-arrow-up')
+      )
+    )
+  ;
+};
+
+
+/** Creates down arrow button for component*/
+jq.component_down_button = function(){
+  return $('<div>')
+    .addClass('pull-right')
+    .append($('<button>')
+      .addClass('btn btn-primary')
+      .append($('<span>')
+        .addClass('glyphicon glyphicon-arrow-down')
+      )
+    )
+  ;
+};
+
 
 
 ns.docpage.jq = jq;

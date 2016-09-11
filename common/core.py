@@ -12,8 +12,8 @@ if percms.settings.USE_LOCAL_ASSETS:
     __bootst_css = '/static/common/bootstrap.min.css'
 else:
     __jquery_js = __GOOGLE_API + '/libs/jquery/1.11.3/jquery.min.js'
-    __bootst_js = __BOOTSTRAP_API + '/js/bootstrap.min.js'
-    __bootst_css = __BOOTSTRAP_API + '/css/bootstrap.min.css'
+    __bootst_js = __BOOTSTRAP + '/js/bootstrap.min.js'
+    __bootst_css = __BOOTSTRAP + '/css/bootstrap.min.css'
 
 
 __CORE_PAGE_CONFIG = {
