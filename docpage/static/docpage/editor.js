@@ -90,7 +90,16 @@ callback.move_component_up = function(){
 
 /** Moves component down in panel */
 callback.move_component_down = function(){
-  console.log('Moving component down');
+  /* Get current component */
+  var current = $(this).parent().parent().parent();
+  /* Get list of components in this form */
+  var components = current.parent().children('div.component-form')
+  /* Get current component index. Make sure not first element */
+  var i = components.index(current);
+  if (i+1 >= components.size)
+    return;
+  /* Get next component and attach current to after */
+  components.eq(i+1).after(current);
 };
 
 
