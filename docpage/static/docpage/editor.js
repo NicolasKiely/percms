@@ -4,6 +4,11 @@
 var ns = ns || {};
 ns.docpage = {};
 
+$(document).ready(function($){
+  /* Attach add-panel function to initial button */
+  $('#btn-add-panel').click(ns.docpage.cb.add_panel);
+});
+
 
 /**********************\
 |* Callback Functions *|
@@ -14,9 +19,10 @@ var callback = {};
 /**
  * Insert panel after element
  */
-callback.add_panel = function (button){
+callback.add_panel = function (){
   /* Fetch panel to insert after */
-  var prevBox = button.parentElement;
+  var prevBox = this.parentElement.parentElement.parentElement.parentElement;
+  console.log(prevBox);
 
   /* Create inner content box */
   var newBox = document.createElement('div');
@@ -43,6 +49,13 @@ callback.add_panel = function (button){
       .appendRow(ns.docpage.jq.create_form(form))
       .appendRow(ns.docpage.jq.add_component_button())
       .append(ns.docpage.jq.component_terminator())
+    )
+    .append($('<div>')
+      .addClass('container-fluid')
+      .appendRow([
+        ns.docpage.jq.add_panel_button(),
+        ns.docpage.jq.delete_panel_button()
+      ])
     )
   ;
 
@@ -161,10 +174,7 @@ jq.create_form = function (form){
 };
 
 
-/**
- * Creates form for editing docpage component
- * @return Root jquery object of form
- */
+/** Creates form for editing docpage component */
 jq.create_component_form = function(){
   var formFields = [
     {'label': 'Field Type', 'name': 'view'},
@@ -187,20 +197,14 @@ jq.create_component_form = function(){
 };
 
 
-/**
- * Creates component terminator element
- * @return Root jquery object of <hr>
- */
+/** Creates component terminator element */
 jq.component_terminator = function(){
   return $('<hr>').addClass('component-term');
 };
 
 
 
-/**
- * Creates the "Add Component" button in panels
- * @return Root jquery ovject of button
- */
+/** Creates the "Add Component" button in panels */
 jq.add_component_button = function(){
   return $('<div>')
     .addClass('col-lg-2')
@@ -213,10 +217,7 @@ jq.add_component_button = function(){
 }
 
 
-/**
- * Creates "delete component" button
- * @return Root jquery object of <button>
- */
+/** Creates "delete component" button */
 jq.delete_component_button = function(){
   return $('<div>')
     .addClass('col-lg-2')
@@ -257,6 +258,31 @@ jq.component_down_button = function(){
     )
   ;
 };
+
+
+/** Creates button for appending panels */
+jq.add_panel_button = function(){
+  return $('<div>')
+    .addClass('col-lg-6')
+    .append($('<button>')
+      .click(ns.docpage.cb.add_panel)
+      .addClass('btn btn-primary col-lg-12')
+      .text('Add Panel')
+    )
+  ;
+}
+
+
+/** Creates button for deleting panels */
+jq.delete_panel_button = function(){
+  return $('<div>')
+    .addClass('col-lg-6')
+    .append($('<button>')
+      .addClass('btn btn-danger col-lg-12')
+      .text('Delete Panel')
+    )
+  ;
+}
 
 
 
