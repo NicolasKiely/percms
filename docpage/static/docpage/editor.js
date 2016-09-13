@@ -21,8 +21,8 @@ var callback = {};
  */
 callback.add_panel = function (){
   /* Fetch panel to insert after */
-  var prevBox = this.parentElement.parentElement.parentElement.parentElement;
-  console.log(prevBox);
+  var prevBox = this.parentElement.parentElement
+    .parentElement.parentElement;
 
   /* Create inner content box */
   var newBox = document.createElement('div');
@@ -59,10 +59,16 @@ callback.add_panel = function (){
     )
   ;
 
-  /* TODO: Add new panel button */
   /* TODO: Send page config back */
 
   $(prevPanel).after(newPanel);
+};
+
+
+/** Callback for "Delete Panel" button */
+callback.delete_panel = function(){
+  var box = $(this).parent().parent().parent().parent();
+  box.remove();
 };
 
 
@@ -278,6 +284,7 @@ jq.delete_panel_button = function(){
   return $('<div>')
     .addClass('col-lg-6')
     .append($('<button>')
+      .click(ns.docpage.cb.delete_panel)
       .addClass('btn btn-danger col-lg-12')
       .text('Delete Panel')
     )
