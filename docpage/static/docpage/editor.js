@@ -10,15 +10,28 @@ $(document).ready(function($){
 });
 
 
+
 /**********************\
 |* Callback Functions *|
 \**********************/
 var callback = {};
 
 
-/**
- * Insert panel after element
- */
+/** Submits docpage data back to server */
+callback.submit = function(){
+  /* Get page submission data */
+  var data = ns.docpage.misc.gather_docpage_data();
+
+  /* Set panel data to hidden form */
+  $('#edit_panel_data').val(data);
+
+  /* Submit form */
+  document.forms.form_edit_header.submit();
+  
+};
+
+
+/** Insert panel after element */
 callback.add_panel = function (){
   /* Fetch panel to insert after */
   var prevBox = this.parentElement.parentElement
@@ -59,7 +72,7 @@ callback.add_panel = function (){
     )
   ;
 
-  /* TODO: Send page config back */
+  /* TODO: Read in page config on load */
 
   $(prevPanel).after(newPanel);
 };
@@ -292,5 +305,66 @@ jq.delete_panel_button = function(){
 }
 
 
-
 ns.docpage.jq = jq;
+
+
+/******************\
+|* Misc Functions *|
+\******************/
+var misc = {};
+
+/**
+ * Gathers up data in docpage editor fields
+ * @return String representation of JSON docpage data
+ *   [
+ *     {
+ *       'header': <panel header>,
+ *       'components': [
+ *          { <component field name>: <component field value>, ... }
+ *       ], ...
+ *     }, ...
+ *   ]
+ */
+misc.gather_docpage_data = function(){
+  /* Submission data */
+  var panels = [];
+
+  /* Loop over panels */
+  var boxes = $('div.content-box');
+  var box_len = boxes.size();
+  for (var i=1; i<box_len; i++){
+    var box = $(boxes[i]);    // Content box of panel
+    var panel = {'components': []}; // Panel data
+
+    /* Panel header */
+    panel['header'] = box.find('input[name="header"]').val();
+
+    /* Loop over components */
+    var components = box.find('div.component-form div.row form');
+    var component_len = components.size();
+    for (var j=0; j<component_len; j++){
+      var form = $(components[j]); // Component form
+      var component = {}; // Component data
+
+      var form_inputs = form.find('input');
+      var form_input_len = form_inputs.size();
+      for (var k=0; k<form_input_len; k++){
+        /* Map form to component */
+        var input = form_inputs[k];
+        component[input.name] = input.value;
+      }
+
+      /* Add component data */
+      panel.components.push(component);
+    }
+
+    /* Add panel data */
+    panels.push(panel)
+  }
+
+  /* Return as string */
+  return JSON.stringify(panels);
+}
+
+
+ns.docpage.misc = misc;
