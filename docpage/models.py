@@ -1,18 +1,20 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 
+# Component model choices
+mchoices = (
+    ('raw', 'Raw text'),
+    ('sapi', 'Static API'),
+    ('dapi', 'Dynamic API'),
+    ('mu', 'Markup text')
+)
 
-class ModelType(models.Model):
-    ''' Types of a component's data model '''
-    name = models.CharField('Model type name', max_length=64)
-    def __unicode__(self): return unicode(self.name)
-
-
-class ViewType(models.Model):
-    ''' Types of a component's view '''
-    name = models.CharField('View type name', max_length=64)
-    def __unicode__(self): return unicode(self.name)
-
+# Components view choices
+vchoices = (
+    ('text', 'Text'),
+    ('img', 'Image'),
+    ('table', 'Table')
+)
 
 class DocPage(models.Model):
     ''' Generic multi-component page '''
@@ -51,6 +53,6 @@ class Panel(models.Model):
 class Component(models.Model):
     ''' Display object in a panel '''
     src   = models.CharField("Data Source", max_length=4096)
-    model = models.ForeignKey(ModelType)
-    view  = models.ForeignKey(ViewType)
+    model = models.CharField('Model type', max_length=64, choices=mchoices)
+    view  = models.CharField('View type', max_length=64, choices=vchoices)
     panel = models.ForeignKey(Panel, on_delete=models.CASCADE)

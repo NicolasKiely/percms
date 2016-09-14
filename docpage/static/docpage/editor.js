@@ -7,6 +7,8 @@ ns.docpage = {};
 $(document).ready(function($){
   /* Attach add-panel function to initial button */
   $('#btn-add-panel').click(ns.docpage.cb.add_panel);
+
+  /* TODO: read in page config on load */
 });
 
 
@@ -71,8 +73,6 @@ callback.add_panel = function (){
       ])
     )
   ;
-
-  /* TODO: Read in page config on load */
 
   $(prevPanel).after(newPanel);
 };

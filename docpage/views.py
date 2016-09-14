@@ -31,6 +31,10 @@ def edit_header(request):
     docPage = get_object_or_404(DocPage, pk=pk)
     docPage.category = request.POST['category']
     docPage.title = request.POST['title']
+    docpage.panels = request.POST['panel_data']
+
+    # TODO: Edit panel and component data (delete and recreate)
+
     docPage.dt_editted = timezone.now()
     docPage.save()
     return HttpResponseRedirect(
