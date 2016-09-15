@@ -13,10 +13,20 @@ $(document).ready(function($){
 
   /* Read in page config */
   for (var p=0; p<original_panels.length; p++){
-    var panel_spec = original_panels[p];
+    var panelSpec = original_panels[p];
 
     /* Insert panel after last one */
-    prevPanel = ns.docpage.misc.add_panel(prevPanel, panel_spec.header);
+    prevPanel = ns.docpage.misc.add_panel(prevPanel, panelSpec.header);
+
+    /* Build component forms */
+    var hrTerm = $(prevPanel).find('hr.component-term')
+    var originalComps = panelSpec.components || [];
+    for (var c=0; c<originalComps.length; c++){
+      var compSpec = originalComps[c];
+      /* Add component after previous */
+      var prevComp = ns.docpage.misc.add_component(hrTerm, compSpec);
+      hrTerm = $(prevComp).find('hr.component-term')
+    }
   }
 });
 
@@ -57,7 +67,8 @@ callback.add_panel = function (){
 /** Callback for "Delete Panel" button */
 callback.delete_panel = function(){
   var box = $(this).parent().parent().parent().parent();
-  box.remove();
+  /* Remove box's panel */
+  box.parent().parent().remove();
 };
 
 
@@ -68,7 +79,7 @@ callback.add_component = function(){
   var hr_term = component.siblings('hr.component-term')[0];
 
   /* Append new component form */
-  $(hr_term).parent().after(ns.docpage.jq.create_component_form());
+  ns.docpage.misc.add_component(hr_term);
 };
 
 
@@ -172,11 +183,11 @@ jq.create_form = function (form){
 
 
 /** Creates form for editing docpage component */
-jq.create_component_form = function(){
+jq.create_component_form = function(comp){
   var formFields = [
-    {'label': 'Field Type', 'name': 'view'},
-    {'label': 'Data Model Type', 'name': 'model'},
-    {'label': 'Source', 'name': 'source'}
+    {'label': 'Field Type', 'name': 'view', 'value': comp.view || ''},
+    {'label': 'Data Model Type', 'name': 'model', 'value': comp.model || ''},
+    {'label': 'Source', 'name': 'source', 'value': comp.source || ''}
   ];
   return $('<div>')
     .addClass('container-fluid component-form')
@@ -354,6 +365,20 @@ misc.add_panel = function(prevPanel, header){
   $(prevPanel).after(newPanel);
 
   return newPanel;
+};
+
+
+/**
+ * Creates and adds new component after existing terminator
+ * @param hrTerm Component terminator to add after
+ * @param comp Optional component field values
+ * @return Newly created component form
+ */
+misc.add_component = function(hrTerm, comp){
+  var compForm = ns.docpage.jq.create_component_form(comp)
+  $(hrTerm).parent().after(compForm);
+
+  return compForm;
 };
 
 
