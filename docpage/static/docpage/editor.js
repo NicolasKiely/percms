@@ -164,19 +164,34 @@ jq.create_form = function (form){
     var ftype = f.type || 'text';
     var fname = f.name || f.label;
     var fvalue = f.value || '';
+
+    /* Create input element */
+    var inputElement;
+    if (ftype == 'textarea'){
+      inputElement = $('<textarea>')
+        .text(fvalue)
+      ;
+    } else {
+      inputElement = $('<input>')
+        .attr('type', ftype)
+        .attr('value', fvalue)
+      ;
+    }
+
+    /* Create input field and attach to form */
     formEl
       .append($('<label>')
         .addClass('col-sm-3 control-label')
         .append(f.label)
-      ).append($('<div>')
-        .addClass('col-sm-8')
-        .append($('<input>')
-          .addClass('form-control')
-          .attr('name', fname)
-          .attr('type', ftype)
-          .attr('value', fvalue)
       )
-    );
+      .append($('<div>')
+          .addClass('col-sm-8')
+          .append(inputElement
+            .addClass('form-control')
+            .attr('name', fname)
+          )
+        );
+
   }
   return formEl;
 };
@@ -184,10 +199,11 @@ jq.create_form = function (form){
 
 /** Creates form for editing docpage component */
 jq.create_component_form = function(comp){
+  comp = comp || {};
   var formFields = [
-    {'label': 'Field Type', 'name': 'view', 'value': comp.view || ''},
-    {'label': 'Data Model Type', 'name': 'model', 'value': comp.model || ''},
-    {'label': 'Source', 'name': 'source', 'value': comp.source || ''}
+    {label: 'Field Type', name: 'view', value: comp.view},
+    {label: 'Data Model Type', name: 'model', value: comp.model},
+    {label: 'Source', name: 'source', value: comp.source, type:'textarea'}
   ];
   return $('<div>')
     .addClass('container-fluid component-form')
@@ -415,12 +431,21 @@ misc.gather_docpage_data = function(){
       var form = $(components[j]); // Component form
       var component = {}; // Component data
 
+      /* Read value attributes from inputs */
       var form_inputs = form.find('input');
       var form_input_len = form_inputs.size();
       for (var k=0; k<form_input_len; k++){
         /* Map form to component */
         var input = form_inputs[k];
         component[input.name] = input.value;
+      }
+
+      /* Read text area input */
+      var formAreas = form.find('textarea');
+      var formAreasLen = formAreas.size();
+      for (var k=0; k<formAreasLen; k++){
+        var textArea = formAreas[k];
+        component[textArea.name] = $(textArea).val();
       }
 
       /* Add component data */
