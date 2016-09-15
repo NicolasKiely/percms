@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .models import DocPage, Panel
+from .models import DocPage, Panel, Component
 from common import core
 import json
 
@@ -48,6 +48,13 @@ def edit_page(request):
         # Iterate over panel post objects
         new_panel = Panel(title=panel_spec['header'], page=docPage)
         new_panel.save()
+
+        for comp_spec in panel_spec['components']:
+            # Iterate over component objects
+            new_comp = Component(panel=new_panel, src=comp_spec['source'],
+                model=comp_spec['model'], view=comp_spec['view']
+            )
+            new_comp.save()
 
     docPage.dt_editted = timezone.now()
     docPage.save()
