@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .models import DocPage, Panel, Component
+from .models import DocPage, Panel, Component, mchoices, vchoices
 from common import core
 import json
 
@@ -36,7 +36,12 @@ def editor_page(request, pk):
 
         panels_json.append(panel_json)
 
-    context = { 'docpage': docPage, 'panels': json.dumps(panels_json) }
+    context = {
+        'docpage': docPage,
+        'panels': json.dumps(panels_json),
+        'mchoices': json.dumps(mchoices),
+        'vchoices': json.dumps(vchoices)
+    }
     return core.render(request, 'docpage/editor.html', **context)
 
 

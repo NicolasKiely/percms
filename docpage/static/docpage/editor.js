@@ -12,8 +12,8 @@ $(document).ready(function($){
   var prevPanel = $('div.outer-content-box')[0]
 
   /* Read in page config */
-  for (var p=0; p<original_panels.length; p++){
-    var panelSpec = original_panels[p];
+  for (var p=0; p<originalPanels.length; p++){
+    var panelSpec = originalPanels[p];
 
     /* Insert panel after last one */
     prevPanel = ns.docpage.misc.add_panel(prevPanel, panelSpec.header);
@@ -164,6 +164,7 @@ jq.create_form = function (form){
     var ftype = f.type || 'text';
     var fname = f.name || f.label;
     var fvalue = f.value || '';
+    var foptions = f.options || [];
 
     /* Create input element */
     var inputElement;
@@ -171,6 +172,16 @@ jq.create_form = function (form){
       inputElement = $('<textarea>')
         .text(fvalue)
       ;
+    } else if (ftype == 'select'){
+      inputElement = $('<select>');
+      for (var q=0; q<foptions.length; q++){
+        var option = foptions[q];
+        inputElement.append($('<option>')
+          .attr('value', option[0])
+          .text(option[1])
+        );
+      }
+      inputElement.val(fvalue);
     } else {
       inputElement = $('<input>')
         .attr('type', ftype)
@@ -201,8 +212,14 @@ jq.create_form = function (form){
 jq.create_component_form = function(comp){
   comp = comp || {};
   var formFields = [
-    {label: 'Field Type', name: 'view', value: comp.view},
-    {label: 'Data Model Type', name: 'model', value: comp.model},
+    {
+      label: 'Field Type', name: 'view', value: comp.view,
+      options: viewOptions, type: 'select'
+    },
+    {
+      label: 'Data Model Type', name: 'model', value: comp.model,
+      options: modelOptions, type: 'select'
+    },
     {label: 'Source', name: 'source', value: comp.source, type:'textarea'}
   ];
   return $('<div>')
@@ -446,6 +463,14 @@ misc.gather_docpage_data = function(){
       for (var k=0; k<formAreasLen; k++){
         var textArea = formAreas[k];
         component[textArea.name] = $(textArea).val();
+      }
+
+      /* Read select input */
+      var selects = form.find('select');
+      var selectsLen = selects.size();
+      for (var k=0; k<selectsLen; k++){
+        var select = selects[k];
+        component[select.name] = $(select).val();
       }
 
       /* Add component data */
