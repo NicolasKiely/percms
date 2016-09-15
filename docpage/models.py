@@ -3,10 +3,10 @@ from django.core.urlresolvers import reverse
 
 # Component model choices
 mchoices = (
-    ('raw', 'Raw text'),
+    ('raw', 'Plain text'),
     ('sapi', 'Static API'),
     ('dapi', 'Dynamic API'),
-    ('mu', 'Markup text')
+    ('html', 'Raw HTML')
 )
 
 # Components view choices

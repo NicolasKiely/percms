@@ -27,6 +27,8 @@
         <p>
         {% if com.model == 'raw' %}
           {{ com.src }}
+        {% elif com.model == 'html' %}
+          {{ com.src|safe }}
         {% endif %}
         </p>
       {% endif %}
