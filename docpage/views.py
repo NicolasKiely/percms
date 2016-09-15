@@ -25,7 +25,15 @@ def editor_page(request, pk):
     panels_json = []
 
     for panel in docPage.panel_set.all():
-        panel_json = {'header': panel.title}
+        # Get panel data
+        panel_json = {'header': panel.title, 'components': []}
+        for comp in panel.component_set.all():
+            # Get component data
+            comp_json = {
+                'source': comp.src, 'model': comp.model, 'view': comp.view
+            }
+            panel_json['components'].append(comp_json)
+
         panels_json.append(panel_json)
 
     context = { 'docpage': docPage, 'panels': json.dumps(panels_json) }
@@ -43,7 +51,7 @@ def edit_page(request):
 
     # TODO: Drop old panel and component data
 
-    # TODO: Add new panel and component data
+    # Save new panel/component data
     for panel_spec in panel_specs:
         # Iterate over panel post objects
         new_panel = Panel(title=panel_spec['header'], page=docPage)
