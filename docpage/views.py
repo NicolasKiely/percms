@@ -91,7 +91,9 @@ def view_page(request, pk):
                 'model': comp_spec.model, 'src': comp_spec.src}
             if comp['view'] == 'table':
                 # Structure table
-                if comp['model'] == 'raw':
+                comp['safe'] = (comp['model'] != 'raw')
+
+                if comp['model'] in ('raw', 'html'):
                     comp['table'] = component_utils.preprocess_raw_table(comp['src'])
 
             panel['components'].append(comp)

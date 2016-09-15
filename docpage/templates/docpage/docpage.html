@@ -34,17 +34,27 @@
 
       {% elif comp.view == 'table' %}
         {# Table field #}
-        <table class="table table-striped">
+        <table class="table">
         {% if comp.table.header %}
           <tr>
           {% for field in comp.table.header %}
+          {% if comp.safe %}
+            <th>{{ field|safe }}</th>
+          {% else %}
             <th>{{ field }}</th>
+          {% endif %}
           {% endfor %}
           </tr>
         {% endif %}
         {% for row in comp.table.rows %}
           <tr>
-          {% for field in row %}<td>{{ field }}</td>{% endfor %}
+          {% for field in row %}
+          {% if comp.safe %}
+            <td>{{ field|safe }}</td>
+          {% else %}
+            <td>{{ field }}</td>
+          {% endif %}
+          {% endfor %}
           </tr>
         {% endfor %}
         </table>
