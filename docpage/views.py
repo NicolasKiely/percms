@@ -49,7 +49,8 @@ def edit_page(request):
     docPage.title = request.POST['title']
     panel_specs = json.loads(request.POST['panel_data'])
 
-    # TODO: Drop old panel and component data
+    # Drop old panel and component data
+    docPage.panel_set.all().delete()
 
     # Save new panel/component data
     for panel_spec in panel_specs:
