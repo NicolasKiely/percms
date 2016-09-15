@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .models import DocPage, Panel, Component, mchoices, vchoices
+import component_utils
 from common import core
 import json
 
@@ -80,7 +81,23 @@ def edit_page(request):
 def view_page(request, pk):
     ''' Displays public page '''
     docPage = get_object_or_404(DocPage, pk=pk)
-    context = { 'docpage': docPage }
+
+    # Pre-process components
+    panels = []
+    for panel_spec in docPage.panel_set.all():
+        panel = {'title': panel_spec.title, 'components': []}
+        for comp_spec in panel_spec.component_set.all():
+            comp = {'view': comp_spec.view,
+                'model': comp_spec.model, 'src': comp_spec.src}
+            if comp['view'] == 'table':
+                # Structure table
+                if comp['model'] == 'raw':
+                    comp['table'] = component_utils.preprocess_raw_table(comp['src'])
+
+            panel['components'].append(comp)
+        panels.append(panel)
+        
+    context = { 'docpage': docPage, 'panels': panels }
     return core.render(request, 'docpage/docpage.html', **context)
 
 

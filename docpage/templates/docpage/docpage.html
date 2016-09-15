@@ -16,21 +16,38 @@
 
 
 {% block html_body %}
-  {% for panel in docpage.panel_set.all %} {% open_box %}
+  {% for panel in panels %} {% open_box %}
     {# Panel #}
     {% if panel.title != '' %} <h2>{{ panel.title }}</h2> {% endif %}
 
-    {% for com in panel.component_set.all %}
+    {% for comp in panel.components %}
       {# Component #}
-      {% if com.view == 'text' %}
+      {% if comp.view == 'text' %}
         {# Text field #}
         <p>
-        {% if com.model == 'raw' %}
-          {{ com.src }}
-        {% elif com.model == 'html' %}
-          {{ com.src|safe }}
+        {% if comp.model == 'raw' %}
+          {{ comp.src }}
+        {% elif comp.model == 'html' %}
+          {{ comp.src|safe }}
         {% endif %}
         </p>
+
+      {% elif comp.view == 'table' %}
+        {# Table field #}
+        <table class="table table-striped">
+        {% if comp.table.header %}
+          <tr>
+          {% for field in comp.table.header %}
+            <th>{{ field }}</th>
+          {% endfor %}
+          </tr>
+        {% endif %}
+        {% for row in comp.table.rows %}
+          <tr>
+          {% for field in row %}<td>{{ field }}</td>{% endfor %}
+          </tr>
+        {% endfor %}
+        </table>
       {% endif %}
 
     {% endfor %}
