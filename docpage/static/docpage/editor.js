@@ -8,8 +8,16 @@ $(document).ready(function($){
   /* Attach add-panel function to initial button */
   $('#btn-add-panel').click(ns.docpage.cb.add_panel);
 
-  /* TODO: read in page config on load */
-  console.log(original_panels);
+  /* Start off counting panels at header panel */
+  var prevPanel = $('div.outer-content-box')[0]
+
+  /* Read in page config */
+  for (var p=0; p<original_panels.length; p++){
+    var panel_spec = original_panels[p];
+
+    /* Insert panel after last one */
+    prevPanel = ns.docpage.misc.add_panel(prevPanel, panel_spec.header);
+  }
 });
 
 
@@ -36,46 +44,13 @@ callback.submit = function(){
 
 /** Insert panel after element */
 callback.add_panel = function (){
-  /* Fetch panel to insert after */
+  /* Get panel containing this button */
   var prevBox = this.parentElement.parentElement
     .parentElement.parentElement;
+  var prevPanel = prevBox.parentElement.parentElement;
 
-  /* Create inner content box */
-  var newBox = document.createElement('div');
-  newBox.className = prevBox.className;
-
-  /* Create inner row div */
-  var prevRow = prevBox.parentElement;
-  var newRow = document.createElement('div');
-  newRow.className = prevRow.className;
-  newRow.appendChild(newBox);
-
-  /* Create outer container div */
-  var prevPanel = prevRow.parentElement;
-  var newPanel = document.createElement('div')
-  newPanel.className = prevPanel.className;
-  newPanel.appendChild(newRow);
-
-  /* Create panel elements */
-  newBox.appendChild($('<h2>').text('Panel')[0]);
-  var form = [{'type': 'text', 'label': 'Header:', 'name': 'header'}]
-  $(newBox)
-    .append($('<div>')
-      .addClass('container-fluid')
-      .appendRow(ns.docpage.jq.create_form(form))
-      .appendRow(ns.docpage.jq.add_component_button())
-      .append(ns.docpage.jq.component_terminator())
-    )
-    .append($('<div>')
-      .addClass('container-fluid')
-      .appendRow([
-        ns.docpage.jq.add_panel_button(),
-        ns.docpage.jq.delete_panel_button()
-      ])
-    )
-  ;
-
-  $(prevPanel).after(newPanel);
+  /* Insert panel */
+  ns.docpage.misc.add_panel(prevPanel);
 };
 
 
@@ -177,6 +152,7 @@ jq.create_form = function (form){
     var f = form[i];
     var ftype = f.type || 'text';
     var fname = f.name || f.label;
+    var fvalue = f.value || '';
     formEl
       .append($('<label>')
         .addClass('col-sm-3 control-label')
@@ -187,6 +163,7 @@ jq.create_form = function (form){
           .addClass('form-control')
           .attr('name', fname)
           .attr('type', ftype)
+          .attr('value', fvalue)
       )
     );
   }
@@ -290,7 +267,7 @@ jq.add_panel_button = function(){
       .text('Add Panel')
     )
   ;
-}
+};
 
 
 /** Creates button for deleting panels */
@@ -303,7 +280,32 @@ jq.delete_panel_button = function(){
       .text('Delete Panel')
     )
   ;
-}
+};
+
+
+/** Creates new panel */
+jq.empty_panel = function(){
+  /* Get initial header panel and use as prototype for panel */
+  var protoPanel = $('div.outer-content-box')[0]
+  var protoRow = protoPanel.childNodes[0];
+  var protoBox = protoRow.childNodes[0];
+
+  /* Create new panel */
+  var newPanel = document.createElement('div');
+  newPanel.className = protoPanel.className;
+
+  /* Create new row */
+  var newRow = document.createElement('div');
+  newRow.className = protoRow.className;
+  newPanel.appendChild(newRow);
+
+  /* Create new content box */
+  var newBox = document.createElement('div');
+  newBox.className = protoBox.className;
+  newRow.appendChild(newBox);
+
+  return [newPanel, newRow, newBox];
+};
 
 
 ns.docpage.jq = jq;
@@ -313,6 +315,47 @@ ns.docpage.jq = jq;
 |* Misc Functions *|
 \******************/
 var misc = {};
+
+
+/**
+ * Creates and adds new panel after existing panel
+ * @param prevPanel Existing panel div to insert after
+ * @return Newly created panel (div)
+ */
+misc.add_panel = function(prevPanel, header){
+  /* Create new panel */
+  var panelSet = ns.docpage.jq.empty_panel();
+  var newPanel = panelSet[0];
+  var newBox = panelSet[2];
+  header = header || '';
+
+  /* Create panel elements */
+  newBox.appendChild($('<h2>').text('Panel')[0]);
+  var form = [{
+    'label': 'Header:', 'name': 'header', 'type': 'text', 'value': header
+  }];
+  $(newBox)
+    .append($('<div>')
+      .addClass('container-fluid')
+      .appendRow(ns.docpage.jq.create_form(form))
+      .appendRow(ns.docpage.jq.add_component_button())
+      .append(ns.docpage.jq.component_terminator())
+    )
+    .append($('<div>')
+      .addClass('container-fluid')
+      .appendRow([
+        ns.docpage.jq.add_panel_button(),
+        ns.docpage.jq.delete_panel_button()
+      ])
+    )
+  ;
+
+  /* Add it in */
+  $(prevPanel).after(newPanel);
+
+  return newPanel;
+};
+
 
 /**
  * Gathers up data in docpage editor fields
