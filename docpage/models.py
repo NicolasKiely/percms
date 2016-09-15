@@ -43,6 +43,9 @@ class DocPage(models.Model):
             if len(normalized) >= 32: break
         return normalized
 
+    def __unicode__(self):
+        return self.category +':'+ self.get_normalized_name()
+
 
 class Panel(models.Model):
     ''' Stylistic panel on a page '''

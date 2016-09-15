@@ -9,6 +9,7 @@ $(document).ready(function($){
   $('#btn-add-panel').click(ns.docpage.cb.add_panel);
 
   /* TODO: read in page config on load */
+  console.log(original_panels);
 });
 
 

@@ -5,6 +5,11 @@
 
 
 {% block html_head %}
+  {# Page config data #}
+  <script>
+    var original_panels = {{ panels|safe }};
+  </script>
+
   {# Validator scripts #}
   <script src="{% static 'docpage/editor.js' %}"></script>
   {% if validators %}
@@ -23,7 +28,7 @@
       Back to Doc Page List
     </a></div><br />
     <form id="form_edit_header" class="form-horizontal" role="form"
-        action="{% url 'docpage:edit_header' %}" method="post"
+        action="{% url 'docpage:edit_page' %}" method="post"
     >{% csrf_token %}
       <div class="form-group">
         {# Category field #}
@@ -67,6 +72,5 @@
       </button>
     </div></div></div>
   {% close_box %}
-
 
 {% endblock %}
