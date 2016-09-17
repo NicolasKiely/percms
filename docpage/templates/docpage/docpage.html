@@ -58,6 +58,9 @@
           </tr>
         {% endfor %}
         </table>
+
+      {% elif comp.view == 'img' %}
+        <img src="{{ comp.src }}" />
       {% endif %}
 
     {% endfor %}

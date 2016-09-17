@@ -80,27 +80,8 @@ def edit_page(request):
 
 def view_page(request, pk):
     ''' Displays public page '''
-    docPage = get_object_or_404(DocPage, pk=pk)
-
-    # Pre-process components
-    panels = []
-    for panel_spec in docPage.panel_set.all():
-        panel = {'title': panel_spec.title, 'components': []}
-        for comp_spec in panel_spec.component_set.all():
-            comp = {'view': comp_spec.view,
-                'model': comp_spec.model, 'src': comp_spec.src}
-            if comp['view'] == 'table':
-                # Structure table
-                comp['safe'] = (comp['model'] != 'raw')
-
-                if comp['model'] in ('raw', 'html'):
-                    comp['table'] = component_utils.preprocess_raw_table(comp['src'])
-
-            panel['components'].append(comp)
-        panels.append(panel)
-        
-    context = { 'docpage': docPage, 'panels': panels }
-    return core.render(request, 'docpage/docpage.html', **context)
+    docpage = get_object_or_404(DocPage, pk=pk)
+    return render_page(request, docpage)
 
 
 @login_required
@@ -119,3 +100,26 @@ def add_page(request):
     return HttpResponseRedirect(
         reverse('docpage:editor_page', args=(docPage.id,))
     )
+
+
+def render_page(request, docpage):
+    ''' Renders a specific docpage '''
+    # Pre-process components
+    panels = []
+    for panel_spec in docpage.panel_set.all():
+        panel = {'title': panel_spec.title, 'components': []}
+        for comp_spec in panel_spec.component_set.all():
+            comp = {'view': comp_spec.view,
+                'model': comp_spec.model, 'src': comp_spec.src}
+            if comp['view'] == 'table':
+                # Structure table
+                comp['safe'] = (comp['model'] != 'raw')
+
+                if comp['model'] in ('raw', 'html'):
+                    comp['table'] = component_utils.preprocess_raw_table(comp['src'])
+
+            panel['components'].append(comp)
+        panels.append(panel)
+        
+    context = { 'docpage': docpage, 'panels': panels }
+    return core.render(request, 'docpage/docpage.html', **context)
