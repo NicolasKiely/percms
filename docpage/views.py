@@ -84,6 +84,12 @@ def view_page(request, pk):
     return render_page(request, docpage)
 
 
+def view_by_name(request, category, title):
+    ''' Display page retrieved by name '''
+    docpage = get_object_or_404(DocPage, title=title, category=category)
+    return render_page(request, docpage)
+
+
 @login_required
 def add_page(request):
     ''' Post handle for adding a new page '''
