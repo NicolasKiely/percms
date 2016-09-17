@@ -34,8 +34,8 @@
 
       {% elif comp.view == 'table' %}
         {# Table field #}
-        <table class="table">
         {% if comp.table.header %}
+        <table class="table table-striped">
           <tr>
           {% for field in comp.table.header %}
           {% if comp.safe %}
@@ -45,7 +45,10 @@
           {% endif %}
           {% endfor %}
           </tr>
+        {% else %}
+        <table class="table">
         {% endif %}
+
         {% for row in comp.table.rows %}
           <tr>
           {% for field in row %}
