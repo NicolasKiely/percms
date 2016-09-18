@@ -5,10 +5,49 @@
 
 
 {% block html_head %}
+  <script>
+    /** Updates file name field to name of uploaded file */
+    function updateFileName(){
+      /* Get file name */
+      var fileName = $('#upload_input')[0].files[0].name;
+
+      /* Set file name */
+      $('#file_name').val(fileName);
+
+      console.log(fileName);
+    }
+  </script>
 {% endblock %}
 
 {% block html_body %}
   {% open_box %}
     <h2>Upload File</h2>
+
+    <form id="form_upload" class="form-horizontal"
+        method="post" action="{% url 'file:upload' %}"
+    >
+      {% csrf_token %}
+      <div class="form-group">
+        {# Upload button #}
+        <label class="col-sm-3 control-label">Upload File</label>
+        <div class="col-sm-8">
+          <input type="file" name="file" id="upload_input" onchange="updateFileName()">
+        </div>
+
+        {# File category #}
+        <label class="col-sm-3 control-label">Category</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" id="file_cat" name="category">
+        </div>
+
+        {# File name #}
+        <label class="col-sm-3 control-label">File Name</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" id="file_name" name="name">
+        </div>
+
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
   {% close_box %}
 {% endblock %}
