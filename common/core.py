@@ -1,12 +1,13 @@
 import django.shortcuts
 import percms.settings
+import percms.safesettings
 from django.http import HttpResponse
 
 __GOOGLE_API = 'https://ajax.googleapis.com/ajax'
 __BOOTSTRAP =  'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5'
 
 # Resolve local vs cdn assets
-if percms.settings.USE_LOCAL_ASSETS:
+if percms.safesettings.USE_LOCAL_ASSETS:
     __jquery_js = '/static/common/jquery-1.11.3.min.js'
     __bootst_js = '/static/common/bootstrap.min.js'
     __bootst_css = '/static/common/bootstrap.min.css'
@@ -18,7 +19,7 @@ else:
 
 __CORE_PAGE_CONFIG = {
     'page': {
-        'site': 'PerCMS Portfolio',
+        'site': percms.safesettings.SITE_TITLE,
         'title': '',
         'js': {
             'jquery': __jquery_js,
