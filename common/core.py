@@ -3,7 +3,7 @@ import percms.settings
 from django.http import HttpResponse
 
 __GOOGLE_API = 'https://ajax.googleapis.com/ajax'
-__BOOTSTRAP =  'http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5'
+__BOOTSTRAP =  'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5'
 
 # Resolve local vs cdn assets
 if percms.settings.USE_LOCAL_ASSETS:
