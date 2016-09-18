@@ -31,6 +31,7 @@ __CORE_PAGE_CONFIG = {
         # Drop-down menu for logged in users
         'user_menu': [
             ('login:account', 'My Dashboard'),
+            ('file:upload', 'Upload Files'),
             ('index', 'Site Home'),
             ('login:logout', 'Logout')
         ],
