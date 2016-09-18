@@ -123,6 +123,13 @@ def render_page(request, docpage):
 
                 if comp['model'] in ('raw', 'html'):
                     comp['table'] = component_utils.preprocess_raw_table(comp['src'])
+            elif comp['view'] == 'text':
+                # Text post
+                if comp['model'] == 'raw':
+                    # Break up lines into paragraphs
+                    comp['paragraphs'] = [
+                        s for s in comp['src'].split('\n') if len(s)>0
+                    ]
 
             panel['components'].append(comp)
         panels.append(panel)

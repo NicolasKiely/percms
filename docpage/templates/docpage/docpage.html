@@ -24,13 +24,17 @@
       {# Component #}
       {% if comp.view == 'text' %}
         {# Text field #}
-        <p>
         {% if comp.model == 'raw' %}
-          {{ comp.src }}
+          {# Break text into paragraphs #}
+        {% for paragraph in comp.paragraphs %}
+          <p>{{ paragraph }}</p>
+        {% endfor %}
         {% elif comp.model == 'html' %}
+        <p>
+          {# Just dump as html #}
           {{ comp.src|safe }}
-        {% endif %}
         </p>
+        {% endif %}
 
       {% elif comp.view == 'table' %}
         {# Table field #}
