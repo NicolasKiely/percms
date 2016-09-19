@@ -1,0 +1,47 @@
+{% extends "common/base.html" %}
+{% load core %}
+{% load staticfiles %}
+{# Webpage for viewing uploaded file metadata #}
+
+
+{% block html_head %}
+{% endblock %}
+
+{% block html_body %}
+  {% open_box %}
+    {# Just uploaded a file #}
+    <h2>Last Uploaded File</h2>
+
+    <table class="table">
+      <tr>
+        <td><b>File Category:</b></td>
+        <td>{{ file.category }}</td>
+      </tr>
+
+      <tr>
+        <td><b>File Name:</b></td>
+        <td>{{ file.name }}</td>
+      </tr>
+
+      <tr>
+        <td><b>Is Image?</b></td>
+        <td>{% if file.is_img %}Yes{% else %}No{% endif %}</td>
+      </tr>
+
+      <tr>
+        <td><b>Date Uploaded:</b></td>
+        <td>{{ file.dt_uploaded }}</td>
+      </tr>
+
+      <tr>
+        <td><b>URL:</b></td>
+        <td>{% static file_url %}</td>
+      </tr>
+    </table>
+    <br>
+
+    {% if file.is_img %}
+      <img class="img-thumbnail" src="{% static file_url %}" width="100"></img>
+    {% endif %}
+  {% close_box %}
+{% endblock %}

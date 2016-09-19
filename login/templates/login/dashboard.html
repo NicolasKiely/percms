@@ -9,6 +9,7 @@
   {% close_box %}
 
   {% open_box %}
+    {# Docpages #}
     <h2><a href="{% url 'docpage:editor_list' %}">Recent Doc Pages</a></h2>
 
     <table class="table table-striped">
@@ -25,5 +26,17 @@
       </tr>
       {% endfor %}
     </table>
+  {% close_box %}
+
+  {% open_box %}
+    {# Images #}
+    <h2>Recent Images</h2>
+    {% for image in images %}
+      <div class='col-sm-2'>
+        <a href="{% url 'file:describe' image.id %}">
+          <img class="img-thumbnail" src="{% static image.url %}"></img>
+        </a>
+      </div>
+    {% endfor %}
   {% close_box %}
 {% endblock %}

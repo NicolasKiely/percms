@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 from PIL import Image
 from common import core
 from percms import safesettings
@@ -48,3 +49,11 @@ def upload(request):
             context['file_url'] = 'images/'+ sid
 
     return core.render(request, 'filemanager/upload.html', **context)
+
+
+def describe(request, pk):
+    ''' Shows image meta data '''
+    meta_file = get_object_or_404(Meta_File, pk=pk)
+    context = {'file': meta_file, 'file_url': 'images/'+str(meta_file.id)}
+
+    return core.render(request, 'filemanager/describe.html', **context)
