@@ -33,6 +33,7 @@ __CORE_PAGE_CONFIG = {
             ('login:account', 'My Dashboard'),
             ('file:upload', 'Upload Files'),
             ('index', 'Site Home'),
+            ('admin:index', 'Site Admin'),
             ('login:logout', 'Logout')
         ],
         # Alternative menu for non-logged in users
