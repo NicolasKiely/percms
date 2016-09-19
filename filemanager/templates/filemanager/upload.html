@@ -24,6 +24,7 @@
     <h2>Upload File</h2>
 
     <form id="form_upload" class="form-horizontal"
+        enctype="multipart/form-data"
         method="post" action="{% url 'file:upload' %}"
     >
       {% csrf_token %}
@@ -50,4 +51,40 @@
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   {% close_box %}
+
+  {% if too_big %}{% open_box %}
+    <h2>Error: File was too big</h2>
+  {% close_box %}{% endif %}
+  
+  {% if file %}{% open_box %}
+    {# Just uploaded a file #}
+    <h2>Last Uploaded File</h2>
+
+    <table class="table">
+      <tr>
+        <td><b>File Category:</b></td>
+        <td>{{ file.category }}</td>
+      </tr>
+
+      <tr>
+        <td><b>File Name:</b></td>
+        <td>{{ file.name }}</td>
+      </tr>
+
+      <tr>
+        <td><b>Is Image?</b></td>
+        <td>{% if file.is_img %}Yes{% else %}No{% endif %}</td>
+      </tr>
+
+      <tr>
+        <td><b>Date Uploaded:</b></td>
+        <td>{{ file.dt_uploaded }}</td>
+      </tr>
+    </table>
+    <br>
+
+    {% if file.is_img %}
+      <img class="img-thumbnail" src="{% static file_url %}" width="100"></img>
+    {% endif %}
+  {% close_box %}{% endif %}
 {% endblock %}
