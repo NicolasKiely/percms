@@ -118,6 +118,7 @@ def render_page(request, docpage):
         for comp_spec in panel_spec.component_set.all():
             comp = {'view': comp_spec.view,
                 'model': comp_spec.model, 'src': comp_spec.src}
+
             if comp['view'] == 'table':
                 # Structure table
                 comp['safe'] = (comp['model'] != 'raw')
@@ -125,24 +126,23 @@ def render_page(request, docpage):
                 if comp['model'] in ('raw', 'html'):
                     comp['table'] = component_utils.preprocess_raw_table(comp['src'])
 
-                elif comp['model'] == 'dapi':
-                    try:
-                        dapi_module, dapi_func = comp['src'].split(':')
-                        func = view_table[dapi_func]
-                        func(comp)
-                    except KeyError:
-                        comp['view'] = 'text'
-                        comp['model'] = 'raw'
-                        err_msg = 'Error: Could not lookup dapi call '+comp['src']
-                        comp['paragraphs'] = [err_msg]
-
             elif comp['view'] == 'text':
                 # Text post
                 if comp['model'] == 'raw':
                     # Break up lines into paragraphs
-                    comp['paragraphs'] = [
-                        s for s in comp['src'].split('\n') if len(s)>0
-                    ]
+                    comp['paragraphs'] = component_utils.preprocess_text(comp['src'])
+
+            # Handle dynamic views
+            if comp['model'] == 'dapi':
+                try:
+                    dapi_module, dapi_func = comp['src'].split(':')
+                    func = view_table[dapi_func]
+                    func(comp)
+                except KeyError:
+                    comp['view'] = 'text'
+                    comp['model'] = 'raw'
+                    err_msg = 'Error: Could not lookup dapi call '+comp['src']
+                    comp['paragraphs'] = [err_msg]
 
             panel['components'].append(comp)
         panels.append(panel)

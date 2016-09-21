@@ -1,5 +1,9 @@
 ''' Utilities for processing component specs '''
 
+def preprocess_text(src):
+    ''' Parse source into paragraphs '''
+    return [s for s in src.split('\n') if len(s)>0]
+
 
 def preprocess_raw_table(src):
     ''' Parse table string into usable dict for html views '''
