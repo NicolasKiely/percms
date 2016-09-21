@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .models import DocPage, Panel, Component, mchoices, vchoices
+from .dynamic_views import view_table
 import component_utils
 from common import core
 import json
@@ -123,6 +124,18 @@ def render_page(request, docpage):
 
                 if comp['model'] in ('raw', 'html'):
                     comp['table'] = component_utils.preprocess_raw_table(comp['src'])
+
+                elif comp['model'] == 'dapi':
+                    try:
+                        dapi_module, dapi_func = comp['src'].split(':')
+                        func = view_table[dapi_func]
+                        func(comp)
+                    except KeyError:
+                        comp['view'] = 'text'
+                        comp['model'] = 'raw'
+                        err_msg = 'Error: Could not lookup dapi call '+comp['src']
+                        comp['paragraphs'] = [err_msg]
+
             elif comp['view'] == 'text':
                 # Text post
                 if comp['model'] == 'raw':

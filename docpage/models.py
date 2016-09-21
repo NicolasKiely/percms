@@ -29,6 +29,11 @@ class DocPage(models.Model):
         url = reverse('docpage:view_page', args=(self.id,)) 
         return url + self.get_normalized_name()
 
+    def get_view_link(self, title=None):
+        ''' Returns link to view '''
+        title = title if title else self.title
+        return '<a href="'+ self.get_view_url() +'">'+ title +'</a>'
+
     def get_normalized_name(self):
         ''' Returns url-friendly normalized name '''
         underscore = False
