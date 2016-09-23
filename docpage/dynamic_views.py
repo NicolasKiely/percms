@@ -7,7 +7,7 @@ def latest_posts(component):
     ''' Returns table of latest posts '''
     pages = DocPage.objects.order_by('-dt_published')[:5]
     component['table'] = {
-        'rows': [[p.get_view_link(), p.dt_editted.date()] for p in pages]
+        'rows': [[p.get_view_link(), p.dt_published.date()] for p in pages]
     }
 
 
