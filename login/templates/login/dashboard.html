@@ -29,6 +29,19 @@
   {% close_box %}
 
   {% open_box %}
+    {# Projects #}
+    <h2><a href="{% url 'project:editor_list' %}">Recent Projects</a></h2>
+
+    <table class="table table-striped">
+      <tr>
+        <th>Project</th>
+        <th>Edit Project</th>
+        <th>View Project</th>
+      </tr>
+    </table>
+  {% close_box %}
+
+  {% open_box %}
     {# Images #}
     <h2>Recent Images</h2>
     {% for image in images %}

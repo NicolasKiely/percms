@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from common import core
 from .models import Proj
 
 
