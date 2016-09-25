@@ -19,7 +19,7 @@
 
     {# Form for adding new docpages #}
     <form id="form_add_new" class="form-horizontal" role="form"
-        action="{% url 'project:add_page' %}" method="post"
+        action="{% url 'project:add' %}" method="post"
     >{% csrf_token %}
       <div class="form-group">
         {# Category field #}
@@ -56,9 +56,9 @@
         <td>{{ project.category }} : {{ project.title }}</td>
         <td>{{ project.dt_published }}</td>
         <td>
-          <a href="{% url 'proj:editor_page' project.id %}">Edit Project</a> |
+          <a href="{% url 'project:editor' project.id %}">Edit Project</a> |
           <a
-              href="{% url 'proj:view_page' proj.id %}{{ proj.get_normalized_name }}"
+              href="{% url 'project:view' project.id %}{{ project.get_normalized_name }}"
           >View Project</a>
         </td>
       </tr>
