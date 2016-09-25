@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^percms/account/', include('login.urls', namespace='login')),
     url(r'^percms/docpage/', include('docpage.urls', namespace='docpage')),
     url(r'^percms/files/', include('filemanager.urls', namespace='file')),
+    url(r'^percms/project/', include('proj.urls', namespace='project'))
     url(r'^$', include('home.urls')),
     url(r'^percms/admin/', include(admin.site.urls)),
     url(r'', include('docpage.fallback_urls', namespace='fallback_docpage'))
