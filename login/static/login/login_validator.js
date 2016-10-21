@@ -6,6 +6,6 @@ jQuery()
     .submit('#login-form button[type="submit"]')
     .validate
 ({
-  '#login-email' : checkEmail,
+  '#login-name' : checkAlphaNumeric,
   '#login-passwd': checkPassword
 });

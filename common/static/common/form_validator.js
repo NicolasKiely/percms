@@ -342,6 +342,14 @@
 })(jQuery);
 
 
+function checkAlphaNumeric(x){
+  var uname = $(x).val();
+  if (! /^\w+$/.test(uname) ){
+    return 'User name may only countain letters and numbers';
+  }
+}
+
+
 /**
  * Checks to make sure password fields match eachother
  * @param password Password field jq element
