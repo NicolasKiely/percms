@@ -43,7 +43,7 @@
           </a>
           <ul class="dropdown-menu">
           {% for iurl, iname in page.user_menu %}
-            <li><a href="{% url iurl %}">{{ iname }}</a></li>
+            <li><a href="{{ iurl }}">{{ iname }}</a></li>
           {% endfor %}
           </ul>
         {% else %}

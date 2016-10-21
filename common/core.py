@@ -33,11 +33,11 @@ def get_core_config():
             },
             # Drop-down menu for logged in users
             'user_menu': [
-                ('login:account', 'My Dashboard'),
-                ('file:upload', 'Upload Files'),
-                ('index', 'Site Home'),
-                ('admin:index', 'Site Admin'),
-                ('login:logout', 'Logout')
+                (reverse('login:account'), 'My Dashboard'),
+                (reverse('file:upload'), 'Upload Files'),
+                (reverse('index'), 'Site Home'),
+                (reverse('admin:index'), 'Site Admin'),
+                (reverse('login:logout'), 'Logout')
             ],
             # Alternative menu for non-logged in users
             'anon_menu': [
