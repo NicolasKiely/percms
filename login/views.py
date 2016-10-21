@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from common import core
@@ -27,7 +28,7 @@ def user_account(request):
             'form': forms.login,
             'formid': 'login-form',
             'logid': 'login-log',
-            'action': '/percms/account/login',
+            'action': reverse('login:login'),
             'validators': ['login/login_validator.js'],
             'title': 'Editor Log In'
         }
@@ -36,21 +37,21 @@ def user_account(request):
 
 def user_login(request):
     ''' Logs user in '''
-    uname = request.POST['login-email']
+    uname = request.POST['login-name']
     upass = request.POST['login-passwd']
     user = authenticate(username=uname, password=upass)
     if user:
         if user.is_active:
             login(request, user)
-            return HttpResponseRedirect('/percms/account/login-success')
+            return HttpResponseRedirect(reverse('login:account'))
         else:
-            return HttpResponseRedirect('/percms/account/login-inactive')
+            return HttpResponseRedirect(reverse('login:login-inactive'))
     else:
         context = {
             'form'  : forms.login,
             'formid': 'login-form',
             'logid' : 'login-log',
-            'action': '/percms/account/login',
+            'action': reverse('login:login'),
             'validators': ['login/login_validator.js'],
             'title' : 'Log In',
             'error' : 'Error in authenticating account'+ uname

@@ -1,10 +1,10 @@
 # Account login fields
 login = [
     {
-        'label': 'Email Address',
+        'label': 'User Name',
         'type' : 'text',
-        'name' : 'login-email',
-        'id'   : 'login-email'
+        'name' : 'login-name',
+        'id'   : 'login-name'
     },
     {
         'label': 'Password',
