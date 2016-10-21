@@ -1,0 +1,19 @@
+{% extends "common/base.html" %}
+{% load core %}
+{% load staticfiles %}
+{# Editor tool for doc pages #}
+
+
+{% block html_head %}
+{% endblock %}
+
+
+{% block html_body %}
+  {% open_box %}
+    <h2>Project Header</h2>
+    <div class="text-center">
+      <a href="{% url 'project:editor_list' %}">Back to Project List</a> |
+      <a href="{% url 'project:view' project.id %}">View Project Home Page</a>
+    </div><br />
+  {% close_box %}
+{% endblock %}
