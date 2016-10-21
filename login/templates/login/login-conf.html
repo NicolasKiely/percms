@@ -1,0 +1,12 @@
+{% extends "common/base.html" %}
+{% load core %}
+{% load staticfiles %}
+
+{# User account dashboard #}
+{% block html_body %}
+  {% open_box %}
+    <h2>Login Success</h2>
+
+    <p>Welcome <u>{{ user.username }}</u>.</p>
+  {% close_box %}
+{% endblock %}
