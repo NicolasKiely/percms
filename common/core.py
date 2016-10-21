@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 import django.shortcuts
 import percms.settings
 import percms.safesettings
@@ -17,36 +18,43 @@ else:
     __bootst_css = __BOOTSTRAP + '/css/bootstrap.min.css'
 
 
-__CORE_PAGE_CONFIG = {
-    'page': {
-        'site': percms.safesettings.SITE_TITLE,
-        'title': '',
-        'js': {
-            'jquery': __jquery_js,
-            'bootstrap': __bootst_js
+def get_core_config():
+    ''' Returns copy of core page config '''
+    return {
+        'page': {
+            'site': percms.safesettings.SITE_TITLE,
+            'title': '',
+            'js': {
+                'jquery': __jquery_js,
+                'bootstrap': __bootst_js
+            },
+            'css': {
+                'bootstrap': __bootst_css
+            },
+            # Drop-down menu for logged in users
+            'user_menu': [
+                ('login:account', 'My Dashboard'),
+                ('file:upload', 'Upload Files'),
+                ('index', 'Site Home'),
+                ('admin:index', 'Site Admin'),
+                ('login:logout', 'Logout')
+            ],
+            # Alternative menu for non-logged in users
+            'anon_menu': [
+                (reverse('index'), 'Site Home'),
+                (reverse('fallback_docpage:view', args=('site', 'about-site')), 'About This Site'),
+                (reverse('fallback_docpage:view', args=('site', 'about-me')), 'About Me'),
+                (reverse('login:account'), 'Login')
+            ]
         },
-        'css': {
-            'bootstrap': __bootst_css
-        },
-        # Drop-down menu for logged in users
-        'user_menu': [
-            ('login:account', 'My Dashboard'),
-            ('file:upload', 'Upload Files'),
-            ('index', 'Site Home'),
-            ('admin:index', 'Site Admin'),
-            ('login:logout', 'Logout')
-        ],
-        # Alternative menu for non-logged in users
-        'anon_menu': []
-    },
 
-    'user': None
-}
+        'user': None
+    }
 
 
 def render(request, template_path, **kwargs):
     ''' Wrapper for django render function '''
-    context = __CORE_PAGE_CONFIG.copy()
+    context = get_core_config()
     for key, value in kwargs.iteritems():
         context[key] = value
 

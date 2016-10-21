@@ -35,9 +35,9 @@
         </a>
       </div>
       <div id="page-nav"><ul class="nav navbar-nav navbar-right">
-        {% if user %}
         <!-- Account dropdown menu -->
         <li class="dropdown">
+        {% if user %}
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
             Hello <b>{{ user.username }}</b><span class="caret"></span>
           </a>
@@ -46,13 +46,17 @@
             <li><a href="{% url iurl %}">{{ iname }}</a></li>
           {% endfor %}
           </ul>
-        </li>
         {% else %}
-        <!-- Login/Signup menu -->
-        {% for iurl, iname in page.anon_menu %}
-          <li><a href="{% url iurl %}">{{ iname }}</a></li>
-        {% endfor %}
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            Welcome Visitor<span class="caret" />
+          </a>
+          <ul class="dropdown-menu">
+          {% for iurl, iname in page.anon_menu %}
+            <li><a href="{{ iurl }}">{{ iname }}</a></li>
+          {% endfor %}
+          </ul>
         {% endif %}
+        </li>
       </ul></div>
     </div></nav>
     {% endblock %}
