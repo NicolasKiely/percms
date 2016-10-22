@@ -149,6 +149,7 @@ $.fn.appendRow = function(children){
  *    'label': required name of label input label
  *    'type': optional type of input, defaults to text
  *    'name': optional name of input field, defaults to label
+ *    'attr': optional attribute of input field
  * @return Root jquery object of form
  */
 jq.create_form = function (form){
@@ -165,12 +166,14 @@ jq.create_form = function (form){
     var fname = f.name || f.label;
     var fvalue = f.value || '';
     var foptions = f.options || [];
+    var frows = f.rows || 4;
 
     /* Create input element */
     var inputElement;
     if (ftype == 'textarea'){
       inputElement = $('<textarea>')
         .text(fvalue)
+        .attr('rows', ''+frows)
       ;
     } else if (ftype == 'select'){
       inputElement = $('<select>');
@@ -220,7 +223,7 @@ jq.create_component_form = function(comp){
       label: 'Data Model Type', name: 'model', value: comp.model,
       options: modelOptions, type: 'select'
     },
-    {label: 'Source', name: 'source', value: comp.source, type:'textarea'}
+    {label: 'Source', name:'source', value:comp.source, type:'textarea', rows:8}
   ];
   return $('<div>')
     .addClass('container-fluid component-form')
