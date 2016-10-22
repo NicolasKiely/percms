@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 import django.shortcuts
+import json
 import percms.settings
 import percms.safesettings
 from django.http import HttpResponse
@@ -54,14 +55,36 @@ def get_core_config():
     }
 
 
+def merge_config(source, dest):
+    ''' Merges config items '''
+    for dest_key, dest_val in dest.iteritems():
+        if dest_key in source:
+            # Merge conflict
+            source_val = source[dest_key]
+            if type(source_val) is list:
+                # Append new data to old lists
+                source[dest_key] += dest_val
+
+            elif type(source_val) is dict:
+                # Recursive conflict with child dictionary items
+                merge_config(source_val, dest_val)
+
+            else:
+                # Override old data
+                source[dest_key] = dest_val
+        else:
+            # No conflict
+            source[dest_key] = dest_val
+
+
 def render(request, template_path, **kwargs):
     ''' Wrapper for django render function '''
     context = get_core_config()
-    for key, value in kwargs.iteritems():
-        context[key] = value
+    merge_config(context, kwargs)
 
     if request.user.is_authenticated():
         context['user'] = request.user
+
     return django.shortcuts.render(request, template_path, context) 
 
 
