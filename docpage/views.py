@@ -123,9 +123,12 @@ def render_page(request, docpage):
     ''' Renders a specific docpage '''
     # Pre-process components
     panels = []
-    for panel_spec in docpage.panel_set.all():
+    panel_specs = docpage.panel_set.all()[:]
+    for panel_spec in panel_specs:
+        # For each panel
         panel = {'title': panel_spec.title, 'components': []}
         for comp_spec in panel_spec.component_set.all():
+            # For each component
             comp = {'view': comp_spec.view,
                 'model': comp_spec.model, 'src': comp_spec.src}
 
@@ -158,6 +161,7 @@ def render_page(request, docpage):
         panels.append(panel)
         
     page_title = dash_pattern.sub(' ', docpage.title).title()
+
     context = {
         'docpage': docpage, 'panels': panels,
         'page': {
@@ -167,4 +171,14 @@ def render_page(request, docpage):
             'title': page_title +' - PerCMS'
         }
     }
+
+    # Add page description if text
+    if len(panel_specs) > 0:
+        panel_spec = panel_specs[0]
+        comp_specs = list(panel_spec.component_set.all()[:1])
+        if comp_specs:
+            comp_spec = comp_specs[0]
+            if comp_spec.view=='text' and comp_spec.model=='raw':
+                context['page']['description'] = comp_spec.src.split('.', 1)[0]
+            
     return core.render(request, 'docpage/docpage.html', **context)
