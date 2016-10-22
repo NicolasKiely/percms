@@ -25,6 +25,7 @@ def get_core_config():
         'page': {
             'site': percms.safesettings.SITE_TITLE,
             'title': 'PerCMS',
+            'description': "Nicolas Kiely's Portfolio Website",
             'js': {
                 'jquery': __jquery_js,
                 'bootstrap': __bootst_js

@@ -8,6 +8,10 @@ from .dynamic_views import view_table
 import component_utils
 from common import core
 import json
+import re
+
+# Pattern for matching dashes and underscores
+dash_pattern = re.compile('[-_]+')
 
 
 @login_required
@@ -97,15 +101,6 @@ def view_by_name(request, category, title):
     return render_page(request, docpage)
 
 
-def view_by_static(request, resource):
-    ''' Display static document '''
-    resource = resource[:32].replace('/', '')
-    fh = open('common/static/common/'+resource, 'r')
-    doc = fh.read()
-    fh.close()
-    return HttpResponse(doc)
-
-
 @login_required
 def add_page(request):
     ''' Post handle for adding a new page '''
@@ -162,7 +157,7 @@ def render_page(request, docpage):
             panel['components'].append(comp)
         panels.append(panel)
         
-    page_title = docpage.title.replace('_', ' ').title()
+    page_title = dash_pattern.sub(' ', docpage.title).title()
     context = {
         'docpage': docpage, 'panels': panels,
         'page': {
