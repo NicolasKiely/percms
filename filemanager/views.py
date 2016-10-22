@@ -1,6 +1,7 @@
-from django.utils import timezone
-from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from PIL import Image
 from common import core
 from percms import safesettings
@@ -62,7 +63,11 @@ def describe(request, pk):
 
 def view_by_name(request, resource):
     ''' Loads file by name '''
-    meta_file = get_object_or_404(Meta_File, name=resource)
+    try:
+        meta_file = Meta_File.objects.filter(name=resource).latest('dt_uploaded')
+    except ObjectDoesNotExist:
+        raise Http404("File Not Found")
+
     if meta_file.is_img:
         save_path = safesettings.UPLOAD_IMAGE_PATH + str(meta_file.id)
     else:
