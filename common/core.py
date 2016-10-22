@@ -43,9 +43,9 @@ def get_core_config():
             # Alternative menu for non-logged in users
             'anon_menu': [
                 (reverse('index'), 'Site Home'),
-                (reverse('fallback_docpage:view', args=('site', 'about-percms')),
+                (reverse('fallback:docpage', args=('site', 'about-percms')),
                     'About This Site'),
-                (reverse('fallback_docpage:view', args=('site', 'about-me')),
+                (reverse('fallback:docpage', args=('site', 'about-me')),
                     'About Me'),
                 (reverse('login:account'), 'Login')
             ]

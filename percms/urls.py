@@ -24,5 +24,5 @@ urlpatterns = [
     url(r'^percms/project/', include('proj.urls', namespace='project')),
     url(r'^$', include('home.urls')),
     url(r'^percms/admin/', include(admin.site.urls)),
-    url(r'', include('docpage.fallback_urls', namespace='fallback_docpage'))
+    url(r'', include('percms.fallback_urls', namespace='fallback'))
 ]

@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from PIL import Image
 from common import core
@@ -57,3 +58,15 @@ def describe(request, pk):
     context = {'file': meta_file, 'file_url': 'images/'+str(meta_file.id)}
 
     return core.render(request, 'filemanager/describe.html', **context)
+
+
+def view_by_name(request, resource):
+    ''' Loads file by name '''
+    meta_file = get_object_or_404(Meta_File, name=resource)
+    if meta_file.is_img:
+        save_path = safesettings.UPLOAD_IMAGE_PATH + str(meta_file.id)
+    else:
+        save_path = safesettings.UPLOAD_FILE_PATH + str(meta_file.id)
+
+    with open(save_path, 'r') as fh:
+        return HttpResponse(fh.read())

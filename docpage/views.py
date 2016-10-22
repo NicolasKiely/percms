@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .models import DocPage, Panel, Component, mchoices, vchoices
@@ -95,6 +95,15 @@ def view_by_name(request, category, title):
     ''' Display page retrieved by name '''
     docpage = get_object_or_404(DocPage, title=title, category=category)
     return render_page(request, docpage)
+
+
+def view_by_static(request, resource):
+    ''' Display static document '''
+    resource = resource[:32].replace('/', '')
+    fh = open('common/static/common/'+resource, 'r')
+    doc = fh.read()
+    fh.close()
+    return HttpResponse(doc)
 
 
 @login_required
