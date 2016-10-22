@@ -24,7 +24,7 @@ def get_core_config():
     return {
         'page': {
             'site': percms.safesettings.SITE_TITLE,
-            'title': '',
+            'title': 'PerCMS',
             'js': {
                 'jquery': __jquery_js,
                 'bootstrap': __bootst_js

@@ -43,8 +43,11 @@ def editor_page(request, pk):
         'panels': json.dumps(panels_json),
         'mchoices': json.dumps(mchoices),
         'vchoices': json.dumps(vchoices),
-        'page': {'user_menu':
-            [(reverse('docpage:view_page', args=(docPage.id,)), 'View This Page')]
+        'page': {
+            'user_menu': [
+                (reverse('docpage:view_page', args=(docPage.id,)), 'View This Page')
+            ],
+            'title': docPage.title.title() +' - PerCMS'
         }
     }
     return core.render(request, 'docpage/editor.html', **context)
@@ -150,10 +153,14 @@ def render_page(request, docpage):
             panel['components'].append(comp)
         panels.append(panel)
         
+    page_title = docpage.title.replace('_', ' ').title()
     context = {
         'docpage': docpage, 'panels': panels,
-        'page': {'user_menu':
-            [(reverse('docpage:editor_page', args=(docpage.id,)), 'Edit This Page')]
+        'page': {
+            'user_menu': [
+                (reverse('docpage:editor_page', args=(docpage.id,)), 'Edit This Page')
+            ],
+            'title': page_title +' - PerCMS'
         }
     }
     return core.render(request, 'docpage/docpage.html', **context)
