@@ -42,7 +42,10 @@ def editor_page(request, pk):
         'docpage': docPage,
         'panels': json.dumps(panels_json),
         'mchoices': json.dumps(mchoices),
-        'vchoices': json.dumps(vchoices)
+        'vchoices': json.dumps(vchoices),
+        'page': {'user_menu':
+            [(reverse('docpage:view_page', args=(docPage.id,)), 'View This Page')]
+        }
     }
     return core.render(request, 'docpage/editor.html', **context)
 
@@ -147,5 +150,10 @@ def render_page(request, docpage):
             panel['components'].append(comp)
         panels.append(panel)
         
-    context = { 'docpage': docpage, 'panels': panels }
+    context = {
+        'docpage': docpage, 'panels': panels,
+        'page': {'user_menu':
+            [(reverse('docpage:editor_page', args=(docpage.id,)), 'Edit This Page')]
+        }
+    }
     return core.render(request, 'docpage/docpage.html', **context)
