@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-
+from django.core.urlresolvers import reverse
 from django.db import models
 
 # Create your models here.
@@ -28,7 +28,7 @@ class Proj(models.Model):
 
     def get_view_url(self):
         ''' Returns view url '''
-        url = reverse('project:view_page', args=(self.id,))
+        url = reverse('project:view', args=(self.id,))
         return url + self.get_normalize_name()
 
 

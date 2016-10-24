@@ -38,6 +38,13 @@
         <th>Edit Project</th>
         <th>View Project</th>
       </tr>
+      {% for project in projects %}
+      <tr>
+        <td>[{{ project.category }}] {{ project.title }}</td>
+        <td><a href="{% url 'project:editor' project.id %}">Edit Project</a></td>
+        <td><a href="{{ project.get_view_url }}">View Project</a></td>
+      </tr>
+      {% endfor %}
     </table>
   {% close_box %}
 

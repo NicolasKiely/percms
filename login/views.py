@@ -8,6 +8,7 @@ from common import core
 from . import forms
 from docpage.models import DocPage
 from filemanager.models import Meta_File
+from proj.models import Proj
 
 
 def user_account(request):
@@ -18,7 +19,8 @@ def user_account(request):
         image_ids = [str(image.id) for image in image_objs]
         context = {
             'docpages': DocPage.objects.order_by('-dt_editted')[:5],
-            'images': [{'id':i, 'url':'images/'+i} for i in image_ids]
+            'images': [{'id':i, 'url':'images/'+i} for i in image_ids],
+            'projects': Proj.objects.order_by('-dt_published')[:5]
         }
         return core.render(request, 'login/dashboard.html', **context)
 
