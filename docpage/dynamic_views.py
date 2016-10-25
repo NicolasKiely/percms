@@ -1,6 +1,15 @@
 ''' Handle dynamic component content for docpages '''
 from .models import DocPage
 from .component_utils import preprocess_text
+from proj.models import Proj
+
+
+def latest_projects(component):
+    ''' Returns table of latest projects '''
+    projects = Proj.objects.order_by('-dt_published')[:5]
+    component['table'] = {
+        'rows': [[p.get_view_link(), p.dt_published.date()] for p in projects]
+    }
 
 
 def latest_posts(component):
@@ -48,5 +57,6 @@ def last_post(component):
 # Map of dyanmic method names : methods
 view_table = {
     'latest_posts': latest_posts,
-    'last_post': last_post
+    'last_post': last_post,
+    'latest_projects': latest_projects
 }
