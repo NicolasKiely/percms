@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from common import core
 from .models import Proj
+from docpage.models import DocPage
 
 
 @login_required
@@ -22,13 +23,31 @@ def editor(request, pk):
     project = get_object_or_404(Proj, pk=pk)
     context = { 'project': project }
     if project.about_page:
-        context['about_page'] = project.about_page
+        context['about_page'] = project.about_page.id
     return core.render(request, 'proj/editor.html', **context)
 
 
 @login_required
 def edit(request):
     ''' Post handle for editting a project '''
+    pk = request.POST['pk']
+    # Set project text fields
+    project = get_object_or_404(Proj, pk=pk)
+    project.category = request.POST['category']
+    project.title = request.POST['title']
+    project.repo_URL = request.POST['repo']
+
+    # Set project about page id
+    about = request.POST['about']
+    if about != '':
+        project.about_page = DocPage.objects.get(pk=int(about))
+    else:
+        project.about_page = None
+
+    project.save()
+    return HttpResponseRedirect(
+        reverse('project:editor', args=(pk,))
+    )
 
 
 @login_required
