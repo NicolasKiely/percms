@@ -15,5 +15,39 @@
       <a href="{% url 'project:editor_list' %}">Back to Project List</a> |
       <a href="{% url 'project:view' project.id %}">View Project Home Page</a>
     </div><br />
+
+    <form id="form_edit_header" class="form-horizontal" role="form"
+      action="{% url 'project:edit' %}" method="post"
+    >{% csrf_token %}
+      <div class="form-group">
+        {# Category field #}
+        <label class="col-sm-3 control-label">Category</label>
+        <div class="col-sm-8"><input class="form-control" type="text"
+            id="edit_cat" name="category" value="{{ project.category }}"
+        ></div>
+
+        {# Title field #}
+        <label class="col-sm-3 control-label">Title</label>
+        <div class="col-sm-8"><input class="form-control" type="text"
+            id="edit_title" name="title" value="{{ project.title }}"
+        ></div>
+
+        {# Project Repo field #}
+        <label class="col-sm-3 control-label">Project Repository</label>
+        <div class="col-sm-8"><input class="form-control" type="text"
+            id="edit_repo" name="repo" value="{{ project.repo_URL }}"
+        ></div>
+
+        {# Project about page #}
+        <label class="col-sm-3 control-label">Description DocPage ID</label>
+        <div class="col-sm-8"><input class="form-control" type="text"
+            id="edit_about" name="repo" value="{{ about_page }}"
+        ></div>
+
+      </div>
+      <button type="submit" class="btn btn-primary">
+        Save Changes
+      </button>
+    </form>
   {% close_box %}
 {% endblock %}

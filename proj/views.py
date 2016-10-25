@@ -21,6 +21,8 @@ def editor(request, pk):
     ''' Editor for a project '''
     project = get_object_or_404(Proj, pk=pk)
     context = { 'project': project }
+    if project.about_page:
+        context['about_page'] = project.about_page
     return core.render(request, 'proj/editor.html', **context)
 
 
