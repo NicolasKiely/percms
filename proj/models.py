@@ -1,15 +1,22 @@
 from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.db import models
+from docpage.models import DocPage
 
 # Create your models here.
 
 
 class Proj(models.Model):
     ''' Project Information '''
+    # Project title and category
     title = models.CharField("Project Title", max_length=255)
     category = models.CharField("Project Category", max_length=255)
+    # Date published
     dt_published = models.DateTimeField('Date Published')
+    # Optional project repository
+    repo_URL = models.CharField('Repository', max_length=255, default='')
+    # Project Description
+    about_page = models.ForeignKey(DocPage, on_delete=models.SET_NULL, null=True)
 
     def get_normalize_name(self):
         ''' Returns url-friendly normalized name '''
