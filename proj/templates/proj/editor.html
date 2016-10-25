@@ -5,6 +5,9 @@
 
 
 {% block html_head %}
+  {# Validator scripts #}
+  <script src="{% static 'common/form_validator.js' %}"></script>
+  <script src="{% static 'proj/editor_validator.js' %}"></script>
 {% endblock %}
 
 
@@ -50,6 +53,20 @@
         ></div>
 
       </div>
+
+      {# Error Messages #}
+      <div class="row"><div class="col-sm-offset-3 col-sm-8">
+        {% if error %}
+          <div class="panel panel-danger log-panel" id="log_edit_header">
+            <div class="panel-heading">{{ error }}</div>
+          </div>
+        {% else %}
+          <div class="panel panel-default log-panel" id="log_edit_header">
+            <div class="panel-heading"></div>
+          </div>
+        {% endif %}
+      </div></div>
+
       <button type="submit" class="btn btn-primary">
         Save Changes
       </button>
