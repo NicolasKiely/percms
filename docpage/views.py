@@ -119,11 +119,12 @@ def add_page(request):
     )
 
 
-def render_page(request, docpage):
-    ''' Renders a specific docpage '''
-    # Pre-process components
+def build_docpage_context(docpage):
+    ''' Builds a context for a docpage '''
     panels = []
     panel_specs = docpage.panel_set.all()[:]
+
+    # Pre-process components
     for panel_spec in panel_specs:
         # For each panel
         panel = {'title': panel_spec.title, 'components': []}
@@ -160,17 +161,8 @@ def render_page(request, docpage):
             panel['components'].append(comp)
         panels.append(panel)
         
-    page_title = dash_pattern.sub(' ', docpage.title).title()
 
-    context = {
-        'docpage': docpage, 'panels': panels,
-        'page': {
-            'user_menu': [
-                (reverse('docpage:editor_page', args=(docpage.id,)), 'Edit This Page')
-            ],
-            'title': page_title +' - PerCMS'
-        }
-    }
+    context = {'docpage': docpage, 'panels': panels, 'page': {}}
 
     # Add page description if text
     if len(panel_specs) > 0:
@@ -180,5 +172,16 @@ def render_page(request, docpage):
             comp_spec = comp_specs[0]
             if comp_spec.view=='text' and comp_spec.model=='raw':
                 context['page']['description'] = comp_spec.src.split('.', 1)[0]
+    return context
+
+
+def render_page(request, docpage):
+    ''' Renders a specific docpage '''
             
+    context = build_docpage_context(docpage)
+    context['page']['user_menu'] = [
+        (reverse('docpage:editor_page', args=(docpage.id,)), 'Edit This Page')
+    ]
+    page_title = dash_pattern.sub(' ', docpage.title).title()
+    context['page']['title'] = page_title +' - PerCMS'
     return core.render(request, 'docpage/docpage.html', **context)

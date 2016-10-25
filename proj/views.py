@@ -6,6 +6,7 @@ from django.utils import timezone
 from common import core
 from .models import Proj
 from docpage.models import DocPage
+from docpage.views import build_docpage_context
 
 
 @login_required
@@ -70,3 +71,16 @@ def add(request):
 
 def view(request, pk):
     ''' Displays project '''
+    project = get_object_or_404(Proj, pk=pk)
+    docpage = project.about_page
+    context = build_docpage_context(docpage)
+    context['project'] = project
+    
+    context['page']['user_menu'] = [
+        (reverse('docpage:editor_page', args=(docpage.id,)), 'Edit Description'),
+        (reverse('project:editor', args=(project.id,)), 'Edit Project')
+    ]
+
+    page_title = project.title.title()
+    context['page']['title'] = page_title + ' - PerCMS'
+    return core.render(request, 'proj/view.html', **context)

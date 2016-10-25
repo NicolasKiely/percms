@@ -1,0 +1,72 @@
+{% extends "common/base.html" %}
+{% load core %}
+{% load staticfiles %}
+{# View project #}
+
+
+{% block html_body %}
+  {% open_box %}
+    <h2>Project [{{ project.category }}] {{ project.title }}</h2>
+
+    {% if project.repo_URL %}
+      <div class="text-center">
+        <a href="{{ project.repo_URL }}">Project Repository</a>
+      </div>
+    {% endif %}
+  {% close_box %}
+
+  {% for panel in panels %} {% open_box %}
+    {# Panel #}
+    {% if panel.title != '' %} <h2>{{ panel.title }}</h2> {% endif %}
+
+    {% for comp in panel.components %}
+      {# Component #}
+      {% if comp.view == 'text' %}
+        {# Text field #}
+        {% if comp.model == 'raw' %}
+          {# Break text into paragraphs #}
+        {% for paragraph in comp.paragraphs %}
+          <p>{{ paragraph }}</p>
+        {% endfor %}
+        {% elif comp.model == 'html' %}
+          {# Just dump as html #}
+          {{ comp.src|safe }}
+        {% endif %}
+
+      {% elif comp.view == 'table' %}
+        {# Table field #}
+        {% if comp.table.header %}
+        <table class="table table-striped">
+          <tr>
+          {% for field in comp.table.header %}
+          {% if comp.safe %}
+            <th>{{ field|safe }}</th>
+          {% else %}
+            <th>{{ field }}</th>
+          {% endif %}
+          {% endfor %}
+          </tr>
+        {% else %}
+        <table class="table">
+        {% endif %}
+
+        {% for row in comp.table.rows %}
+          <tr>
+          {% for field in row %}
+          {% if comp.safe %}
+            <td>{{ field|safe }}</td>
+          {% else %}
+            <td>{{ field }}</td>
+          {% endif %}
+          {% endfor %}
+          </tr>
+        {% endfor %}
+        </table>
+
+      {% elif comp.view == 'img' %}
+        <img src="{{ comp.src }}" />
+      {% endif %}
+
+    {% endfor %}
+  {% close_box %}{% endfor %}
+{% endblock %}
