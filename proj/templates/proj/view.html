@@ -6,8 +6,11 @@
 
 {% block html_body %}
   {% open_box %}
-    <h2>Project [{{ project.category }}] {{ project.title }}</h2>
+    <h2>Project {{ project.title }}</h2>
 
+    <div class="text-center">
+      Category: <u>{{ project.category }}</u>
+    </div>
     {% if project.repo_URL %}
       <div class="text-center">
         <a href="{{ project.repo_URL }}">Project Repository</a>
