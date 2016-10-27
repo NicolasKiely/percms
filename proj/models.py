@@ -17,6 +17,8 @@ class Proj(models.Model):
     repo_URL = models.CharField('Repository', max_length=255, default='')
     # Project Description
     about_page = models.ForeignKey(DocPage, on_delete=models.SET_NULL, null=True)
+    # Project Docpages
+    docpages = models.ManyToManyField(DocPage, related_name='doc_set')
 
     def get_normalize_name(self):
         ''' Returns url-friendly normalized name '''
