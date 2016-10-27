@@ -149,9 +149,15 @@ def build_docpage_context(docpage):
             # Handle dynamic views
             if comp['model'] == 'dapi':
                 try:
-                    dapi_module, dapi_func = comp['src'].split(':')
+                    dapi_split = comp['src'].split(' ', 1)
+                    dapi_method = dapi_split[0]
+                    if len(dapi_split) > 1:
+                        dapi_args = [s.strip() for s in dapi_split[1].split(':')]
+                    else:
+                        dapi_args = []
+                    dapi_module, dapi_func = dapi_method.split(':')
                     func = view_table[dapi_func]
-                    func(comp)
+                    func(comp, dapi_args)
                 except KeyError:
                     comp['view'] = 'text'
                     comp['model'] = 'raw'

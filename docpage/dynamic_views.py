@@ -4,7 +4,7 @@ from .component_utils import preprocess_text
 from proj.models import Proj
 
 
-def latest_projects(component):
+def latest_projects(component, args):
     ''' Returns table of latest projects '''
     projects = Proj.objects.order_by('-dt_published')[:5]
     component['table'] = {
@@ -12,15 +12,20 @@ def latest_projects(component):
     }
 
 
-def latest_posts(component):
+def latest_posts(component, args):
     ''' Returns table of latest posts '''
-    pages = DocPage.objects.order_by('-dt_published')[:5]
+    if len(args) > 0:
+        page_objects = DocPage.objects.filter(category=args[0])
+    else:
+        page_objects = DocPage.objects
+
+    pages = page_objects.order_by('-dt_published')[:5]
     component['table'] = {
         'rows': [[p.get_view_link(), p.dt_published.date()] for p in pages]
     }
 
 
-def last_post(component):
+def last_post(component, args):
     ''' Returns first component of last post '''
     # Get recent page and component
     try:
