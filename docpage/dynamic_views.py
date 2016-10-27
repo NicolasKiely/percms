@@ -29,7 +29,11 @@ def last_post(component, args):
     ''' Returns first component of last post '''
     # Get recent page and component
     try:
-        page = DocPage.objects.order_by('-dt_published')[0]
+        if len(args) > 0:
+            page_objects = DocPage.objects.filter(category=args[0])
+        else:
+            page_objects = DocPage.objects
+        page = page_objects.order_by('-dt_published')[0]
         panel = page.panel_set.first()
         other = panel.component_set.first()
     except AttributeError:
