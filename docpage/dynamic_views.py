@@ -25,6 +25,19 @@ def latest_posts(component, args):
     }
 
 
+def all_posts(component, args):
+    ''' Returns table of all posts '''
+    if len(args) > 0:
+        page_objects = DocPage.objects.filter(category=args[0])
+    else:
+        page_objects = DocPage.objects
+
+    pages = page_objects.order_by('-dt_published')
+    component['table'] = {
+        'rows': [[p.get_view_link(), p.dt_published.date()] for p in pages]
+    }
+
+
 def last_post(component, args):
     ''' Returns first component of last post '''
     # Get recent page and component
@@ -67,5 +80,6 @@ def last_post(component, args):
 view_table = {
     'latest_posts': latest_posts,
     'last_post': last_post,
-    'latest_projects': latest_projects
+    'latest_projects': latest_projects,
+    'all_posts': all_posts
 }
