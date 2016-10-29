@@ -1,0 +1,3 @@
+[submodule "Game-Tracker"]
+	path = Game-Tracker
+	url = git@github.com:NicolasKiely/Game-Tracker.git
