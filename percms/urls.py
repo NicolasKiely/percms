@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^percms/docpage/', include('docpage.urls', namespace='docpage')),
     url(r'^percms/files/', include('filemanager.urls', namespace='file')),
     url(r'^percms/project/', include('proj.urls', namespace='project')),
+    url(r'^percms/app/gametracker/', include('gametracker.urls', namespace='gametracker')),
     url(r'^$', include('home.urls')),
     url(r'^percms/admin/', include(admin.site.urls)),
     url(r'', include('percms.fallback_urls', namespace='fallback'))

@@ -29,6 +29,24 @@
   {% close_box %}
 
   {% open_box %}
+    {# Apps #}
+    <h2>PerCMS Apps</h2>
+    
+    <table class="table table-striped">
+      <tr>
+        <th>App</th>
+        <th>Manage App</th>
+        <th>View App</th>
+      </tr>
+      <tr>
+        <td>Game-Tracker</td>
+        <td><a href="{% url 'gametracker:dashboard' %}">Manage App</a></td>
+        <td><a href="{% url 'gametracker:view' %}">View App</a></td>
+      </tr>
+    </table>
+  {% close_box %}
+
+  {% open_box %}
     {# Projects #}
     <h2><a href="{% url 'project:editor_list' %}">Recent Projects</a></h2>
 
