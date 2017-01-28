@@ -92,3 +92,13 @@ def render(request, template_path, **kwargs):
 def renderform(request, formcontext):
     ''' Renders generic form '''
     return render(request, 'common/singleform.html', **formcontext)
+
+
+def view_link(url, args, appended=''):
+    ''' Helper function for generating view links '''
+    return '<a href="'+ reverse(url, args=args) + appended +'">View</a>'
+
+
+def edit_link(url, args):
+    ''' Helper function for generating edit links '''
+    return '<a href="'+ reverse(url, args=args) +'">Edit</a>'
