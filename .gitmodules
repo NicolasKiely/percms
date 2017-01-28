@@ -1,3 +1,4 @@
 [submodule "gametracker"]
 	path = gametracker
 	url = git@github.com:NicolasKiely/Game-Tracker.git
+  ignore = dirty
