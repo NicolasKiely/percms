@@ -1,4 +1,5 @@
 from django.core.urlresolvers import reverse
+from django.middleware.csrf import get_token
 import django.shortcuts
 import json
 import percms.settings
@@ -85,6 +86,9 @@ def render(request, template_path, **kwargs):
 
     if request.user.is_authenticated():
         context['user'] = request.user
+
+    if 'form' in context:
+        context['form']['csrf'] = get_token(request)
 
     return django.shortcuts.render(request, template_path, context) 
 
