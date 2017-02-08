@@ -22,7 +22,7 @@
         action="{{ action }}" method="post"
     > {% csrf_token %}
       {# Input fields #}
-      {% for f in form %}
+      {% for f in form.fields %}
       <div class="form-group">
         <label class="col-sm-3 control-label">{{ f.label }}</label>
         <div class="col-sm-8">

@@ -1,15 +1,18 @@
 # Account login fields
-login = [
-    {
-        'label': 'User Name',
-        'type' : 'text',
-        'name' : 'login-name',
-        'id'   : 'login-name'
-    },
-    {
-        'label': 'Password',
-        'type' : 'password',
-        'name' : 'login-passwd',
-        'id'   : 'login-passwd'
-    }
-]
+
+login = {
+    'action': '',
+    'fields': [
+        {
+            'label': 'User Name',
+            'name' : 'login-name',
+            'id'   : 'login-name'
+        },
+        {
+            'label': 'Password',
+            'type' : 'password',
+            'name' : 'login-passwd',
+            'id'   : 'login-passwd'
+        }
+    ]
+}
