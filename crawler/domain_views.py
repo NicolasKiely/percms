@@ -6,7 +6,16 @@ from .models import Website
 @login_required
 def dashboard(request):
     ''' Top level editor for domains '''
-    pass
+    context = {
+        'title': 'Domain Manager',
+        'active_website'  : [Website.objects.filter(can_crawl=True)[0:5]],
+        'inactive_website': [Website.objects.filter(can_crawl=False)[0:5]],
+        'form': {
+            'action': 'crawler:add_domain',
+            'fields': Website().to_form_fields()
+        }
+    }
+    return core.render(request, 'crawler/domain_dashboard.html', **context)
 
 
 @login_required

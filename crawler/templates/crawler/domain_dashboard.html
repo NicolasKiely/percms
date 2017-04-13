@@ -1,0 +1,57 @@
+{% extends "common/base.html" %}
+{% load core %}
+
+{% block html_body %}
+  {% open_box %}
+    <h2>Domain</h2>
+    <div class="text-center">
+      <a href="">Dashboard</a> | 
+      <a href="">View Domains</a>
+    </div>
+  {% close_box %}
+
+  {% open_box %}
+    <h2>Add Website</h2>
+    {{ form | common_form | safe }}
+  {% close_box %}
+
+  {# List of domains actively crawling #}
+  {% open_box %}
+    <h2>Active Domains</h2>
+
+    <table class="table table-striped">
+      <tr>
+        <th>Domain</th>
+        <th>Module</th>
+        <th>Login Profile</th>
+      </tr>
+      {% for website in active_websites %}
+      <tr>
+        <td>{{ website.domain }}</td>
+        <td>{{ website.scraper }}</td>
+        <td>{{ website.profile.name }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% close_box %}
+
+  {# List of domains not being crawled #}
+  {% open_box %}
+    <h2>Inactive Domains</h2>
+
+    <table class="table table-striped">
+      <tr>
+        <th>Domain</th>
+        <th>Module</th>
+        <th>Login Profile</th>
+      </tr>
+      {% for website in inactive_websites %}
+      <tr>
+        <td>{{ website.domain }}</td>
+        <td>{{ website.scraper }}</td>
+        <td>{{ website.profile.name }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% close_box %}
+{% endblock %}
