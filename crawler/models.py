@@ -36,7 +36,10 @@ class Website(models.Model):
         profile_name = self.profile.name if self.profile else ''
         return [
             {'label': 'Domain:'   , 'name': 'domain'   , 'value': self.domain},
-            {'label': 'Crawling:' , 'name': 'can_crawl', 'value': self.can_crawl},
+            {
+                'type': 'checkbox', 'label': 'Crawling:' ,
+                'name': 'can_crawl', 'value': self.can_crawl
+            },
             {'label': 'Profile'   , 'name': 'profile'  , 'value': profile_name},
             {'label': 'Scraper'   , 'name': 'scraper'  , 'value': self.scraper}
         ]

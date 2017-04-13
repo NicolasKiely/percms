@@ -30,7 +30,7 @@ right_box_class = ' '.join([
 ])
 
 form_open_template = '<form class="form-horizontal" action="{}" method="post">'
-form_input_template = '<input class="form-control" type="{}" name="{}" value="{}">'
+form_input_template = '<input class="form-control" type="{}" name="{}" value="{}" {}>'
 form_button = '<button type="submit" class="btn btn-primary pull-right">{}</button>'
 
 open_row_div = open_row_div_template.format(box_class)
@@ -91,10 +91,14 @@ def do_common_text_input(form):
 def build_input_string(label, ftype, value, name):
     input_str = ''
     if ftype == 'hidden':
-        input_str += form_input_template.format("hidden", name, value)
+        input_str += form_input_template.format("hidden", name, value, '')
     else:
         input_str += '<label class="col-sm-3 control-label">'+ label +'</label>'
         input_str += '<div class="col-sm-8">'
-        input_str += form_input_template.format(ftype, name, value)
+        if ftype == 'checkbox' and value:
+            postfix = 'checked'
+        else:
+            postfix = ''
+        input_str += form_input_template.format(ftype, name, value, postfix)
         input_str += '</div>'
     return input_str
