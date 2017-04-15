@@ -31,6 +31,8 @@ right_box_class = ' '.join([
 
 form_open_template = '<form class="form-horizontal" action="{}" method="post">'
 form_input_template = '<input class="form-control" type="{}" name="{}" value="{}" {}>'
+form_select_template = '<select class="form-control" name="{}" value="{}">{}</select>'
+form_option_template = '<option value="{}">{}</option>'
 form_button = '<button type="submit" class="btn btn-primary pull-right">{}</button>'
 
 open_row_div = open_row_div_template.format(box_class)
@@ -82,23 +84,43 @@ def do_common_text_input(form):
         ftype = field.get('type', 'text')
         value = field.get('value', '')
         name = field.get('name', label)
-        form_str += build_input_string(label, ftype, value, name)
+        options = field.get('options', [])
+        form_str += build_input_string(label, ftype, value, name, options)
 
-    form_str += build_input_string('', 'hidden', csrf, 'csrfmiddlewaretoken')
+    form_str += build_input_string('', 'hidden', csrf, 'csrfmiddlewaretoken', [])
     button_text = form.get('button', 'Submit')
     return form_str +'</div>'+ form_button.format(button_text) +'</form>'
 
-def build_input_string(label, ftype, value, name):
+
+def build_input_string(label, ftype, value, name, options):
     input_str = ''
     if ftype == 'hidden':
         input_str += form_input_template.format("hidden", name, value, '')
+
     else:
         input_str += '<label class="col-sm-3 control-label">'+ label +'</label>'
         input_str += '<div class="col-sm-8">'
-        if ftype == 'checkbox' and value:
-            postfix = 'checked'
+        if ftype == 'checkbox':
+            postfix = 'checked' if value else ''
+            input_str += form_input_template.format(ftype, name, value, postfix)
+            
+        elif ftype == 'select':
+            opt_str = ''
+            for opt in options:
+                opt_t = type(opt)
+                if opt_t is list or opt_t is tuple:
+                    if len(opt) < 2:
+                        opts = (opt[0], opt[0])
+                    else:
+                        opts = (opt[0], opt[1])
+                    opt_str += form_option_template.format(*opts)
+                else:
+                    sopt = str(opt)
+                    opt_str = form_option_template.format(sopt, sopt)
+
+            input_str += form_select_template.format(name, value, opt_str)
+
         else:
-            postfix = ''
-        input_str += form_input_template.format(ftype, name, value, postfix)
+            input_str += form_input_template.format(ftype, name, value, '')
         input_str += '</div>'
     return input_str

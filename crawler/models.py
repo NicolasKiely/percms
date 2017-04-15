@@ -37,9 +37,16 @@ class Website(models.Model):
         return [
             {'label': 'Domain:'   , 'name': 'domain'   , 'value': self.domain},
             {
+                'type': 'select', 'label': 'Profile',
+                'name': 'profile', 'value': profile_name,
+                'options': [map(str, Login_Profile.objects.all())]
+            },
+            {
+                'type': 'text', 'label': 'Scraper', 
+                'name': 'scraper', 'value': self.scraper
+            },
+            {
                 'type': 'checkbox', 'label': 'Crawling:' ,
                 'name': 'can_crawl', 'value': self.can_crawl
-            },
-            {'label': 'Profile'   , 'name': 'profile'  , 'value': profile_name},
-            {'label': 'Scraper'   , 'name': 'scraper'  , 'value': self.scraper}
+            }
         ]
