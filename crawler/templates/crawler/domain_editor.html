@@ -1,0 +1,20 @@
+{% extends "common/base.html" %}
+{% load core %}
+
+{% block html_body %}
+  {# Title/Nav #}
+  {% open_box %}
+    <h2>Domain: <u>{{ website.domain }}</u></h2>
+    <div class="text-center">
+      {{ website.nav_link | safe }}
+    </div>
+  {% close_box %}
+
+  {# Editor form #}
+  {% open_box %}
+    <h2>Editor</h2>
+    {{ form | common_form | safe }}
+  {% close_box %}
+  
+  {# Delete form #}
+{% endblock %}

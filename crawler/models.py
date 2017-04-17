@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.core.urlresolvers import reverse
 from common.core import view_link, edit_link
 
 
@@ -41,6 +42,13 @@ class Website(models.Model):
 
     def view_link(self):
         return view_link('crawler:domain_view', (self.pk,), self.domain)
+
+    def dashboard_link(self):
+        url = reverse('crawler:domain_dashboard')
+        return '<a href="'+ url +'">Domain Dashboard</a>'
+
+    def nav_link(self):
+        return self.dashboard_link() +' | '+ self.view_link()
 
     def to_form_fields(self):
         profile_name = self.profile.name if self.profile else ''
