@@ -62,10 +62,21 @@ def add(request):
 @login_required
 def edit(request):
     ''' Post for editting existing domain '''
-    pass
+    website = get_object_or_404(Website, pk=request.POST['pk'])
+    profile = get_object_or_404(Login_Profile, name=request.POST['profile'])
+    website.domain = request.POST['domain']
+    website.can_crawl = 'cancrawl' in request.POST
+    website.profile = profile
+    website.scraper = request.POST['scraper']
+    website.save()
+
+    return HttpResponseRedirect(reverse('crawler:domain_dashboard'))
 
 
 @login_required
 def delete(request):
     ''' Post for deleting domain '''
-    pass
+    website = get_object_or_404(Website, pk=request.POST['pk'])
+    website.delete()
+
+    return HttpResponseRedirect(reverse('crawler:domain_dashboard'))

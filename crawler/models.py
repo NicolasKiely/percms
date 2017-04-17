@@ -66,5 +66,6 @@ class Website(models.Model):
             {
                 'type': 'checkbox', 'label': 'Crawling:' ,
                 'name': 'cancrawl', 'value': self.can_crawl
-            }
+            },
+            { 'type': 'hidden', 'name': 'pk', 'value': self.pk }
         ]
