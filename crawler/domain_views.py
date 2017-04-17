@@ -1,6 +1,9 @@
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from common import core
-from .models import Website
+from .models import Login_Profile, Website
 
 
 @login_required
@@ -8,8 +11,8 @@ def dashboard(request):
     ''' Top level editor for domains '''
     context = {
         'title': 'Domain Manager',
-        'active_website'  : [Website.objects.filter(can_crawl=True)[0:5]],
-        'inactive_website': [Website.objects.filter(can_crawl=False)[0:5]],
+        'active_websites'  : Website.objects.filter(can_crawl=True)[:5],
+        'inactive_websites': Website.objects.filter(can_crawl=False)[:5],
         'form': {
             'action': 'crawler:add_domain',
             'fields': Website().to_form_fields()
@@ -19,7 +22,13 @@ def dashboard(request):
 
 
 @login_required
-def editor(request):
+def view(request, pk):
+    ''' View of domain information '''
+    pass
+
+
+@login_required
+def editor(request, pk):
     ''' Editor for domain '''
     pass
 
@@ -27,7 +36,18 @@ def editor(request):
 @login_required
 def add(request):
     ''' Post for adding new domain manually '''
-    pass
+    fdom = request.POST['domain']
+    fprof = request.POST['profile']
+    fscrap = request.POST['scraper']
+    fact = 'cancrawl' in request.POST
+
+    profile = get_object_or_404(Login_Profile, name=fprof)
+
+    website = Website(
+        domain=fdom, profile=profile, scraper=fscrap, can_crawl=fact
+    )
+    website.save()
+    return HttpResponseRedirect(reverse('crawler:domain_dashboard'))
 
 
 @login_required

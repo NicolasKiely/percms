@@ -24,12 +24,14 @@
         <th>Domain</th>
         <th>Module</th>
         <th>Login Profile</th>
+        <th>URL</th>
       </tr>
       {% for website in active_websites %}
       <tr>
         <td>{{ website.domain }}</td>
         <td>{{ website.scraper }}</td>
         <td>{{ website.profile.name }}</td>
+        <td>{{ website.edit_link | safe }} | {{ website.view_link | safe }}</td>
       </tr>
       {% endfor %}
     </table>
@@ -44,12 +46,14 @@
         <th>Domain</th>
         <th>Module</th>
         <th>Login Profile</th>
+        <th>URL</th>
       </tr>
       {% for website in inactive_websites %}
       <tr>
         <td>{{ website.domain }}</td>
         <td>{{ website.scraper }}</td>
         <td>{{ website.profile.name }}</td>
+        <td>{{ website.edit_link | safe }} | {{ website.view_link | safe }}</td>
       </tr>
       {% endfor %}
     </table>

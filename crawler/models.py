@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from common.core import view_link, edit_link
 
 
 class Login_Profile(models.Model):
@@ -32,6 +33,15 @@ class Website(models.Model):
     # Scraper module
     scraper = models.CharField(max_length=32, null=True)
 
+    def __str__(self):
+        return self.domain
+
+    def edit_link(self):
+        return edit_link('crawler:domain_editor', (self.pk,))
+
+    def view_link(self):
+        return view_link('crawler:domain_view', (self.pk,), self.domain)
+
     def to_form_fields(self):
         profile_name = self.profile.name if self.profile else ''
         return [
@@ -47,6 +57,6 @@ class Website(models.Model):
             },
             {
                 'type': 'checkbox', 'label': 'Crawling:' ,
-                'name': 'can_crawl', 'value': self.can_crawl
+                'name': 'cancrawl', 'value': self.can_crawl
             }
         ]
