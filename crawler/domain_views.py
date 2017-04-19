@@ -16,7 +16,6 @@ def dashboard(request):
             Website_Dashboard.get_listing_panel('Inactive Domains', can_crawl=False)
         ]
     }
-    #return core.render(request, 'crawler/domain_dashboard.html', **context)
     return Website_Dashboard.render_model_set(request, context)
 
 

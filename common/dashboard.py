@@ -8,6 +8,11 @@ class App_Dashboard(object):
         self.name = ''
         self.namespace = ''
 
+    def render(self, request, context):
+        context['title'] = self.name +' Dashboard'
+        context['app'] = self.name
+        return render(request, 'common/app_dashboard.html', **context)
+
 
 class Model_Dashboard(object):
     ''' Dashboard manager for models '''
@@ -18,7 +23,6 @@ class Model_Dashboard(object):
         self.model = model
         self.listing_headers = []
         
-
     def get_listing_record(self, x):
         return (str(x),)
 
