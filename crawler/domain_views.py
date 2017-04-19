@@ -29,15 +29,7 @@ def view(request, pk):
 def editor(request, pk):
     ''' Editor for domain '''
     website = get_object_or_404(Website, pk=pk)
-    context = {
-        'title': 'Domain Editor',
-        'website': website,
-        'form': {
-            'action': 'crawler:edit_domain',
-            'fields': website.to_form_fields()
-        }
-    }
-    return core.render(request, 'crawler/domain_editor.html', **context)
+    return Website_Dashboard.render_model(request, website, {})
 
 
 @login_required

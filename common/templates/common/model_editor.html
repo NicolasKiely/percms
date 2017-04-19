@@ -2,29 +2,29 @@
 {% load core %}
 
 {% block html_body %}
-  {# Title/Nav #}
+  {# Title/Nav Panel #}
   {% open_box %}
-    <h2>Domain: <u>{{ website.domain }}</u></h2>
+    <h2>{{ model }}: <u>{{ name }}</u></h2>
     <div class="text-center">
-      {{ website.nav_link | safe }}
+      {{ object.nav_link | safe }}
     </div>
   {% close_box %}
 
-  {# Editor form #}
+  {# Edit Model Panel #}
   {% open_box %}
     <h2>Editor</h2>
     {{ form | common_form | safe }}
   {% close_box %}
-  
-  {# Delete form #}
+
+  {# Delete Model Panel #}
   {% open_box %}
     <h2>Delete</h2>
 
     <form id="form_del" class="form-horizontal" role="form"
-        action="{% url 'crawler:delete_domain' %}" method="post"
+        action="{{ post_delete }}" method="post"
     >{% csrf_token %}
-      <input type="hidden" name="pk" value="{{ website.id }}">
-      <button onclick="return confirm('Delete domain?')"
+      <input type="hidden" name="pk" value="{{ object.id }}">
+      <button onclick="return confirm('Delete {{ name }}?')"
           type="submit" class="btn btn-primary pull-right">
         Delete
       </button>

@@ -48,3 +48,15 @@ class Model_Dashboard(object):
             'fields': self.model().to_form_fields()
         }
         return render(request, 'common/model_set_editor.html', **context)
+
+    def render_model(self, request, obj, context):
+        context['title'] = self.name +' Editor'
+        context['name'] = str(obj)
+        context['model'] = self.name
+        context['object'] = obj
+        context['form'] = {
+            'action': self.app.namespace +':edit_'+ self.namespace,
+            'fields': obj.to_form_fields()
+        }
+        context['post_delete'] = reverse(self.app.namespace+':delete_'+self.namespace)
+        return render(request, 'common/model_editor.html', **context)
