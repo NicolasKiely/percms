@@ -27,8 +27,7 @@ def dashboard(request):
                     ]
                 }
             }
-        ],
-        'websites': Website.objects.filter(can_crawl=True)
+        ]
     }
     return core.render(request, 'common/app_dashboard.html', **context)
 

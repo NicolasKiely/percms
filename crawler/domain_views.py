@@ -4,21 +4,20 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from common import core
 from .models import Login_Profile, Website
+from .dashboard import Website_Dashboard
 
 
 @login_required
 def dashboard(request):
     ''' Top level editor for domains '''
     context = {
-        'title': 'Domain Manager',
-        'active_websites'  : Website.objects.filter(can_crawl=True)[:5],
-        'inactive_websites': Website.objects.filter(can_crawl=False)[:5],
-        'form': {
-            'action': 'crawler:add_domain',
-            'fields': Website().to_form_fields()
-        }
+        'panels': [
+            Website_Dashboard.get_listing_panel('Active Domains', can_crawl=True),
+            Website_Dashboard.get_listing_panel('Inactive Domains', can_crawl=False)
+        ]
     }
-    return core.render(request, 'crawler/domain_dashboard.html', **context)
+    #return core.render(request, 'crawler/domain_dashboard.html', **context)
+    return Website_Dashboard.render_model_set(request, context)
 
 
 @login_required
