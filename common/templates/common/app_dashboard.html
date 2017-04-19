@@ -4,15 +4,23 @@
 {% block html_body %}
   {# Title/Nav #}
   {% open_box %}
-    <h2>App Dashboard: {{ app.name }}</h2>
+    <h2>App Dashboard: {{ app }}</h2>
     <div class="text-center"><a href="{% url 'login:account' %}">Admin Dashboard</a></div>
   {% close_box %}
 
   {# Panels #}
   {% for panel in panels %}
   {% open_box %}
+    {% if 'link' in panel %}
+    <h2><a href="{{ panel.link }}">{{ panel.title }}</a></h2>
+    {% else %}
     <h2>{{ panel.title }}</h2>
+    {% endif %}
 
+    {# Panel Text #}
+    <p>{{ panel.text }}</p>
+
+    {# Panel table #}
     {% if 'table' in panel %}
     <table class="table table-striped">
       <tr>
