@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^percms/project/', include('proj.urls', namespace='project')),
     url(r'^percms/app/gametracker/', include('gametracker.urls', namespace='gametracker')),
     url(r'^percms/app/crawler/', include('crawler.urls', namespace='crawler')),
+    url(r'^percms/app/script/', include('scripting.urls', namespace='script')),
     url(r'^$', include('home.urls')),
     url(r'^percms/admin/', include(admin.site.urls)),
     url(r'', include('percms.fallback_urls', namespace='fallback'))

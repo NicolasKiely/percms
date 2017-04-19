@@ -1,0 +1,35 @@
+{% extends "common/base.html" %}
+{% load core %}
+
+{% block html_body %}
+  {# Title/Nav #}
+  {% open_box %}
+    <h2>App Dashboard: {{ app.name }}</h2>
+    <div class="text-center"><a href="{% url 'login:account' %}">Admin Dashboard</a></div>
+  {% close_box %}
+
+  {# Panels #}
+  {% for panel in panels %}
+  {% open_box %}
+    <h2>{{ panel.title }}</h2>
+
+    {% if 'table' in panel %}
+    <table class="table table-striped">
+      <tr>
+      {% for header in panel.table.headers %}
+        <th>{{ header }}</th>
+      {% endfor %}
+      </tr>
+
+      {% for row in panel.table.rows %}
+        <tr>
+        {% for field in row %}
+          <td>{{ field }}</td>
+        {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+  {% close_box %}
+  {% endfor %}
+{% endblock %}
