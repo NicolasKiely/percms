@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.conf.urls import url
 from django.http import HttpResponseRedirect
@@ -9,7 +10,7 @@ from .core import render
 def dashboard_view_closure(dashboard, func):
     d=dashboard
     def inner_func(request, **kwargs):
-        return func(d, request, **kwargs)
+        return func(request, d, **kwargs)
 
     return inner_func
 
@@ -29,7 +30,8 @@ class App_Dashboard(object):
         return reverse(self.namespace+':dashboard')
 
 
-def default_view_model_dashboard(dashboard, request):
+@login_required
+def default_view_model_dashboard(request, dashboard):
     context = {
         'panels': [
             dashboard.get_listing_panel(dashboard.name+'s')
@@ -38,12 +40,14 @@ def default_view_model_dashboard(dashboard, request):
     return dashboard.render_model_set(request, context)
 
 
-def default_view_model_editor(dashboard, request, pk):
+@login_required
+def default_view_model_editor(request, dashboard, pk):
     obj = get_object_or_404(dashboard.model, pk=pk)
     return dashboard.render_model(request, obj, {})
 
 
-def default_post_model_delete(dashboard, request):
+@login_required
+def default_post_model_delete(request, dashboard):
     obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
     obj.delete()
     return HttpResponseRedirect(dashboard.reverse_dashboard())

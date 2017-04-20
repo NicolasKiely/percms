@@ -9,7 +9,8 @@ def view(request):
     pass
 
 
-def editor(dashboard, request, pk):
+@login_required
+def editor(request, dashboard, pk):
     obj = get_object_or_404(Script, pk=pk)
     context = {
         'panels': [
@@ -47,7 +48,3 @@ def edit(request):
 
     script.save()
     return HttpResponseRedirect(reverse('script:script_dashboard'))
-    
-
-def delete(request):
-    pass
