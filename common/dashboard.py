@@ -1,5 +1,15 @@
-from .core import render
 from django.core.urlresolvers import reverse
+from django.conf.urls import url
+from .core import render
+
+
+
+def dashboard_view_closure(dashboard, func):
+    d=dashboard
+    def inner_func(request, **kwargs):
+        return func(d, request, **kwargs)
+
+    return inner_func
 
 
 class App_Dashboard(object):
@@ -14,6 +24,20 @@ class App_Dashboard(object):
         return render(request, 'common/app_dashboard.html', **context)
 
 
+def default_view_model_dashboard(dashboard, request):
+    context = {
+        'panels': [
+            dashboard.get_listing_panel(dashboard.name+'s')
+        ]
+    }
+    return dashboard.render_model_set(request, context)
+
+
+def default_view_model_editor(dashboard, request, pk):
+    obj = get_object_or_404(dashboard.model, pk=pk)
+    return dashboard.render_model(request, obj, {})
+
+
 class Model_Dashboard(object):
     ''' Dashboard manager for models '''
     def __init__(self, app, model):
@@ -22,11 +46,14 @@ class Model_Dashboard(object):
         self.namespace = ''
         self.model = model
         self.listing_headers = []
+        self.view_dashboard = dashboard_view_closure(self, default_view_model_dashboard)
+        self.view_editor = dashboard_view_closure(self, default_view_model_editor)
         
     def get_listing_record(self, x):
         return (str(x),)
 
     def get_listing_panel(self, panel_title, **filters):
+        ''' Panel listing structure '''
         return {
             'title': panel_title,
             'table': {
@@ -39,7 +66,23 @@ class Model_Dashboard(object):
             }
         }
 
+    def get_dashboard_panel(self, **filters):
+        ''' Panel structure for dashboard '''
+        return {
+            'title': self.name +' Management',
+            'link': reverse(self.app.namespace+':'+self.namespace+'_dashboard'),
+            'table': {
+                'headers': self.listing_headers,
+                'rows': [
+                    self.get_listing_record(x) +
+                    (x.edit_link() +' | '+ x.view_link(),)
+                    for x in self.model.objects.filter(**filters)[:5]
+                ]
+            }
+        }
+
     def render_model_set(self, request, context):
+        ''' Model set manager page '''
         context['title'] = self.name + ' Manager'
         context['model_name'] = self.name
         context['app_dashboard'] = reverse(self.app.namespace+':dashboard')
@@ -50,6 +93,7 @@ class Model_Dashboard(object):
         return render(request, 'common/model_set_editor.html', **context)
 
     def render_model(self, request, obj, context):
+        ''' Model editor page '''
         context['title'] = self.name +' Editor'
         context['name'] = str(obj)
         context['model'] = self.name
@@ -60,3 +104,13 @@ class Model_Dashboard(object):
         }
         context['post_delete'] = reverse(self.app.namespace+':delete_'+self.namespace)
         return render(request, 'common/model_editor.html', **context)
+
+    def url_view_dashboard(self, route, view=None):
+        ''' URL for dashboard '''
+        view_func = self.view_dashboard if view is None else view
+        return url(route, view_func, name=self.namespace+'_dashboard')
+
+    def url_view_editor(self, route, view=None):
+        ''' URL for editor '''
+        view_func = self.view_editor if view is None else view
+        return url(route, view_func, name=self.namespace+'_editor')

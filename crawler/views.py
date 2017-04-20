@@ -14,7 +14,7 @@ def dashboard(request):
                 'title': 'Crawler Status',
                 'text': 'Not implemented yet'
             },
-            Website_Dashboard.get_listing_panel('Domain Management')
+            Website_Dashboard.get_dashboard_panel()
         ]
     }
     return Dashboard.render(request, context)
