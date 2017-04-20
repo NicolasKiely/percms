@@ -10,13 +10,6 @@ from .models import Script
 def editor(request, dashboard, pk):
     obj = get_object_or_404(Script, pk=pk)
     context = {
-        'panels': [
-            {
-                'title': 'Code'
-            },
-            {
-                'title': 'Version History'
-            }
-        ]
+        'code': 'def foo(a, b):\n    return a+b\nprint "<foo>:"+str(foo(5, 7))'
     }
     return dashboard.render_model(request, obj, context)

@@ -20,3 +20,5 @@ Script_Dashboard.get_listing_record = \
 Script_Dashboard.view_editor = dashboard_view_closure(
     Script_Dashboard, editor
 )
+
+Script_Dashboard.model_editor_template = 'scripting/editor.html'

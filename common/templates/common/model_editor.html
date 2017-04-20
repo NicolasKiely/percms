@@ -16,6 +16,8 @@
     {{ form | common_form | safe }}
   {% close_box %}
 
+  {% block custom_panels %}
+
   {# Listing Panels #}
   {% for panel in panels %}
   {% open_box %}
@@ -48,6 +50,8 @@
     {% endif %}
   {% close_box %}
   {% endfor %}
+
+  {% endblock %}
 
   {# Delete Model Panel #}
   {% open_box %}

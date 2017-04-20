@@ -92,6 +92,9 @@ class Model_Dashboard(object):
         self.post_add = dashboard_view_closure(self, default_post_model_add)
         self.post_edit = dashboard_view_closure(self, default_post_model_edit)
         self.post_delete = dashboard_view_closure(self, default_post_model_delete)
+        self.model_set_editor_template = 'common/model_set_editor.html'
+        self.model_editor_template = 'common/model_editor.html'
+        self.model_view_template = 'common/model_view.html'
 
     def model_from_post(self, POST):
         ''' Create new model instance from POST variables '''
@@ -154,7 +157,7 @@ class Model_Dashboard(object):
             'action': self.app.namespace +':add_'+ self.namespace,
             'fields': self.model().to_form_fields()
         }
-        return render(request, 'common/model_set_editor.html', **context)
+        return render(request, self.model_set_editor_template, **context)
 
     def render_model(self, request, obj, context):
         ''' Model editor page '''
@@ -167,14 +170,14 @@ class Model_Dashboard(object):
             'fields': obj.to_form_fields()
         }
         context['post_delete'] = self.reverse_delete()
-        return render(request, 'common/model_editor.html', **context)
+        return render(request, self.model_editor_template, **context)
 
     def view_model(self, request, obj, context):
         ''' Public view of object '''
         context['title'] = self.name + ' View'
         context['name'] = str(obj)
         context['model'] = self.name
-        return render(request, 'common/model_view.html', **context)
+        return render(request, self.model_view_template, **context)
 
     def url_view_dashboard(self, route):
         ''' URL for dashboard '''
