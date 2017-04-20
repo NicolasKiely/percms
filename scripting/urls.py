@@ -6,9 +6,7 @@ urlpatterns = [
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
 
     # Script pages
-    #url(r'^script/dashboard/$', script_views.dashboard, name='script_dashboard'),
     Script_Dashboard.url_view_dashboard(r'script/dashboard/$'),
-    #url(r'^script/editor/(?P<pk>\d+)/\w*$', script_views.editor, name='script_editor'),
     Script_Dashboard.url_view_editor(r'script/editor/(?P<pk>\d+)/\w*$'),
 
     url(r'^script/view/(?P<pk>\d+)/\w*$', script_views.view, name='script_view'),

@@ -11,5 +11,4 @@ def dashboard(request):
             Script_Dashboard.get_dashboard_panel()
         ]
     }
-    #return core.render(request, 'common/app_dashboard.html', **context)
     return Dashboard.render(request, context)

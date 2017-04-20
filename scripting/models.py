@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from common.core import view_link, edit_link
 
 # Languages
 langs = (
@@ -18,6 +19,12 @@ class Script(models.Model):
 
     def __str__(self):
         return self.category +':'+ self.name
+
+    def edit_link(self):
+        return edit_link('script:script_editor', (self.pk,))
+
+    def view_link(self):
+        return view_link('script:script_view', (self.pk,))
 
     def to_form_fields(self):
         return [
