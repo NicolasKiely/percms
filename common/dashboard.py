@@ -42,12 +42,30 @@ def default_view_model_dashboard(request, dashboard):
 
 @login_required
 def default_view_model_editor(request, dashboard, pk):
+    ''' Default handler for viewing object editor '''
     obj = get_object_or_404(dashboard.model, pk=pk)
     return dashboard.render_model(request, obj, {})
 
 
 @login_required
+def default_post_model_add(request, dashboard):
+    ''' Default handler for adding an object '''
+    obj = dashboard.model_from_post(request.POST)
+    obj.save()
+    return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+
+@login_required
+def default_post_model_edit(request, dashboard):
+    ''' Default handler for editting an object '''
+    obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
+    dashboard.edit_object_from_post(obj, request.POST)
+    obj.save()
+    return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+@login_required
 def default_post_model_delete(request, dashboard):
+    ''' Default handler for deleting object '''
     obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
     obj.delete()
     return HttpResponseRedirect(dashboard.reverse_dashboard())
@@ -63,8 +81,30 @@ class Model_Dashboard(object):
         self.listing_headers = []
         self.view_dashboard = dashboard_view_closure(self, default_view_model_dashboard)
         self.view_editor = dashboard_view_closure(self, default_view_model_editor)
+        self.post_add = dashboard_view_closure(self, default_post_model_add)
+        self.post_edit = dashboard_view_closure(self, default_post_model_edit)
         self.post_delete = dashboard_view_closure(self, default_post_model_delete)
-        
+
+    def model_from_post(self, POST):
+        ''' Create new model instance from POST variables '''
+        fields = {}
+        for key, val in POST.iteritems():
+            if key=='csrfmiddlewaretoken' or key=='pk':
+                continue
+            else:
+                fields[key] = val
+        return self.model(**fields)
+
+    def edit_object_from_post(self, obj, POST):
+        ''' Edits object given POST variables '''
+        fields = {}
+        dict_obj = obj.__dict__
+        for key, val in POST.iteritems():
+            if key=='csrfmiddlewaretoken' or key=='pk':
+                continue
+            else:
+                dict_obj[key] = val
+
     def get_listing_record(self, x):
         return (str(x),)
 
@@ -121,20 +161,25 @@ class Model_Dashboard(object):
         context['post_delete'] = self.reverse_delete()
         return render(request, 'common/model_editor.html', **context)
 
-    def url_view_dashboard(self, route, view=None):
+    def url_view_dashboard(self, route):
         ''' URL for dashboard '''
-        view_func = self.view_dashboard if view is None else view
-        return url(route, view_func, name=self.namespace+'_dashboard')
+        return url(route, self.view_dashboard, name=self.namespace+'_dashboard')
 
-    def url_view_editor(self, route, view=None):
+    def url_view_editor(self, route):
         ''' URL for editor '''
-        view_func = self.view_editor if view is None else view
-        return url(route, view_func, name=self.namespace+'_editor')
+        return url(route, self.view_editor, name=self.namespace+'_editor')
 
-    def url_post_delete(self, route, view=None):
+    def url_post_add(self, route):
+        ''' URL for add '''
+        return url(route, self.post_add, name='add_'+self.namespace)
+
+    def url_post_edit(self, route):
+        ''' URL for edit '''
+        return url(route, self.post_edit, name='edit_'+self.namespace)
+
+    def url_post_delete(self, route):
         ''' URL for delete '''
-        view_func = self.post_delete if view is None else view
-        return url(route, view_func, name='delete_'+self.namespace)
+        return url(route, self.post_delete, name='delete_'+self.namespace)
 
     def reverse_dashboard(self):
         ''' Reverse URL lookup for model set manager '''
