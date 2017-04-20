@@ -25,6 +25,9 @@ class App_Dashboard(object):
         context['app'] = self.name
         return render(request, 'common/app_dashboard.html', **context)
 
+    def reverse_dashboard(self):
+        return reverse(self.namespace+':dashboard')
+
 
 def default_view_model_dashboard(dashboard, request):
     context = {
@@ -43,9 +46,7 @@ def default_view_model_editor(dashboard, request, pk):
 def default_post_model_delete(dashboard, request):
     obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
     obj.delete()
-    return HttpResponseRedirect(
-        reverse(dashboard.app.namespace+':'+dashboard.namespace+'_dashboard')
-    )
+    return HttpResponseRedirect(dashboard.reverse_dashboard())
 
 
 class Model_Dashboard(object):
@@ -81,7 +82,7 @@ class Model_Dashboard(object):
         ''' Panel structure for dashboard '''
         return {
             'title': self.name +' Management',
-            'link': reverse(self.app.namespace+':'+self.namespace+'_dashboard'),
+            'link': self.reverse_dashboard(),
             'table': {
                 'headers': self.listing_headers,
                 'rows': [
@@ -96,7 +97,7 @@ class Model_Dashboard(object):
         ''' Model set manager page '''
         context['title'] = self.name + ' Manager'
         context['model_name'] = self.name
-        context['app_dashboard'] = reverse(self.app.namespace+':dashboard')
+        context['app_dashboard'] = self.app.reverse_dashboard()
         context['form'] = {
             'action': self.app.namespace +':add_'+ self.namespace,
             'fields': self.model().to_form_fields()
@@ -113,7 +114,7 @@ class Model_Dashboard(object):
             'action': self.app.namespace +':edit_'+ self.namespace,
             'fields': obj.to_form_fields()
         }
-        context['post_delete'] = reverse(self.app.namespace+':delete_'+self.namespace)
+        context['post_delete'] = self.reverse_delete()
         return render(request, 'common/model_editor.html', **context)
 
     def url_view_dashboard(self, route, view=None):
@@ -131,3 +132,10 @@ class Model_Dashboard(object):
         view_func = self.post_delete if view is None else view
         return url(route, view_func, name='delete_'+self.namespace)
 
+    def reverse_dashboard(self):
+        ''' Reverse URL lookup for model set manager '''
+        return reverse(self.app.namespace+':'+self.namespace+'_dashboard')
+
+    def reverse_delete(self):
+        ''' Reverse URL lookup for delete model post '''
+        return reverse(self.app.namespace+':delete_'+self.namespace)
