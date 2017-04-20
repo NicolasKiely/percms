@@ -43,7 +43,8 @@ class Script(models.Model):
                 'type': 'select', 'label': 'Language',
                 'name': 'lang', 'value': self.lang,
                 'options': langs
-            }
+            },
+            {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
 
 
