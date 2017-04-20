@@ -41,6 +41,13 @@ def default_view_model_dashboard(request, dashboard):
 
 
 @login_required
+def default_view_model(request, dashboard, pk):
+    ''' Default handler for viewing object '''
+    obj = get_object_or_404(dashboard.model, pk=pk)
+    return dashboard.view_model(request, obj, {})
+
+
+@login_required
 def default_view_model_editor(request, dashboard, pk):
     ''' Default handler for viewing object editor '''
     obj = get_object_or_404(dashboard.model, pk=pk)
@@ -80,6 +87,7 @@ class Model_Dashboard(object):
         self.model = model
         self.listing_headers = []
         self.view_dashboard = dashboard_view_closure(self, default_view_model_dashboard)
+        self.view_public = dashboard_view_closure(self, default_view_model)
         self.view_editor = dashboard_view_closure(self, default_view_model_editor)
         self.post_add = dashboard_view_closure(self, default_post_model_add)
         self.post_edit = dashboard_view_closure(self, default_post_model_edit)
@@ -161,9 +169,20 @@ class Model_Dashboard(object):
         context['post_delete'] = self.reverse_delete()
         return render(request, 'common/model_editor.html', **context)
 
+    def view_model(self, request, obj, context):
+        ''' Public view of object '''
+        context['title'] = self.name + ' View'
+        context['name'] = str(obj)
+        context['model'] = self.name
+        return render(request, 'common/model_view.html', **context)
+
     def url_view_dashboard(self, route):
         ''' URL for dashboard '''
         return url(route, self.view_dashboard, name=self.namespace+'_dashboard')
+
+    def url_view_public(self, route):
+        ''' URL for general view '''
+        return url(route, self.view_public, name=self.namespace+'_view')
 
     def url_view_editor(self, route):
         ''' URL for editor '''

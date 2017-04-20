@@ -5,9 +5,6 @@ from django.shortcuts import get_object_or_404
 from .models import Script
 
 
-def view(request):
-    pass
-
 
 @login_required
 def editor(request, dashboard, pk):
@@ -23,14 +20,3 @@ def editor(request, dashboard, pk):
         ]
     }
     return dashboard.render_model(request, obj, context)
-
-@login_required
-def edit(request):
-    script = get_object_or_404(Script, pk=request.POST['pk'])
-    script.name = request.POST['name']
-    script.category = request.POST['category']
-    script.description = request.POST['description']
-    script.lang = request.POST['lang']
-
-    script.save()
-    return HttpResponseRedirect(reverse('script:script_dashboard'))
