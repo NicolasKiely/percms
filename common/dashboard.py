@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.conf.urls import url
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from .core import render
 
@@ -39,6 +40,14 @@ def default_view_model_editor(dashboard, request, pk):
     return dashboard.render_model(request, obj, {})
 
 
+def default_post_model_delete(dashboard, request):
+    obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
+    obj.delete()
+    return HttpResponseRedirect(
+        reverse(dashboard.app.namespace+':'+dashboard.namespace+'_dashboard')
+    )
+
+
 class Model_Dashboard(object):
     ''' Dashboard manager for models '''
     def __init__(self, app, model):
@@ -49,6 +58,7 @@ class Model_Dashboard(object):
         self.listing_headers = []
         self.view_dashboard = dashboard_view_closure(self, default_view_model_dashboard)
         self.view_editor = dashboard_view_closure(self, default_view_model_editor)
+        self.post_delete = dashboard_view_closure(self, default_post_model_delete)
         
     def get_listing_record(self, x):
         return (str(x),)
@@ -115,3 +125,9 @@ class Model_Dashboard(object):
         ''' URL for editor '''
         view_func = self.view_editor if view is None else view
         return url(route, view_func, name=self.namespace+'_editor')
+
+    def url_post_delete(self, route, view=None):
+        ''' URL for delete '''
+        view_func = self.post_delete if view is None else view
+        return url(route, view_func, name='delete_'+self.namespace)
+

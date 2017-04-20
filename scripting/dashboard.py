@@ -1,5 +1,6 @@
-from common.dashboard import App_Dashboard, Model_Dashboard
+from common.dashboard import App_Dashboard, Model_Dashboard, dashboard_view_closure
 from .models import Script, Source
+from .script_views import editor
 
 
 # App dashboard
@@ -15,3 +16,7 @@ Script_Dashboard.namespace = 'script'
 Script_Dashboard.listing_headers = ['Category', 'Name', 'URL']
 Script_Dashboard.get_listing_record = \
     lambda x: (x.category, x.name)
+
+Script_Dashboard.view_editor = dashboard_view_closure(
+    Script_Dashboard, editor
+)

@@ -9,6 +9,21 @@ def view(request):
     pass
 
 
+def editor(dashboard, request, pk):
+    obj = get_object_or_404(Script, pk=pk)
+    context = {
+        'panels': [
+            {
+                'title': 'Code'
+            },
+            {
+                'title': 'Version History'
+            }
+        ]
+    }
+    return dashboard.render_model(request, obj, context)
+
+
 @login_required
 def add(request):
     fname = request.POST['name']

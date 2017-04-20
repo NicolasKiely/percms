@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'^script/view/(?P<pk>\d+)/\w*$', script_views.view, name='script_view'),
     url(r'^script/add/$', script_views.add, name='add_script'),
     url(r'^script/edit/$', script_views.edit, name='edit_script'),
-    url(r'^script/delete/$', script_views.delete, name='delete_script')
+    # url(r'^script/delete/$', script_views.delete, name='delete_script')
+    Script_Dashboard.url_post_delete(r'^script/delete/$')
 ]
