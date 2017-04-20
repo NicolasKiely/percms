@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.core.urlresolvers import reverse
 from common.core import view_link, edit_link
 
 # Languages
@@ -25,6 +26,13 @@ class Script(models.Model):
 
     def view_link(self):
         return view_link('script:script_view', (self.pk,))
+
+    def dashboard_link(self):
+        url = reverse('script:script_dashboard')
+        return '<a href="'+ url +'">Script Dashboard</a>'
+
+    def nav_link(self):
+        return self.dashboard_link() +' | '+ self.view_link()
 
     def to_form_fields(self):
         return [

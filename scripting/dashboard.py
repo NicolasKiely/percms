@@ -12,6 +12,6 @@ Dashboard.namespace = 'script'
 Script_Dashboard = Model_Dashboard(Dashboard, Script)
 Script_Dashboard.name = 'Script'
 Script_Dashboard.namespace = 'script'
-Script_Dashboard.listing_headers = ['Category', 'Name']
+Script_Dashboard.listing_headers = ['Category', 'Name', 'URL']
 Script_Dashboard.get_listing_record = \
     lambda x: (x.category, x.name)
