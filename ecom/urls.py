@@ -1,10 +1,10 @@
 from django.conf.urls import url
 from . import views
-from .dashboard import Supplier_Dashboard, Product_Dashboard
+from .dashboard import App_Dashboard, Supplier_Dashboard, Product_Dashboard
 
 
 urlpatterns = [
-    url(r'^dashboard/$', views.view_dashboard, name='dashboard'),
+    App_Dashboard.url_view_dashboard(r'^dashboard/$'),
 
     # Supplier pages
     Supplier_Dashboard.url_view_dashboard(r'^supplier/dashboard/$'),

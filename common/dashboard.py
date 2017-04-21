@@ -15,11 +15,23 @@ def dashboard_view_closure(dashboard, func):
     return inner_func
 
 
+def default_view_app_dashboard(request, dashboard):
+    context = {
+        'panels': [
+            d.get_dashboard_panel()
+            for d in dashboard.children
+        ]
+    }
+    return dashboard.render(request, context)
+
+
 class App_Dashboard(object):
     ''' Dashboard manager for app '''
     def __init__(self):
         self.name = ''
         self.namespace = ''
+        self.view_dashboard = dashboard_view_closure(self, default_view_app_dashboard)
+        self.children = []
 
     def render(self, request, context):
         context['title'] = self.name +' Dashboard'
@@ -28,6 +40,10 @@ class App_Dashboard(object):
 
     def reverse_dashboard(self):
         return reverse(self.namespace+':dashboard')
+
+    def url_view_dashboard(self, route):
+        ''' URL for dashboard '''
+        return url(route, self.view_dashboard, name='dashboard')
 
 
 @login_required
@@ -95,6 +111,7 @@ class Model_Dashboard(object):
         self.model_set_editor_template = 'common/model_set_editor.html'
         self.model_editor_template = 'common/model_editor.html'
         self.model_view_template = 'common/model_view.html'
+        app.children.append(self)
 
     def model_from_post(self, POST):
         ''' Create new model instance from POST variables '''
