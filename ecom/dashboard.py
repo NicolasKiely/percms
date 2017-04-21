@@ -14,3 +14,12 @@ Supplier_Dashboard.namespace = 'supplier'
 Supplier_Dashboard.listing_headers = ['Name', 'URL']
 Supplier_Dashboard.get_listing_record = \
     lambda x: (x.name, )
+
+
+# Product dashboard
+Product_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Product)
+Product_Dashboard.name = 'Product'
+Product_Dashboard.namespace = 'product'
+Product_Dashboard.listing_headers = ['Name', 'URL']
+Product_Dashboard.get_listing_record = \
+    lambda x: (x.name, )
