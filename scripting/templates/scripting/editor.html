@@ -55,6 +55,7 @@
         var cins = this.selectionStart;
         var text = this.value;
         this.value = text.substr(0, cins) +'    '+ text.substr(cins);
+        this.selectionStart = this.selectionEnd = cins + 4;
 
         //console.log(cins);
         //console.log(this.value);
