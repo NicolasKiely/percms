@@ -11,5 +11,8 @@ urlpatterns = [
     Script_Dashboard.url_view_public(r'script/view/(?P<pk>\d+)/\w*$'),
     Script_Dashboard.url_post_add(r'^script/add/$'),
     Script_Dashboard.url_post_edit(r'script/edit/$'),
-    Script_Dashboard.url_post_delete(r'^script/delete/$')
+    Script_Dashboard.url_post_delete(r'^script/delete/$'),
+
+    # Source pages
+    url(r'^script/source/commit/$', script_views.commit, name='commit')
 ]

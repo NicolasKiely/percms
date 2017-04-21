@@ -1,0 +1,50 @@
+{% extends "common/model_editor.html" %}
+{% load core %}
+
+
+{% block custom_panels %}
+  {% open_box %}
+    <h2>Code</h2>
+
+    {# Code editor form #}
+    <form class="form-horizontal" action="{% url 'script:commit' %}"
+        method="post"
+    >
+      {% csrf_token %}
+      <code>
+        <textarea class="form-control" id="code" name="code" rows="20"
+        >{{ code }}</textarea>
+      </code>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="message">Change Message:</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" name="message">
+        </div>
+
+        <input type="hidden" name="scriptpk" value="{{ scriptpk }}">
+      </div>
+      <button type="submit" class="btn btn-primary pull-right">Commit</button>
+    </form>
+  {% close_box %}
+
+  {% open_box %}
+    <h2>Version History</h2>
+
+    <table class="table table-striped">
+      <tr>
+        <th>#</th>
+        <th>Message</th>
+        <th>URL</th>
+      </tr>
+
+      {% for version in versions %}
+      <tr>
+        <td>{{ version.version }}</td>
+        <td>{{ version.short_message }}</td>
+        <td></td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% close_box %}
+{% endblock %}

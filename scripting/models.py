@@ -57,3 +57,6 @@ class Source(models.Model):
 
     def __str__(self):
         return '#'+ str(self.version)
+
+    def short_message(self):
+        return self.message[:20]
