@@ -12,7 +12,7 @@
     >
       {% csrf_token %}
       <code>
-        <textarea class="form-control" id="code" name="code" rows="20"
+        <textarea class="form-control" id="codeinput" name="code" rows="20"
         >{{ code }}</textarea>
       </code>
 
@@ -42,9 +42,27 @@
       <tr>
         <td>{{ version.version }}</td>
         <td>{{ version.short_message }}</td>
-        <td></td>
+        <td>{# version.edit_link | safe #}</td>
       </tr>
       {% endfor %}
     </table>
   {% close_box %}
+
+  <script>
+    // Disable stupid tab navigation
+    function fixtabkey(e){
+      if (e.key === 'Tab'){
+        var cins = this.selectionStart;
+        var text = this.value;
+        this.value = text.substr(0, cins) +'    '+ text.substr(cins);
+
+        //console.log(cins);
+        //console.log(this.value);
+        return false;
+      }
+      return true;
+    }
+    var codeElement = document.getElementById('codeinput');
+    codeElement.onkeydown=fixtabkey;
+  </script>
 {% endblock %}

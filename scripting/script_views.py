@@ -4,18 +4,31 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from .models import Script, Source
 
-def get_last_source(:q
+def get_last_source(script, create_new=False):
+    ''' Fetch last source file from script '''
+    sources = Source.objects.order_by('-version').filter(script=script)
+    if sources.count() > 0:
+        # Record found, return last
+        return sources[0]
+    elif create_new:
+        # No record found, create new one
+        return Source(script=script, source='', version=0, message='')
+    else:
+        # No record found, return null
+        return None
+
 
 @login_required
 def editor(request, dashboard, pk):
-    obj = get_object_or_404(Script, pk=pk)
+    script = get_object_or_404(Script, pk=pk)
+    last_source = get_last_source(script, create_new=True)
 
     context = {
-        'code': 'def foo(a, b):\n    return a+b\nprint "<foo>:"+str(foo(5, 7))',
+        'code': last_source.source,
         'scriptpk': pk,
-        'versions': obj.source_set.order_by('-version')
+        'versions': script.source_set.order_by('-version')
     }
-    return dashboard.render_model(request, obj, context)
+    return dashboard.render_model(request, script, context)
 
 
 @login_required

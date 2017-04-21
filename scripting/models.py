@@ -60,3 +60,9 @@ class Source(models.Model):
 
     def short_message(self):
         return self.message[:20]
+
+    def edit_link(self):
+        return edit_link('script:source_editor', (self.pk,))
+
+    def view_link(self):
+        return view_link('script:source_view', (self.pk,))
