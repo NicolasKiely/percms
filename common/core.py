@@ -98,11 +98,11 @@ def renderform(request, formcontext):
     return render(request, 'common/singleform.html', **formcontext)
 
 
-def view_link(url, args, appended=''):
+def view_link(url, args, appended='', text='View'):
     ''' Helper function for generating view links '''
-    return '<a href="'+ reverse(url, args=args) + appended +'">View</a>'
+    return '<a href="'+ reverse(url, args=args) + appended +'">'+ text +'</a>'
 
 
-def edit_link(url, args):
+def edit_link(url, args, text='Edit'):
     ''' Helper function for generating edit links '''
-    return '<a href="'+ reverse(url, args=args) +'">Edit</a>'
+    return '<a href="'+ reverse(url, args=args) +'">'+ text +'</a>'
