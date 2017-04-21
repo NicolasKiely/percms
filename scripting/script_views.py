@@ -38,7 +38,7 @@ def source_editor(request, dashboard, pk):
     source = get_object_or_404(Source, pk=pk)
     context = {
         'code': source.source,
-        'scriptpk': pk
+        'scriptpk': source.script.pk
     }
     return dashboard.render_model(request, source, context)
 
@@ -50,7 +50,8 @@ def commit(request):
     fmsg = request.POST['message']
     fScriptPK = request.POST['scriptpk']
 
-    script = get_object_or_404(Script, pk=fScriptPK)
+    script = get_object_or_404(Script, pk=int(fScriptPK))
+
     sources = Source.objects.filter(script=script)
     if len(sources) == 0:
         # Create first version of script
@@ -73,3 +74,12 @@ def edit_source(request, dashboard):
     source.version = int(request.POST['version'])
     source.save()
     return HttpResponseRedirect(reverse('script:script_editor', args=(source.script.pk,)))
+
+
+@login_required
+def delete_source(request, dashboard):
+    ''' Delete handler for source '''
+    source = get_object_or_404(dashboard.model, pk=request.POST['pk'])
+    scriptpk = source.script.pk
+    source.delete()
+    return HttpResponseRedirect(reverse('script:script_editor', args=(scriptpk,)))
