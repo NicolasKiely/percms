@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from . import views, script_views
-from .dashboard import Script_Dashboard
+from .dashboard import Script_Dashboard, Source_Dashboard
 
 urlpatterns = [
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
@@ -14,5 +14,9 @@ urlpatterns = [
     Script_Dashboard.url_post_delete(r'^script/delete/$'),
 
     # Source pages
-    url(r'^script/source/commit/$', script_views.commit, name='commit')
+    url(r'^script/source/commit/$', script_views.commit, name='commit'),
+    Source_Dashboard.url_view_editor(r'^source/editor/(?P<pk>\d+)/'),
+    Source_Dashboard.url_view_public(r'^source/view/(?P<pk>\d+)/'),
+    Source_Dashboard.url_post_edit(r'^source/edit/$'),
+    Source_Dashboard.url_post_delete(r'^source/delete/$')
 ]

@@ -28,6 +28,7 @@
     </form>
   {% close_box %}
 
+  {% if versions %}
   {% open_box %}
     <h2>Version History</h2>
 
@@ -42,11 +43,12 @@
       <tr>
         <td>{{ version.version }}</td>
         <td>{{ version.short_message }}</td>
-        <td>{# version.edit_link | safe #}</td>
+        <td>{{ version.edit_link | safe }} | {{ version.view_link | safe }}</td>
       </tr>
       {% endfor %}
     </table>
   {% close_box %}
+  {% endif %}
 
   <script>
     // Disable stupid tab navigation
@@ -56,9 +58,6 @@
         var text = this.value;
         this.value = text.substr(0, cins) +'    '+ text.substr(cins);
         this.selectionStart = this.selectionEnd = cins + 4;
-
-        //console.log(cins);
-        //console.log(this.value);
         return false;
       }
       return true;

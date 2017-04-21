@@ -20,6 +20,7 @@ def get_last_source(script, create_new=False):
 
 @login_required
 def editor(request, dashboard, pk):
+    ''' Script editor '''
     script = get_object_or_404(Script, pk=pk)
     last_source = get_last_source(script, create_new=True)
 
@@ -29,6 +30,17 @@ def editor(request, dashboard, pk):
         'versions': script.source_set.order_by('-version')
     }
     return dashboard.render_model(request, script, context)
+
+
+@login_required
+def source_editor(request, dashboard, pk):
+    ''' Source-specific editor '''
+    source = get_object_or_404(Source, pk=pk)
+    context = {
+        'code': source.source,
+        'scriptpk': pk
+    }
+    return dashboard.render_model(request, source, context)
 
 
 @login_required
@@ -51,3 +63,13 @@ def commit(request):
     new_source = Source(version=v, source=fcode, message=fmsg, script=script)
     new_source.save()
     return HttpResponseRedirect(reverse('script:script_editor', args=(fScriptPK,)))
+
+
+@login_required
+def edit_source(request, dashboard):
+    ''' Edit handler for source '''
+    source = get_object_or_404(dashboard.model, pk=request.POST['pk'])
+    source.message = request.POST['message']
+    source.version = int(request.POST['version'])
+    source.save()
+    return HttpResponseRedirect(reverse('script:script_editor', args=(source.script.pk,)))

@@ -22,10 +22,10 @@ class Script(models.Model):
         return self.category +':'+ self.name
 
     def edit_link(self):
-        return edit_link('script:script_editor', (self.pk,))
+        return edit_link('script:script_editor', (self.pk,), text='Edit Script')
 
     def view_link(self):
-        return view_link('script:script_view', (self.pk,))
+        return view_link('script:script_view', (self.pk,), text='View Script')
 
     def dashboard_link(self):
         url = reverse('script:script_dashboard')
@@ -56,13 +56,23 @@ class Source(models.Model):
     script = models.ForeignKey(Script, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return '#'+ str(self.version)
+        return str(self.script) +'#'+ str(self.version)
 
     def short_message(self):
         return self.message[:20]
 
     def edit_link(self):
-        return edit_link('script:source_editor', (self.pk,))
+        return edit_link('script:source_editor', (self.pk,), text='Edit Version')
 
     def view_link(self):
-        return view_link('script:source_view', (self.pk,))
+        return view_link('script:source_view', (self.pk,), text='View Version')
+
+    def nav_link(self):
+        return self.script.edit_link() +' | '+ self.view_link()
+
+    def to_form_fields(self):
+        return [
+            {'label': 'Message: ', 'name': 'message', 'value': self.message},
+            {'label': 'Version: ', 'name': 'version', 'value': self.version},
+            {'type': 'hidden', 'name': 'pk', 'value': self.pk}
+        ]
