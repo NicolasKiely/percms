@@ -68,7 +68,14 @@ def default_view_model(request, dashboard, pk):
 def default_view_model_editor(request, dashboard, pk):
     ''' Default handler for viewing object editor '''
     obj = get_object_or_404(dashboard.model, pk=pk)
-    return dashboard.render_model(request, obj, {})
+    context = {'panels':[
+        board.get_sublisting_panel(
+            board.name +' Listing', 
+            board.reverse_sublist(dashboard.namespace, pk)
+        )
+        for board in dashboard.children
+    ]}
+    return dashboard.render_model(request, obj, context)
 
 
 @login_required
@@ -107,6 +114,7 @@ class Model_Dashboard(object):
         self.view_dashboard = dashboard_view_closure(self, default_view_model_dashboard)
         self.view_public = dashboard_view_closure(self, default_view_model)
         self.view_editor = dashboard_view_closure(self, default_view_model_editor)
+        self.view_sublist = dashboard_view_closure(self, default_view_model_dashboard)
         self.post_add = dashboard_view_closure(self, default_post_model_add)
         self.post_edit = dashboard_view_closure(self, default_post_model_edit)
         self.post_delete = dashboard_view_closure(self, default_post_model_delete)
@@ -148,7 +156,22 @@ class Model_Dashboard(object):
         return {
             'title': panel_title,
             'table': {
-                'headers': self.listing_headers,
+                'headers': self.listing_headers + ['URL'],
+                'rows': [
+                    self.get_listing_record(x) +
+                    (x.edit_link() +' | '+ x.view_link(),)
+                    for x in self.model.objects.filter(**filters)[:5]
+                ]
+            }
+        }
+
+    def get_sublisting_panel(self, panel_title, title_link, **filters):
+        ''' Panel listing as child '''
+        return {
+            'title': self.name +' Listing',
+            'link': title_link,
+            'table': {
+                'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
                     (x.edit_link() +' | '+ x.view_link(),)
@@ -163,7 +186,7 @@ class Model_Dashboard(object):
             'title': self.name +' Management',
             'link': self.reverse_dashboard(),
             'table': {
-                'headers': self.listing_headers,
+                'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
                     (x.edit_link() +' | '+ x.view_link(),)
@@ -193,12 +216,6 @@ class Model_Dashboard(object):
             'action': self.app.namespace +':edit_'+ self.namespace,
             'fields': obj.to_form_fields()
         }
-        if not('panels' in context):
-            context['panels'] = []
-        context['panels'] += [
-            board.get_listing_panel(board.name+' Listing')
-            for board in self.children
-        ]
 
         context['post_delete'] = self.reverse_delete()
         return render(request, self.model_editor_template, **context)
@@ -222,6 +239,13 @@ class Model_Dashboard(object):
         ''' URL for editor '''
         return url(route, self.view_editor, name=self.namespace+'_editor')
 
+    def url_view_sublist(self, route, field):
+        ''' URL for sublist view '''
+        return url(
+            route, self.view_sublist,
+            name='sublist_%s_%s' % (self.namespace, field)
+        )
+
     def url_post_add(self, route):
         ''' URL for add '''
         return url(route, self.post_add, name='add_'+self.namespace)
@@ -241,3 +265,10 @@ class Model_Dashboard(object):
     def reverse_delete(self):
         ''' Reverse URL lookup for delete model post '''
         return reverse(self.app.namespace+':delete_'+self.namespace)
+
+    def reverse_sublist(self, field, value):
+        ''' Reverse URL lookup for filtering listing by parent model '''
+        return reverse(
+            '%s:sublist_%s_%s' % (self.app.namespace, self.namespace, field),
+            args=(value,)
+        )

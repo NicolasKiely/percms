@@ -20,5 +20,10 @@ urlpatterns = [
     Product_Dashboard.url_view_public(r'^product/view/(?P<pk>\d)/w*$'),
     Product_Dashboard.url_post_add(r'^product/add/$'),
     Product_Dashboard.url_post_edit(r'^product/edit/$'),
-    Product_Dashboard.url_post_delete(r'^product/delete/$')
+    Product_Dashboard.url_post_delete(r'^product/delete/$'),
+
+    Product_Dashboard.url_view_sublist(
+        r'^product/sublist-supplier/(?P<fk>\d)/\w*$',
+        'supplier'
+    )
 ]
