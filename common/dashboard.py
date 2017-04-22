@@ -20,6 +20,7 @@ def default_view_app_dashboard(request, dashboard):
         'panels': [
             d.get_dashboard_panel()
             for d in dashboard.children
+            if d.show_on_app_dashboard
         ]
     }
     return dashboard.render(request, context)
@@ -102,6 +103,7 @@ class Model_Dashboard(object):
         self.namespace = ''
         self.model = model
         self.listing_headers = []
+        self.children = []
         self.view_dashboard = dashboard_view_closure(self, default_view_model_dashboard)
         self.view_public = dashboard_view_closure(self, default_view_model)
         self.view_editor = dashboard_view_closure(self, default_view_model_editor)
@@ -112,6 +114,11 @@ class Model_Dashboard(object):
         self.model_editor_template = 'common/model_editor.html'
         self.model_view_template = 'common/model_view.html'
         app.children.append(self)
+        self.show_on_app_dashboard = True
+
+    def child_of(self, parent):
+        ''' Make model child of other dashboard '''
+        parent.children.append(self)
 
     def model_from_post(self, POST):
         ''' Create new model instance from POST variables '''
@@ -186,6 +193,13 @@ class Model_Dashboard(object):
             'action': self.app.namespace +':edit_'+ self.namespace,
             'fields': obj.to_form_fields()
         }
+        if not('panels' in context):
+            context['panels'] = []
+        context['panels'] += [
+            board.get_listing_panel(board.name+' Listing')
+            for board in self.children
+        ]
+
         context['post_delete'] = self.reverse_delete()
         return render(request, self.model_editor_template, **context)
 

@@ -20,6 +20,9 @@ Supplier_Dashboard.get_listing_record = \
 Product_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Product)
 Product_Dashboard.name = 'Product'
 Product_Dashboard.namespace = 'product'
+Product_Dashboard.show_on_app_dashboard = False
 Product_Dashboard.listing_headers = ['Name', 'URL']
 Product_Dashboard.get_listing_record = \
     lambda x: (x.name, )
+
+Product_Dashboard.child_of(Supplier_Dashboard)
