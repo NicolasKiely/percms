@@ -72,7 +72,12 @@ def default_view_model_dashboard(request, dashboard):
 @login_required
 def default_view_model_sublist(request, dashboard, field, fk):
     ''' Default handler for viewing subsets of objects '''
+    parent = dashboard.get_parent(field)
+    parent_obj = get_object_or_404(parent.model, pk=fk)
+    dash_link = '<a href="%s">All Products</a>' % dashboard.reverse_dashboard()
     context = {
+        'nav': parent_obj.edit_link() +' | '+ dash_link,
+        'title': '%s Listing for %s: %s' % (dashboard.name, field, str(parent_obj)),
         'panels': [
             dashboard.get_sublisting_panel(dashboard.name +'s', '')
         ]
@@ -146,10 +151,15 @@ class Model_Dashboard(object):
         self.model_view_template = 'common/model_view.html'
         app.children.append(self)
         self.show_on_app_dashboard = True
+        self.parents = {}
 
-    def child_of(self, parent):
+    def child_of(self, parent, field):
         ''' Make model child of other dashboard '''
         parent.children.append(self)
+        self.parents[field] = parent
+
+    def get_parent(self, field):
+        return self.parents[field]
 
     def model_from_post(self, POST):
         ''' Create new model instance from POST variables '''
@@ -220,7 +230,7 @@ class Model_Dashboard(object):
 
     def render_model_set(self, request, context):
         ''' Model set manager page '''
-        context['title'] = self.name + ' Manager'
+        context['title'] = context.get('title', self.name + ' Manager')
         context['model_name'] = self.name
         context['app_dashboard'] = self.app.reverse_dashboard()
         context['form'] = {

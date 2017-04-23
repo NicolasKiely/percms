@@ -6,7 +6,11 @@
   {% open_box %}
     <h2>{{ title }}</h2>
     <div class="text-center">
+      {% if nav %}
+      <a href="{{ app_dashboard }}">App Dashboard</a> | {{ nav | safe }}
+      {% else %}
       <a href="{{ app_dashboard }}">App Dashboard</a>
+      {% endif %}
     </div>
   {% close_box %}
 

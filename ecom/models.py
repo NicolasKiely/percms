@@ -45,6 +45,9 @@ class Product(models.Model):
     def view_link(self):
         return view_link('ecom:product_view', (self.pk,), text='View Product')
 
+    def nav_link(self):
+        return self.view_link()
+
     def to_form_fields(self):
         supplier = self.supplier.name if self.supplier else ''
         return [

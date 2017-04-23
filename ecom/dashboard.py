@@ -25,4 +25,4 @@ Product_Dashboard.listing_headers = ['Name']
 Product_Dashboard.get_listing_record = \
     lambda x: (x.name, )
 
-Product_Dashboard.child_of(Supplier_Dashboard)
+Product_Dashboard.child_of(Supplier_Dashboard, 'supplier')
