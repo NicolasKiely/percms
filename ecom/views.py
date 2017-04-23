@@ -18,12 +18,13 @@ def view_dashboard(request):
 def add_product(request, dashboard):
     ''' Add new product '''
     p = request.POST
+    supplier = models.Supplier.objects.get(name=p['supplier']) 
     product = models.Product(
         name=p['name'],
         description=p['description'],
         inventory=p['inventory'],
-        supplier=models.Supplier.objects.get(name=p['supplier'])
+        supplier=supplier
     )
     product.save()
     parent_dash = dashboard.get_parent('supplier')
-    return HttpResponseRedirect(parent_dash.reverse_dashboard())
+    return HttpResponseRedirect(parent_dash.reverse_editor(supplier.id))

@@ -302,6 +302,9 @@ class Model_Dashboard(object):
         ''' Reverse URL lookup for model set manager '''
         return reverse(self.app.namespace+':'+self.namespace+'_dashboard')
 
+    def reverse_editor(self, *args):
+        return reverse(self.app.namespace+':'+self.namespace+'_editor', args=args)
+
     def reverse_delete(self):
         ''' Reverse URL lookup for delete model post '''
         return reverse(self.app.namespace+':delete_'+self.namespace)
