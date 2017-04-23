@@ -46,10 +46,11 @@ class Product(models.Model):
         return view_link('ecom:product_view', (self.pk,), text='View Product')
 
     def to_form_fields(self):
+        supplier = self.supplier.name if self.supplier else ''
         return [
             {'label': 'Name:', 'name': 'name', 'value': self.name},
             {'label': 'Description:', 'name': 'description', 'value': self.description},
             {'label': 'Count:', 'name': 'inventory', 'value': self.inventory},
-            {'label': 'Supplier:', 'name': 'supplier', 'value': self.supplier.name},
+            {'label': 'Supplier:', 'name': 'supplier', 'value': supplier},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]

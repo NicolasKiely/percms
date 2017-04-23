@@ -8,11 +8,23 @@ from .core import render
 
 
 def dashboard_view_closure(dashboard, func):
+    ''' Closure for binding dashboard to view functions (2nd arg) '''
     d=dashboard
     def inner_func(request, **kwargs):
         return func(request, d, **kwargs)
 
     return inner_func
+
+
+def dashboard_sublist_view_closure(dashboard, func, field):
+    ''' Closure for binding dashboard and sublist criteria '''
+    d=dashboard
+    f=field
+    def inner_func(request, **kwargs):
+        return func(request, d, f, **kwargs)
+
+    return inner_func
+
 
 
 def default_view_app_dashboard(request, dashboard):
@@ -52,6 +64,17 @@ def default_view_model_dashboard(request, dashboard):
     context = {
         'panels': [
             dashboard.get_listing_panel(dashboard.name+'s')
+        ]
+    }
+    return dashboard.render_model_set(request, context)
+
+
+@login_required
+def default_view_model_sublist(request, dashboard, field, fk):
+    ''' Default handler for viewing subsets of objects '''
+    context = {
+        'panels': [
+            dashboard.get_sublisting_panel(dashboard.name +'s', '')
         ]
     }
     return dashboard.render_model_set(request, context)
@@ -114,7 +137,7 @@ class Model_Dashboard(object):
         self.view_dashboard = dashboard_view_closure(self, default_view_model_dashboard)
         self.view_public = dashboard_view_closure(self, default_view_model)
         self.view_editor = dashboard_view_closure(self, default_view_model_editor)
-        self.view_sublist = dashboard_view_closure(self, default_view_model_dashboard)
+        self.view_sublist = default_view_model_sublist
         self.post_add = dashboard_view_closure(self, default_post_model_add)
         self.post_edit = dashboard_view_closure(self, default_post_model_edit)
         self.post_delete = dashboard_view_closure(self, default_post_model_delete)
@@ -242,7 +265,7 @@ class Model_Dashboard(object):
     def url_view_sublist(self, route, field):
         ''' URL for sublist view '''
         return url(
-            route, self.view_sublist,
+            route, dashboard_sublist_view_closure(self, self.view_sublist, field),
             name='sublist_%s_%s' % (self.namespace, field)
         )
 
