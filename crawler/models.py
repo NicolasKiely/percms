@@ -71,3 +71,18 @@ class Website(models.Model):
 
     def get_profile_name(self):
         return self.profile.name if self.profile else ''
+ 
+
+class Crawler_Config(models.Model):
+    ''' Crawler config and state '''
+    name = models.CharField(max_length=64, unique=True)
+    domain = models.ForeignKey(Website, on_delete=models.SET_NULL, null=True)
+    active = models.ForeignKey('Crawler_State', on_delete=models.SET_NULL, null=True)
+
+class Crawler_State(models.Model):
+    ''' Sequential State of crawler '''
+    name = models.CharField(max_length=64, unique=True)
+    crawler = models.ForeignKey(Crawler_Config, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('name', 'crawler')
