@@ -1,5 +1,6 @@
 from common import dashboard as dbd
 from . import models
+from . import views
 
 # App dashboard
 App_Dashboard = dbd.App_Dashboard()
@@ -26,4 +27,6 @@ Product_Dashboard.listing_headers = ['Name']
 Product_Dashboard.get_listing_record = \
     lambda x: (x.name, )
 
-#Product_Dashboard.post_add = dashboard.
+Product_Dashboard.post_add = dbd.dashboard_view_closure(
+    Product_Dashboard, views.add_product
+)
