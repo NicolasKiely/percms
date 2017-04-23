@@ -51,12 +51,24 @@ class Product(models.Model):
     def nav_link(self):
         return self.view_link()
 
-    def to_form_fields(self):
-        supplier = self.supplier.name if self.supplier else ''
+    def to_form_fields(self, field=None, fk=None):
+        supplier = {'name': 'supplier'}
+        if self.supplier:
+            supplier['label'] = 'Supplier:'
+            supplier['value'] = self.supplier.name
+
+        elif field=='supplier':
+            supplier['type'] = 'hidden'
+            supplier['value'] = Supplier.objects.get(pk=fk).name
+
+        else:
+            supplier['label'] = 'Supplier:'
+            supplier['value'] = ''
+
         return [
             {'label': 'Name:', 'name': 'name', 'value': self.name},
             {'label': 'Description:', 'name': 'description', 'value': self.description},
             {'label': 'Count:', 'name': 'inventory', 'value': self.inventory},
-            {'label': 'Supplier:', 'name': 'supplier', 'value': supplier},
+            supplier,
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]

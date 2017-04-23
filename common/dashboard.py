@@ -73,16 +73,15 @@ def default_view_model_sublist(request, dashboard, field, fk):
     ''' Default handler for viewing subsets of objects '''
     parent = dashboard.get_parent(field)
     parent_obj = get_object_or_404(parent.model, pk=fk)
-    dash_link = '<a href="%s">All Products</a>' % dashboard.reverse_dashboard()
     context = {
         'model_dashboard': dashboard.link_dashboard(),
-        'nav': parent_obj.edit_link() +' | '+ dash_link,
-        'title': '%s Listing for %s: %s' % (dashboard.name, field, str(parent_obj)),
+        'nav': parent_obj.edit_link(),
+        'title': '%s Listing for %s: %s' % (dashboard.name, parent.name, str(parent_obj)),
         'panels': [
             dashboard.get_sublisting_panel(dashboard.name +'s', '')
         ]
     }
-    return dashboard.render_model_set(request, context)
+    return dashboard.render_model_set(request, context, field, fk)
 
 
 @login_required
@@ -231,14 +230,19 @@ class Model_Dashboard(object):
             }
         }
 
-    def render_model_set(self, request, context):
+    def render_model_set(self, request, context, field=None, fk=None):
         ''' Model set manager page '''
         context['title'] = context.get('title', self.name + ' Manager')
         context['model_name'] = self.name
         context['app_dashboard'] = self.app.reverse_dashboard()
+        if field is None:
+            form_fields = self.model().to_form_fields()
+        else:
+            form_fields = self.model().to_form_fields(field, fk)
+
         context['form'] = {
             'action': self.app.namespace +':add_'+ self.namespace,
-            'fields': self.model().to_form_fields()
+            'fields': form_fields
         }
         return render(request, self.model_set_editor_template, **context)
 

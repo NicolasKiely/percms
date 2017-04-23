@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from . import dashboard
 
 
@@ -11,3 +11,4 @@ def view_dashboard(request):
         ]
     }
     return dashboard.App_Dashboard.render(request, context)
+
