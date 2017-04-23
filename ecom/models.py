@@ -19,6 +19,9 @@ class Supplier(models.Model):
     def view_link(self):
         return view_link('ecom:supplier_view', (self.pk,), text='View Supplier')
 
+    def nav_link(self):
+        return self.view_link()
+
     def to_form_fields(self):
         return [
             {'label': 'Name:', 'name': 'name', 'value': self.name},

@@ -6,7 +6,7 @@
   {% open_box %}
     <h2>{{ model }}: <u>{{ name }}</u></h2>
     <div class="text-center">
-      {{ object.nav_link | safe }}
+      {{ model_dashboard | safe }} | {{ object.nav_link | safe }}
     </div>
   {% close_box %}
 

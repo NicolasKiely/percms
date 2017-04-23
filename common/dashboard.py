@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 from .core import render
 
 
-
 def dashboard_view_closure(dashboard, func):
     ''' Closure for binding dashboard to view functions (2nd arg) '''
     d=dashboard
@@ -76,6 +75,7 @@ def default_view_model_sublist(request, dashboard, field, fk):
     parent_obj = get_object_or_404(parent.model, pk=fk)
     dash_link = '<a href="%s">All Products</a>' % dashboard.reverse_dashboard()
     context = {
+        'model_dashboard': dashboard.link_dashboard(),
         'nav': parent_obj.edit_link() +' | '+ dash_link,
         'title': '%s Listing for %s: %s' % (dashboard.name, field, str(parent_obj)),
         'panels': [
@@ -96,13 +96,16 @@ def default_view_model(request, dashboard, pk):
 def default_view_model_editor(request, dashboard, pk):
     ''' Default handler for viewing object editor '''
     obj = get_object_or_404(dashboard.model, pk=pk)
-    context = {'panels':[
-        board.get_sublisting_panel(
-            board.name +' Listing', 
-            board.reverse_sublist(dashboard.namespace, pk)
-        )
-        for board in dashboard.children
-    ]}
+    context = {
+        'model_dashboard': dashboard.link_dashboard(),
+        'panels':[
+            board.get_sublisting_panel(
+                board.name +' Listing', 
+                board.reverse_sublist(dashboard.namespace, pk)
+            )
+            for board in dashboard.children
+        ]
+    }
     return dashboard.render_model(request, obj, context)
 
 
@@ -305,3 +308,6 @@ class Model_Dashboard(object):
             '%s:sublist_%s_%s' % (self.app.namespace, self.namespace, field),
             args=(value,)
         )
+
+    def link_dashboard(self):
+        return '<a href="%s">%s Manager</a>' % (self.reverse_dashboard(), self.name)
