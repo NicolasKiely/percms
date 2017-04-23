@@ -52,12 +52,17 @@ def add(request):
 @login_required
 def edit(request):
     ''' Post for editting existing domain '''
-    website = get_object_or_404(Website, pk=request.POST['pk'])
-    profile = get_object_or_404(Login_Profile, name=request.POST['profile'])
-    website.domain = request.POST['domain']
-    website.can_crawl = 'cancrawl' in request.POST
+    p = request.POST
+    website = get_object_or_404(Website, pk=p['pk'])
+    profile_name = p['profile']
+    if profile_name:
+        profile = get_object_or_404(Login_Profile, name=p['profile'])
+    else:
+        profile = None
+    website.domain = p['domain']
+    website.can_crawl = 'cancrawl' in p
     website.profile = profile
-    website.scraper = request.POST['scraper']
+    website.scraper = p['scraper']
     website.save()
 
     return HttpResponseRedirect(reverse('crawler:domain_dashboard'))

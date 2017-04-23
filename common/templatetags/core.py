@@ -33,6 +33,7 @@ form_open_template = '<form class="form-horizontal" action="{}" method="post">'
 form_input_template = '<input class="form-control" type="{}" name="{}" value="{}" {}>'
 form_select_template = '<select class="form-control" name="{}" value="{}">{}</select>'
 form_option_template = '<option value="{}">{}</option>'
+form_selected_template = '<option value="{}" selected="true">{}</option>'
 form_button = '<button type="submit" class="btn btn-primary pull-right">{}</button>'
 
 open_row_div = open_row_div_template.format(box_class)
@@ -113,7 +114,10 @@ def build_input_string(label, ftype, value, name, options):
                         opts = (opt[0], opt[0])
                     else:
                         opts = (opt[0], opt[1])
-                    opt_str += form_option_template.format(*opts)
+                    if opts[0] == value:
+                        opt_str += form_selected_template.format(*opts)
+                    else:
+                        opt_str += form_option_template.format(*opts)
                 else:
                     sopt = str(opt)
                     opt_str = form_option_template.format(sopt, sopt)

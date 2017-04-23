@@ -51,13 +51,12 @@ class Website(models.Model):
         return self.dashboard_link() +' | '+ self.view_link()
 
     def to_form_fields(self):
-        profile_name = self.profile.name if self.profile else ''
         return [
             {'label': 'Domain:'   , 'name': 'domain'   , 'value': self.domain},
             {
                 'type': 'select', 'label': 'Profile',
-                'name': 'profile', 'value': profile_name,
-                'options': [map(str, Login_Profile.objects.all())]
+                'name': 'profile', 'value': self.get_profile_name(),
+                'options': [''] + [map(str, Login_Profile.objects.all())]
             },
             {
                 'type': 'text', 'label': 'Scraper', 
@@ -69,3 +68,6 @@ class Website(models.Model):
             },
             { 'type': 'hidden', 'name': 'pk', 'value': self.pk }
         ]
+
+    def get_profile_name(self):
+        return self.profile.name if self.profile else ''

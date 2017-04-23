@@ -1,11 +1,12 @@
 from django.conf.urls import url
 from . import views
 from . import domain_views
+from .dashboard import App_Dashboard, Website_Dashboard
 
 
 urlpatterns = [
     # Crawler manager and view portals
-    url(r'^dashboard/$', views.dashboard, name='dashboard'),
+    App_Dashboard.url_view_dashboard(r'^dashboard/$'),
     url(r'^view/$', views.public_view, name='view'),
 
     # Crawler pages

@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from common import core
 from .models import Website
-from .dashboard import Dashboard, Website_Dashboard
+from .dashboard import App_Dashboard, Website_Dashboard
 
 
 @login_required
@@ -17,7 +17,7 @@ def dashboard(request):
             Website_Dashboard.get_dashboard_panel()
         ]
     }
-    return Dashboard.render(request, context)
+    return App_Dashboard.render(request, context)
 
 
 @login_required
