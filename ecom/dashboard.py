@@ -16,6 +16,10 @@ Supplier_Dashboard.listing_headers = ['Name']
 Supplier_Dashboard.get_listing_record = \
     lambda x: (x.name, )
 
+Supplier_Dashboard.post_edit = dbd.dashboard_view_closure(
+    Supplier_Dashboard, views.edit_supplier
+)
+
 
 # Product dashboard
 Product_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Product)

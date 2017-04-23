@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+
 from common.core import view_link, edit_link
+from crawler.models import Website
 
 
 class Supplier(models.Model):
@@ -9,6 +11,7 @@ class Supplier(models.Model):
     name = models.CharField('Supplier name', max_length=255, unique=True)
     description = models.CharField('Supplier description', max_length=255)
     active = models.BooleanField(default=True)
+    website = models.ForeignKey(Website, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
@@ -23,9 +26,11 @@ class Supplier(models.Model):
         return self.view_link()
 
     def to_form_fields(self):
+        domain = 'http://' if self.website is None else self.website.domain
         return [
             {'label': 'Name:', 'name': 'name', 'value': self.name},
             {'label': 'Description:', 'name': 'description', 'value': self.description},
+            {'label': 'Website', 'name': 'website', 'value': domain},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
 
