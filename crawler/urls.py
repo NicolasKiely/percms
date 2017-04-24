@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from . import views
 from . import domain_views
-from .dashboard import App_Dashboard, Website_Dashboard
+from .dashboard import App_Dashboard, Website_Dashboard, Crawler_Dashboard
 
 
 urlpatterns = [
@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^domain/add/$', domain_views.add, name='add_domain'),
     url(r'^domain/edit/$', domain_views.edit, name='edit_domain'),
     url(r'^domain/delete/$', domain_views.delete, name='delete_domain')
-]
+] + Crawler_Dashboard.create_standard_urls()
+

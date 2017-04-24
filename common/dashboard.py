@@ -298,6 +298,17 @@ class Model_Dashboard(object):
         ''' URL for delete '''
         return url(route, self.post_delete, name='delete_'+self.namespace)
 
+    def create_standard_urls(self):
+        url = '^'+ self.namespace +'/%s$'
+        return [
+            self.url_view_dashboard(url % 'dashboard/'),
+            self.url_view_editor(url % 'editor/(?P<pk>\d+)/\w*'),
+            self.url_view_public(url % 'view/(?P<pk>\d+)/\w*'),
+            self.url_post_add(url % 'add/'),
+            self.url_post_edit(url % 'edit/'),
+            self.url_post_delete(url % 'delete/')
+        ]
+
     def reverse_dashboard(self):
         ''' Reverse URL lookup for model set manager '''
         return reverse(self.app.namespace+':'+self.namespace+'_dashboard')
