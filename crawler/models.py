@@ -122,3 +122,13 @@ class Crawler(models.Model):
 
     # Crawler status
     status = models.CharField(max_length=64, choices=statuses)
+
+
+    def get_domain(self):
+        return self.domain.domain if self.domain else ''
+
+    def get_config(self):
+        return self.config.name if self.config else ''
+
+    def get_state(self):
+        return self.state.name if self.state else ''
