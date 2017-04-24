@@ -194,7 +194,7 @@ class Model_Dashboard(object):
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    (x.edit_link() +' | '+ x.view_link(),)
+                    (self.edit_link(x) +' | '+ self.view_link(x),)
                     for x in self.model.objects.filter(**filters)[:5]
                 ]
             }
@@ -302,8 +302,8 @@ class Model_Dashboard(object):
         url = '^'+ self.namespace +'/%s$'
         return [
             self.url_view_dashboard(url % 'dashboard/'),
-            self.url_view_editor(url % 'editor/(?P<pk>\d+)/\w*'),
-            self.url_view_public(url % 'view/(?P<pk>\d+)/\w*'),
+            self.url_view_editor(url % 'editor/(?P<pk>\d+)/[\w\.]*'),
+            self.url_view_public(url % 'view/(?P<pk>\d+)/[\w\.]*'),
             self.url_post_add(url % 'add/'),
             self.url_post_edit(url % 'edit/'),
             self.url_post_delete(url % 'delete/')
@@ -315,6 +315,9 @@ class Model_Dashboard(object):
 
     def reverse_editor(self, *args):
         return reverse(self.app.namespace+':'+self.namespace+'_editor', args=args)
+
+    def reverse_view(self, *args):
+        return reverse(self.app.namespace+':'+self.namespace+'_view', args=args)
 
     def reverse_delete(self):
         ''' Reverse URL lookup for delete model post '''
@@ -329,3 +332,9 @@ class Model_Dashboard(object):
 
     def link_dashboard(self):
         return '<a href="%s">%s Manager</a>' % (self.reverse_dashboard(), self.name)
+
+    def edit_link(self, obj):
+        return '<a href="%s">Edit %s</a>' % (self.reverse_editor(obj.id), self.name)
+
+    def view_link(self, obj):
+        return '<a href="%s">View %s</a>' % (self.reverse_view(obj.id), self.name)
