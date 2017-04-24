@@ -3,6 +3,15 @@ from __future__ import unicode_literals
 from django.db import models
 from django.core.urlresolvers import reverse
 from common.core import view_link, edit_link
+from scripting.models import Source
+
+
+statuses = (
+    ('running', 'Running'),   # Currently running
+    ('paused', 'Paused'),     # Paused by user
+    ('stopped', 'Stopped'),   # Stopped due to some condition
+    ('finished', 'Finished')  # Finished with no work left to do
+)
 
 
 class Login_Profile(models.Model):
@@ -75,14 +84,41 @@ class Website(models.Model):
 
 class Crawler_Config(models.Model):
     ''' Crawler config and state '''
+    # Name of config
     name = models.CharField(max_length=64, unique=True)
-    domain = models.ForeignKey(Website, on_delete=models.SET_NULL, null=True)
-    active = models.ForeignKey('Crawler_State', on_delete=models.SET_NULL, null=True)
+
+    # Initial/default state
+    initial_state = models.ForeignKey('Crawler_State', on_delete=models.SET_NULL, null=True)
+
 
 class Crawler_State(models.Model):
     ''' Sequential State of crawler '''
-    name = models.CharField(max_length=64, unique=True)
-    crawler = models.ForeignKey(Crawler_Config, on_delete=models.CASCADE)
+    # Name of state
+    name = models.CharField(max_length=64)
+
+    # Config this state belongs to
+    config = models.ForeignKey(Crawler_Config, on_delete=models.CASCADE)
+
+    # Source code to execute on state visit
+    source = models.ForeignKey(Source, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('name', 'crawler')
+        unique_together = ('name', 'config')
+
+
+class Crawler(models.Model):
+    ''' Running/Sleeping instance of crawler '''
+    # Domain to run on
+    domain = models.ForeignKey(Website, on_delete=models.SET_NULL, null=True)
+
+    # Configuration of crawler
+    config = models.ForeignKey(Crawler_Config, on_delete=models.SET_NULL, null=True)
+
+    # Active State of crawler
+    active_state = models.ForeignKey(Crawler_State, on_delete=models.SET_NULL, null=True)
+
+    # Sleep time between page visits
+    wait_time = models.IntegerField(default=0)
+
+    # Crawler status
+    status = models.CharField(max_length=64, choices=statuses)
