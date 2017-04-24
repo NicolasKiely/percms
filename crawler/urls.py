@@ -19,4 +19,3 @@ urlpatterns = [
     url(r'^domain/edit/$', domain_views.edit, name='edit_domain'),
     url(r'^domain/delete/$', domain_views.delete, name='delete_domain')
 ] + Crawler_Dashboard.create_standard_urls()
-

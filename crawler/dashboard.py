@@ -1,5 +1,6 @@
 from common import dashboard as dbd
 from . import models
+from . import views
 
 
 # App dashboard
@@ -21,6 +22,10 @@ Website_Dashboard.get_listing_record = \
 Crawler_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Crawler)
 Crawler_Dashboard.name = 'Crawler'
 Crawler_Dashboard.namespace = 'crawler'
-Crawler_Dashboard.listing_headers = ['Domain', 'Status']
+Crawler_Dashboard.listing_headers = ['Domain', 'Status', 'Active State']
 Crawler_Dashboard.get_listing_record = \
-    lambda x: (x.get_domain(), x.status, x.get_config(), x.get_state())
+    lambda x: (x.get_domain(), x.status, x.get_config() +':'+ x.get_state())
+
+Crawler_Dashboard.post_add = dbd.dashboard_view_closure(
+    Crawler_Dashboard, views.add_crawler
+)

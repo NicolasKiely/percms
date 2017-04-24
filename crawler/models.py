@@ -121,7 +121,7 @@ class Crawler(models.Model):
     wait_time = models.IntegerField(default=0)
 
     # Crawler status
-    status = models.CharField(max_length=64, choices=statuses)
+    status = models.CharField(max_length=64, choices=statuses, default='paused')
 
 
     def get_domain(self):
@@ -131,4 +131,11 @@ class Crawler(models.Model):
         return self.config.name if self.config else ''
 
     def get_state(self):
-        return self.state.name if self.state else ''
+        return self.active_state.name if self.active_state else ''
+
+    def to_form_fields(self):
+        return [
+            {'label': 'Domain:', 'name': 'domain', 'value': self.get_domain()},
+            {'label': 'Config:', 'name': 'config', 'value': self.get_config()},
+            {'label': 'Wait Time', 'name': 'wait_time', 'value': str(self.wait_time)}
+        ]
