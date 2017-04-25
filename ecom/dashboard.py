@@ -14,7 +14,7 @@ Supplier_Dashboard.name = 'Supplier'
 Supplier_Dashboard.namespace = 'supplier'
 Supplier_Dashboard.listing_headers = ['Name']
 Supplier_Dashboard.get_listing_record = \
-    lambda x: (x.name, )
+    lambda x: [x.name]
 
 Supplier_Dashboard.post_edit = dbd.dashboard_view_closure(
     Supplier_Dashboard, views.edit_supplier
@@ -29,7 +29,7 @@ Product_Dashboard.namespace = 'product'
 Product_Dashboard.show_on_app_dashboard = False
 Product_Dashboard.listing_headers = ['Name']
 Product_Dashboard.get_listing_record = \
-    lambda x: (x.name, )
+    lambda x: [x.name]
 
 Product_Dashboard.post_add = dbd.dashboard_view_closure(
     Product_Dashboard, views.add_product

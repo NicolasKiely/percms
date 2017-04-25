@@ -15,7 +15,7 @@ Script_Dashboard.name = 'Script'
 Script_Dashboard.namespace = 'script'
 Script_Dashboard.listing_headers = ['Category', 'Name', 'URL']
 Script_Dashboard.get_listing_record = \
-    lambda x: (x.category, x.name)
+    lambda x: [x.category, x.name]
 
 Script_Dashboard.view_editor = dashboard_view_closure(
     Script_Dashboard, script_views.editor
