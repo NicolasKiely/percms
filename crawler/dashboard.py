@@ -29,3 +29,12 @@ Crawler_Dashboard.get_listing_record = \
 Crawler_Dashboard.post_add = dbd.dashboard_view_closure(
     Crawler_Dashboard, views.add_crawler
 )
+
+
+# Crawler config dashboard
+Config_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Crawler_Config)
+Config_Dashboard.name = 'Configuration'
+Config_Dashboard.namespace = 'crawler_config'
+Config_Dashboard.listing_headers = ['Name']
+Config_Dashboard.get_listing_record = \
+    lambda x: [x.name]

@@ -90,6 +90,18 @@ class Crawler_Config(models.Model):
     # Initial/default state
     initial_state = models.ForeignKey('Crawler_State', on_delete=models.SET_NULL, null=True)
 
+    def get_initial_state(self):
+        return self.initial_state.name if self.initial_state else ''
+
+    def to_form_fields(self):
+        return [
+            {'label': 'Name:', 'name': 'name', 'value': self.name},
+            {
+                'label': 'Initial State:', 'name': 'initial_state',
+                'value': self.get_initial_state()
+            }
+        ]
+
 
 class Crawler_State(models.Model):
     ''' Sequential State of crawler '''
@@ -139,3 +151,6 @@ class Crawler(models.Model):
             {'label': 'Config:', 'name': 'config', 'value': self.get_config()},
             {'label': 'Wait Time', 'name': 'wait_time', 'value': str(self.wait_time)}
         ]
+
+    def __str__(self):
+        return self.get_config() +' => '+ self.get_domain()

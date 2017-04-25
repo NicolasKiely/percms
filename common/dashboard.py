@@ -209,7 +209,7 @@ class Model_Dashboard(object):
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    (x.edit_link() +' | '+ x.view_link(),)
+                    (self.edit_link(x) +' | '+ self.view_link(x),)
                     for x in self.model.objects.filter(**filters)[:5]
                 ]
             }
@@ -224,7 +224,7 @@ class Model_Dashboard(object):
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    (x.edit_link() +' | '+ x.view_link(),)
+                    (self.edit_link(x) +' | '+ self.view_link(x),)
                     for x in self.model.objects.filter(**filters)[:5]
                 ]
             }
