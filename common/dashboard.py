@@ -75,7 +75,7 @@ def default_view_model_sublist(request, dashboard, field, fk):
     parent_obj = get_object_or_404(parent.model, pk=fk)
     context = {
         'model_dashboard': dashboard.link_dashboard(),
-        'nav': parent_obj.edit_link(),
+        'nav': dashboard.edit_link(parent_obj),
         'title': '%s Listing for %s: %s' % (dashboard.name, parent.name, str(parent_obj)),
         'panels': [
             dashboard.get_sublisting_panel(dashboard.name +'s', '')
@@ -98,11 +98,11 @@ def default_view_model_editor(request, dashboard, pk):
     context = {
         'model_dashboard': dashboard.link_dashboard(),
         'panels':[
-            board.get_sublisting_panel(
-                board.name +' Listing', 
-                board.reverse_sublist(dashboard.namespace, pk)
+            child.get_sublisting_panel(
+                child.name +' Listing', 
+                child.reverse_sublist(dashboard, pk)
             )
-            for board in dashboard.children
+            for child in dashboard.children
         ]
     }
     return dashboard.render_model(request, obj, context)
@@ -300,6 +300,13 @@ class Model_Dashboard(object):
 
     def create_standard_urls(self):
         url = '^'+ self.namespace +'/%s$'
+        sublist_urls = [
+            self.url_view_sublist(
+                r'^%s/sublist-%s/%s$' % (self.namespace, k, '(?P<fk>\d)/[\w\.]*'),
+                k
+            )
+            for k,v in self.parents.iteritems()
+        ]
         return [
             self.url_view_dashboard(url % 'dashboard/'),
             self.url_view_editor(url % 'editor/(?P<pk>\d+)/[\w\.]*'),
@@ -307,7 +314,7 @@ class Model_Dashboard(object):
             self.url_post_add(url % 'add/'),
             self.url_post_edit(url % 'edit/'),
             self.url_post_delete(url % 'delete/')
-        ]
+        ] + sublist_urls
 
     def reverse_dashboard(self):
         ''' Reverse URL lookup for model set manager '''
@@ -323,10 +330,11 @@ class Model_Dashboard(object):
         ''' Reverse URL lookup for delete model post '''
         return reverse(self.app.namespace+':delete_'+self.namespace)
 
-    def reverse_sublist(self, field, value):
+    def reverse_sublist(self, parent, value):
         ''' Reverse URL lookup for filtering listing by parent model '''
+        parent_field = [k for k,v in self.parents.iteritems() if v==parent][0]
         return reverse(
-            '%s:sublist_%s_%s' % (self.app.namespace, self.namespace, field),
+            '%s:sublist_%s_%s' % (self.app.namespace, self.namespace, parent_field),
             args=(value,)
         )
 
