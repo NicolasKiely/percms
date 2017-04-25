@@ -42,3 +42,12 @@ Config_Dashboard.get_listing_record = \
 Config_Dashboard.post_add = dbd.dashboard_view_closure(
     Config_Dashboard, views.add_config
 )
+
+
+# Crawler state
+State_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Crawler_State)
+State_Dashboard.child_of(Config_Dashboard, 'config')
+State_Dashboard.name = 'Crawler State'
+State_Dashboard.namespace = 'crawler_state'
+State_Dashboard.listing_headers = ['Name']
+State_Dashboard.show_on_app_dashboard = False

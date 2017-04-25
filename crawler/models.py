@@ -120,6 +120,11 @@ class Crawler_State(models.Model):
     def __str__(self):
         return self.config.name +':'+ self.name
 
+    def to_form_fields(self, field, fk):
+        return [
+            {'label': 'Name:', 'name': 'name', 'value': self.name}
+        ]
+
     class Meta:
         unique_together = ('name', 'config')
 

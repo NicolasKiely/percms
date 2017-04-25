@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^domain/delete/$', domain_views.delete, name='delete_domain')
 ] \
     + dashboard.Crawler_Dashboard.create_standard_urls() \
-    + dashboard.Config_Dashboard.create_standard_urls()
+    + dashboard.Config_Dashboard.create_standard_urls() \
+    + dashboard.State_Dashboard.create_standard_urls()
