@@ -15,7 +15,7 @@ Website_Dashboard.name = 'Domain'
 Website_Dashboard.namespace = 'domain'
 Website_Dashboard.listing_headers = ['Domain', 'Module', 'Login Profile']
 Website_Dashboard.get_listing_record = \
-    lambda x: (x.domain, x.scraper, x.get_profile_name())
+    lambda x: [x.domain, x.scraper, x.get_profile_name()]
 
 
 # Crawler dashboard
@@ -24,7 +24,7 @@ Crawler_Dashboard.name = 'Crawler'
 Crawler_Dashboard.namespace = 'crawler'
 Crawler_Dashboard.listing_headers = ['Domain', 'Status', 'Active State']
 Crawler_Dashboard.get_listing_record = \
-    lambda x: (x.get_domain(), x.status, x.get_config() +':'+ x.get_state())
+    lambda x: [x.get_domain(), x.status, x.get_config() +':'+ x.get_state()]
 
 Crawler_Dashboard.post_add = dbd.dashboard_view_closure(
     Crawler_Dashboard, views.add_crawler
@@ -38,3 +38,7 @@ Config_Dashboard.namespace = 'crawler_config'
 Config_Dashboard.listing_headers = ['Name']
 Config_Dashboard.get_listing_record = \
     lambda x: [x.name]
+
+Config_Dashboard.post_add = dbd.dashboard_view_closure(
+    Config_Dashboard, views.add_config
+)

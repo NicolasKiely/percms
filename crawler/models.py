@@ -102,6 +102,9 @@ class Crawler_Config(models.Model):
             }
         ]
 
+    def __str__(self):
+        return self.name
+
 
 class Crawler_State(models.Model):
     ''' Sequential State of crawler '''
@@ -113,6 +116,9 @@ class Crawler_State(models.Model):
 
     # Source code to execute on state visit
     source = models.ForeignKey(Source, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.config.name +':'+ self.name
 
     class Meta:
         unique_together = ('name', 'config')

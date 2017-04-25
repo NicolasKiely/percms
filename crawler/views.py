@@ -37,3 +37,14 @@ def add_crawler(request, dashboard):
     crawler.save()
 
     return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+
+@login_required
+def add_config(request, dashboard):
+    ''' Add new crawler configuration '''
+    p = request.POST
+    fname = p['name']
+    crawler_config = models.Crawler_Config(name=fname)
+    crawler_config.save()
+
+    return HttpResponseRedirect(dashboard.reverse_dashboard())

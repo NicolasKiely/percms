@@ -184,7 +184,7 @@ class Model_Dashboard(object):
                 dict_obj[key] = val
 
     def get_listing_record(self, x):
-        return (str(x),)
+        return [str(x)]
 
     def get_listing_panel(self, panel_title, **filters):
         ''' Panel listing structure '''
@@ -194,7 +194,7 @@ class Model_Dashboard(object):
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    (self.edit_link(x) +' | '+ self.view_link(x),)
+                    [self.edit_link(x) +' | '+ self.view_link(x),]
                     for x in self.model.objects.filter(**filters)[:5]
                 ]
             }
@@ -209,7 +209,7 @@ class Model_Dashboard(object):
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    (self.edit_link(x) +' | '+ self.view_link(x),)
+                    [self.edit_link(x) +' | '+ self.view_link(x),]
                     for x in self.model.objects.filter(**filters)[:5]
                 ]
             }
@@ -224,7 +224,7 @@ class Model_Dashboard(object):
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    (self.edit_link(x) +' | '+ self.view_link(x),)
+                    [self.edit_link(x) +' | '+ self.view_link(x)]
                     for x in self.model.objects.filter(**filters)[:5]
                 ]
             }
