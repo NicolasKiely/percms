@@ -115,14 +115,27 @@ class Crawler_State(models.Model):
     config = models.ForeignKey(Crawler_Config, on_delete=models.CASCADE)
 
     # Source code to execute on state visit
-    source = models.ForeignKey(Source, on_delete=models.CASCADE)
+    source = models.ForeignKey(Source, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.config.name +':'+ self.name
 
-    def to_form_fields(self, field, fk):
+    def get_code(self):
+        return str(self.source) if self.source else ''
+
+    def to_form_fields(self, field=None, fk=None):
+        config = {'name': 'config'}
+        if field=='config':
+            config['type'] = 'hidden'
+            config['value'] = Crawler_Config.objects.get(pk=fk).name
+        else:
+            config['label'] = 'Config: '
+            config['value'] = self.config.name
+            
         return [
-            {'label': 'Name:', 'name': 'name', 'value': self.name}
+            {'label': 'Name:', 'name': 'name', 'value': self.name},
+            {'label': 'Script:', 'name': 'source', 'value': self.get_code()},
+            config
         ]
 
     class Meta:

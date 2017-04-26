@@ -51,3 +51,7 @@ State_Dashboard.name = 'Crawler State'
 State_Dashboard.namespace = 'crawler_state'
 State_Dashboard.listing_headers = ['Name']
 State_Dashboard.show_on_app_dashboard = False
+
+State_Dashboard.post_add = dbd.dashboard_view_closure(
+    State_Dashboard, views.add_state
+)
