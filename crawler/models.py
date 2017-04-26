@@ -99,7 +99,8 @@ class Crawler_Config(models.Model):
             {
                 'label': 'Initial State:', 'name': 'initial_state',
                 'value': self.get_initial_state()
-            }
+            },
+            {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
 
     def __str__(self):

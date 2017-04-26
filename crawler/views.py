@@ -52,6 +52,26 @@ def add_config(request, dashboard):
 
 
 @login_required
+def edit_config(request, dashboard):
+    ''' Edit crawler configuration '''
+    p = request.POST
+    fname = p['name']
+    fstate = p['initial_state']
+
+    crawler_config = get_object_or_404(models.Crawler_Config, pk=p['pk'])
+    crawler_config.name = fname
+    
+    if fstate:
+        istate = get_object_or_404(
+            models.Crawler_State, config=crawler_config, name=fstate
+        )
+        crawler_config.initial_state = istate
+    crawler_config.save()
+
+    return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+
+@login_required
 def add_state(request, dashboard):
     ''' Add new config state '''
     p = request.POST

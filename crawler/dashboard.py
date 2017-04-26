@@ -43,6 +43,10 @@ Config_Dashboard.post_add = dbd.dashboard_view_closure(
     Config_Dashboard, views.add_config
 )
 
+Config_Dashboard.post_edit = dbd.dashboard_view_closure(
+    Config_Dashboard, views.edit_config
+)
+
 
 # Crawler state
 State_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Crawler_State)
