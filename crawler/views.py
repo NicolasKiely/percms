@@ -71,3 +71,23 @@ def add_state(request, dashboard):
 
     parent_dash = dashboard.get_parent('config')
     return HttpResponseRedirect(parent_dash.reverse_editor(config.id))
+
+
+@login_required
+def edit_state(request, dashboard):
+    ''' Edit config state '''
+    p = request.POST
+    config = models.Crawler_Config.objects.get(name=p['config'])
+    fname = p['name']
+    script_cat, script_post = p['source'].split(':', 1)
+    script_name, script_version = script_post.split('#', 1)
+    script = get_object_or_404(Script, category=script_cat, name=script_name)
+    source = get_object_or_404(Source, version=script_version, script=script)
+
+    state = get_object_or_404(models.Crawler_State, pk=p['pk'])
+    state.name = fname
+    state.source = source
+    state.save()
+
+    parent_dash = dashboard.get_parent('config')
+    return HttpResponseRedirect(parent_dash.reverse_editor(config.id))

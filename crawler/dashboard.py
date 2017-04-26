@@ -55,3 +55,7 @@ State_Dashboard.show_on_app_dashboard = False
 State_Dashboard.post_add = dbd.dashboard_view_closure(
     State_Dashboard, views.add_state
 )
+
+State_Dashboard.post_edit = dbd.dashboard_view_closure(
+    State_Dashboard, views.edit_state
+)

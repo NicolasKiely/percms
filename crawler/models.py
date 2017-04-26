@@ -124,17 +124,16 @@ class Crawler_State(models.Model):
         return str(self.source) if self.source else ''
 
     def to_form_fields(self, field=None, fk=None):
-        config = {'name': 'config'}
+        config = {'name': 'config', 'type': 'hidden'}
         if field=='config':
-            config['type'] = 'hidden'
             config['value'] = Crawler_Config.objects.get(pk=fk).name
         else:
-            config['label'] = 'Config: '
             config['value'] = self.config.name
             
         return [
             {'label': 'Name:', 'name': 'name', 'value': self.name},
             {'label': 'Script:', 'name': 'source', 'value': self.get_code()},
+            {'type': 'hidden', 'name': 'pk', 'value': self.pk},
             config
         ]
 
