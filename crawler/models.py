@@ -7,6 +7,7 @@ from scripting.models import Source
 
 
 statuses = (
+    ('inactive', 'Inactive'), # Not bound to a running process
     ('running', 'Running'),   # Currently running
     ('paused', 'Paused'),     # Paused by user
     ('stopped', 'Stopped'),   # Stopped due to some condition
@@ -157,7 +158,7 @@ class Crawler(models.Model):
     wait_time = models.IntegerField(default=0)
 
     # Crawler status
-    status = models.CharField(max_length=64, choices=statuses, default='paused')
+    status = models.CharField(max_length=64, choices=statuses, default='inactive')
 
 
     def get_domain(self):
@@ -173,7 +174,12 @@ class Crawler(models.Model):
         return [
             {'label': 'Domain:', 'name': 'domain', 'value': self.get_domain()},
             {'label': 'Config:', 'name': 'config', 'value': self.get_config()},
-            {'label': 'Wait Time', 'name': 'wait_time', 'value': str(self.wait_time)}
+            {'label': 'Wait Time', 'name': 'wait_time', 'value': str(self.wait_time)},
+            {
+                'label': 'Status', 'name': 'status',
+                'type': 'select', 'value': self.status,
+                'options': statuses
+            }
         ]
 
     def __str__(self):
