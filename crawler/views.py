@@ -41,6 +41,32 @@ def add_crawler(request, dashboard):
 
 
 @login_required
+def edit_crawler(request, dashboard):
+    ''' Edit crawler instance '''
+    p = request.POST
+    fdomain = p['domain']
+    fconfig = p['config']
+    fstatus = p['status']
+
+    if fdomain:
+        domain = models.Website.objects.get(domain=fdomain)
+    else:
+        domain = None
+
+    if fconfig:
+        config = get_object_or_404(models.Crawler_Config, name=fconfig)
+    else:
+        config = None
+
+    crawler = get_object_or_404(models.Crawler, pk=p['pk'])
+    crawler.domain = domain
+    crawler.config = config
+    crawler.status = fstatus.lower()
+    crawler.save()
+    return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+
+@login_required
 def add_config(request, dashboard):
     ''' Add new crawler configuration '''
     p = request.POST

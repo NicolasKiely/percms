@@ -179,7 +179,8 @@ class Crawler(models.Model):
                 'label': 'Status', 'name': 'status',
                 'type': 'select', 'value': self.status,
                 'options': statuses
-            }
+            },
+            {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
 
     def __str__(self):
