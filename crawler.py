@@ -64,6 +64,19 @@ path = '/'
 webpage = site.domain + path
 print 'Processing "%s"' % webpage
 
+# Get marker for this state
+markers = crawler.models.Webpage_Mark.objects.filter(
+    state=crawler_state, to_crawl=True
+)
+
+if len(markers) == 0:
+    # No webpages to crawl for this state, move to next
+    # TODO: Handle moving to next crawl state
+else:
+    # TODO: Get a webpage from a marker and crawl it
+
+
+# HTTP request
 headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9',
     'Accept-Language': 'en-US,en;q=0.8',
@@ -78,13 +91,14 @@ headers = {
         'Chrome/56.0.2924.76 Safari/537.36'
     ]),
 }
-request = urllib2.Request(webpage, None, headers)
-response= urllib2.urlopen(request)
-html = response.read()
+#request = urllib2.Request(webpage, None, headers)
+#response= urllib2.urlopen(request)
+#html = response.read()
 
-local_path = safesettings.UPLOAD_CRAWLER_PATH
-fh = open(local_path + 'data.html', 'w')
-fh.write(html)
-fh.close()
+# Fetch page
+#local_path = safesettings.UPLOAD_CRAWLER_PATH
+#fh = open(local_path + 'data.html', 'w')
+#fh.write(html)
+#fh.close()
 
 print 'done'
