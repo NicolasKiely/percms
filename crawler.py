@@ -68,8 +68,6 @@ request = urllib2.Request(webpage, None, headers)
 response= urllib2.urlopen(request)
 html = response.read()
 
-#print html
-
 local_path = safesettings.UPLOAD_CRAWLER_PATH
 fh = open(local_path + 'data.html', 'w')
 fh.write(html)

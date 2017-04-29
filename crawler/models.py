@@ -81,6 +81,15 @@ class Website(models.Model):
 
     def get_profile_name(self):
         return self.profile.name if self.profile else ''
+
+
+class Webpage(models.Model):
+    ''' Website page '''
+    # Domain of webpage
+    website = models.ForeignKey(Website, on_delete=models.CASCADE)
+
+    # Webpage path
+    path = models.CharField(max_length=255, default='/')
  
 
 class Crawler_Config(models.Model):
