@@ -34,3 +34,9 @@ try:
     UPLOAD_FILE_PATH = settings.UPLOAD_FILE_PATH
 except AttributeError:
     UPLOAD_FILE_PATH = 'filemanager/static/files/'
+
+# Path for storing crawler data
+try:
+    UPLOAD_CRAWLER_PATH = settings.UPLOAD_CRAWLER_PATH
+except AttributeError:
+    UPLOAD_CRAWLER_PATH = 'crawler/static/crawler/'

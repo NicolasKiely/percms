@@ -8,6 +8,7 @@
 import django
 import os
 import sys
+import urllib2
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'percms.settings'
 django.setup()
@@ -35,7 +36,18 @@ if crawler_state is None:
     if crawler_state is None:
         print 'Configuration "%s" has no preset state' % crawler_config.name
         sys.exit(0)
-
 print 'Using crawler configuration "%s:%s"' % (crawler_config.name, crawler_state.name)
+
+# Get domain
+site = crawler_instance.domain
+if site is None:
+    print 'Crawler instance is not assigned a website'
+    sys.exit(0)
+
+# Get webpage to crawl
+page = '/'
+print 'Processing "%s"' % (site.domain + page)
+
+
 
 print 'done'
