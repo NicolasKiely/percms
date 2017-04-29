@@ -159,6 +159,16 @@ class Crawler_State(models.Model):
         unique_together = ('name', 'config')
 
 
+class Webpage_Mark(models.Model):
+    ''' Tracker for crawler to visit webpage or if webpage has been visited '''
+    # Webpage to mark
+    webpage = models.ForeignKey(Webpage, on_delete=models.CASCADE)
+    # State this mark is associated with
+    state = models.ForeignKey(Crawler_State, on_delete=models.CASCADE)
+    # Does this page need to be crawled?
+    to_crawl = models.BooleanField(default=False)
+
+
 class Crawler(models.Model):
     ''' Running/Sleeping instance of crawler '''
     # Domain to run on
