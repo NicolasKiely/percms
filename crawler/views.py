@@ -103,15 +103,21 @@ def add_state(request, dashboard):
     p = request.POST
     config = models.Crawler_Config.objects.get(name=p['config'])
     fname = p['name']
+    fnext = p['next']
     script_cat, script_post = p['source'].split(':', 1)
     script_name, script_version = script_post.split('#', 1)
     script = Script.objects.get(category=script_cat, name=script_name)
     source = Source.objects.get(version=script_version, script=script)
+    if fnext == '':
+        next_state = None
+    else:
+        next_state = models.Crawler_State.objects.get(config=config, name=fnext)
 
     state = models.Crawler_State(
         name=fname,
         config=config,
-        source=source
+        source=source,
+        next_state=next_state
     )
     state.save()
 
@@ -125,14 +131,20 @@ def edit_state(request, dashboard):
     p = request.POST
     config = models.Crawler_Config.objects.get(name=p['config'])
     fname = p['name']
+    fnext = p['next']
     script_cat, script_post = p['source'].split(':', 1)
     script_name, script_version = script_post.split('#', 1)
     script = get_object_or_404(Script, category=script_cat, name=script_name)
     source = get_object_or_404(Source, version=script_version, script=script)
+    if fnext == '':
+        next_state = None
+    else:
+        next_state = models.Crawler_State.objects.get(config=config, name=fnext)
 
     state = get_object_or_404(models.Crawler_State, pk=p['pk'])
     state.name = fname
     state.source = source
+    state.next_state = next_state
     state.save()
 
     parent_dash = dashboard.get_parent('config')

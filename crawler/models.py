@@ -137,6 +137,9 @@ class Crawler_State(models.Model):
     def get_code(self):
         return str(self.source) if self.source else ''
 
+    def get_next(self):
+        return self.next_state.name if self.next_state else ''
+
     def to_form_fields(self, field=None, fk=None):
         config = {'name': 'config', 'type': 'hidden'}
         if field=='config':
@@ -147,6 +150,7 @@ class Crawler_State(models.Model):
         return [
             {'label': 'Name:', 'name': 'name', 'value': self.name},
             {'label': 'Script:', 'name': 'source', 'value': self.get_code()},
+            {'label': 'Next:', 'name': 'next', 'value': self.get_next()},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk},
             config
         ]
