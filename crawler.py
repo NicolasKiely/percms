@@ -3,6 +3,20 @@
         python crawler.py
 
     Will find an inactive crawler instance model, and activate it
+    Flow:
+        For a given state, get list of webpage vist requests
+        If a request exists:
+            Download page
+            Call state script on page data
+        Else:
+            If on initial state:
+                Get home page of domain
+                Call state script on page data
+
+            If next state given
+                Go to next state
+            Else
+                Go to initial state
 '''
 
 import django

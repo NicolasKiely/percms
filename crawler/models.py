@@ -128,6 +128,9 @@ class Crawler_State(models.Model):
     # Source code to execute on state visit
     source = models.ForeignKey(Source, on_delete=models.CASCADE, null=True)
 
+    # Set state null
+    next_state = models.ForeignKey('Crawler_State', on_delete=models.SET_NULL, null=True)
+
     def __str__(self):
         return self.config.name +':'+ self.name
 

@@ -195,7 +195,7 @@ class Model_Dashboard(object):
                 'rows': [
                     self.get_listing_record(x) +
                     [self.edit_link(x) +' | '+ self.view_link(x),]
-                    for x in self.model.objects.filter(**filters)[:5]
+                    for x in self.model.objects.filter(**filters)[:10]
                 ]
             }
         }
