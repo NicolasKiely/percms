@@ -14,6 +14,33 @@ def view_dashboard(request):
     }
     return dashboard.App_Dashboard.render(request, context)
 
+
+@login_required
+def add_supplier(request, dashboard):
+    ''' Add a supplier '''
+    p = request.POST
+    fname = p['name']
+    fweb = p['website']
+    fdesc = p['description']
+
+    if fweb == '':
+        website = None
+    else:
+        try:
+            website = Website.objects.get(domain=fweb)
+        except Website.DoesNotExist:
+            website = Website(domain=fweb)
+            website.save()
+
+    supplier = models.Supplier(
+        name=fname,
+        description=fdesc,
+        website=website
+    )
+    supplier.save()
+    return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+
 @login_required
 def edit_supplier(request, dashboard):
     ''' Edit a supplier's info '''
