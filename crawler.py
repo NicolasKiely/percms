@@ -117,14 +117,14 @@ headers = {
         'Chrome/56.0.2924.76 Safari/537.36'
     ]),
 }
-#request = urllib2.Request(webpage, None, headers)
-#response= urllib2.urlopen(request)
-#html = response.read()
+request = urllib2.Request(url, None, headers)
+response= urllib2.urlopen(request)
+html = response.read()
 
 # Fetch page
-#local_path = safesettings.UPLOAD_CRAWLER_PATH
-#fh = open(local_path + 'data.html', 'w')
-#fh.write(html)
-#fh.close()
+local_path = safesettings.UPLOAD_CRAWLER_PATH
+fh = open('%spage-%s.html' % (local_path, str(webpage.pk)), 'w')
+fh.write(html)
+fh.close()
 
 print 'done'
