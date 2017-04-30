@@ -60,20 +60,33 @@ if site is None:
     sys.exit(0)
 
 # Get webpage to crawl
-path = '/'
+if crawler_state.id == crawler_config.initial_state.id:
+    # Initial state; use index page
+    path = '/'
+
+else:
+    # Get marker for this state
+    markers = crawler.models.Webpage_Mark.objects.filter(
+        state=crawler_state, to_crawl=True
+    )
+
+    if len(markers) == 0:
+        # No webpages to crawl for this state, move to next
+        # TODO: Handle moving to next crawl state
+        next_state = crawler_state.next_state
+        if next_state is None:
+            next_state = crawler_config.initial_state
+
+        print 'Moving to state:'+ next_state.name
+        sys.exit(0)
+
+    else:
+        # TODO: Get a webpage from a marker and crawl it
+        pass
+
+
 webpage = site.domain + path
 print 'Processing "%s"' % webpage
-
-# Get marker for this state
-markers = crawler.models.Webpage_Mark.objects.filter(
-    state=crawler_state, to_crawl=True
-)
-
-if len(markers) == 0:
-    # No webpages to crawl for this state, move to next
-    # TODO: Handle moving to next crawl state
-else:
-    # TODO: Get a webpage from a marker and crawl it
 
 
 # HTTP request
