@@ -63,6 +63,21 @@ if site is None:
 if crawler_state.id == crawler_config.initial_state.id:
     # Initial state; use index page
     path = '/'
+    try:
+        webpage = crawler.models.Webpage.objects.get(website=site, path=path)
+    except crawler.models.Webpage.DoesNotExist:
+        webpage = crawler.models.Webpage(website=site, path=path)
+        webpage.save()
+
+    try:
+        marker = crawler.models.Webpage_Mark.objects.get(
+            state=crawler_state, to_crawl=True, webpage=webpage
+        )
+    except crawler.models.Webpage_Mark.DoesNotExist:
+        marker = crawler.models.Webpage_Mark(
+            state=crawler_state, to_crawl=True, webpage=webpage
+        )
+        marker.save()
 
 else:
     # Get marker for this state
@@ -72,7 +87,6 @@ else:
 
     if len(markers) == 0:
         # No webpages to crawl for this state, move to next
-        # TODO: Handle moving to next crawl state
         next_state = crawler_state.next_state
         if next_state is None:
             next_state = crawler_config.initial_state
@@ -81,12 +95,11 @@ else:
         sys.exit(0)
 
     else:
-        # TODO: Get a webpage from a marker and crawl it
-        pass
+        marker = markers[0]
 
 
-webpage = site.domain + path
-print 'Processing "%s"' % webpage
+url = site.domain + path
+print 'Processing "%s"' % url
 
 
 # HTTP request
@@ -96,7 +109,7 @@ headers = {
     'Accept-Encoding': 'identity',
     'Cache-Control': 'max-age=0',
     'Connection': 'keep-alive',
-    'Referer': webpage,
+    'Referer': url,
     'User-Agent': ' '.join([
         'Mozilla/5.0 (X11; Linux x86_64)',
         'AppleWebKit/537.36 (KHTML, like Gecko)'
