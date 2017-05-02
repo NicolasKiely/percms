@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from common import core
 from . import models
 from scripting.models import Source, Script
+from scripting.utils import get_script_by_name
 
 
 
@@ -104,10 +105,7 @@ def add_state(request, dashboard):
     config = models.Crawler_Config.objects.get(name=p['config'])
     fname = p['name']
     fnext = p['next']
-    script_cat, script_post = p['source'].split(':', 1)
-    script_name, script_version = script_post.split('#', 1)
-    script = Script.objects.get(category=script_cat, name=script_name)
-    source = Source.objects.get(version=script_version, script=script)
+    script, source = get_script_by_name(p['source'])
     if fnext == '':
         next_state = None
     else:
@@ -132,10 +130,7 @@ def edit_state(request, dashboard):
     config = models.Crawler_Config.objects.get(name=p['config'])
     fname = p['name']
     fnext = p['next']
-    script_cat, script_post = p['source'].split(':', 1)
-    script_name, script_version = script_post.split('#', 1)
-    script = get_object_or_404(Script, category=script_cat, name=script_name)
-    source = get_object_or_404(Source, version=script_version, script=script)
+    script, source = get_script_by_name(p['source'])
     if fnext == '':
         next_state = None
     else:
