@@ -128,5 +128,15 @@ fh.write(html)
 fh.close()
 
 # Apply code
-
-print 'done'
+execl_args = [
+    'python',
+    'python',
+    'script_executor.py',
+    str(crawler_state.source),
+    'domain='+ site.domain,
+    'path='+ path,
+    'marker.id='+ str(marker.pk),
+    'webpage.id='+ str(webpage.pk)
+]
+print ' '.join(execl_args)
+os.execlp(*execl_args)
