@@ -18,11 +18,11 @@ if len(argv)<2:
     sys.exit(1)
 
 # Get args
-script_arg, args = argv[1], argv[2:]
+script_name_arg, script_args = argv[1], argv[2:]
 
 
 # Get script
-script_cat, script_postfix = script_arg.split(':', 1)
+script_cat, script_postfix = script_name_arg.split(':', 1)
 script_postfix_split = script_postfix.split('#', 1)
 script_name = script_postfix_split[0]
 
@@ -44,3 +44,15 @@ else:
     script_version = script_postfix_split[1]
     source = Source.objects.get(script=script, version=script_version)
 
+
+# Parse args
+args = {}
+for arg in script_args:
+    arg_split = arg.split('=', 1)
+    if len(arg_split) == 1:
+        args[arg_split[0]] = True
+    else:
+        args[arg_split[0]] = arg_split[1]
+
+# Run script
+eval(source.source)
