@@ -1,4 +1,4 @@
-'''
+''' Main Crawler Script
     Usage:
         python crawler.py
 
@@ -126,5 +126,7 @@ local_path = safesettings.UPLOAD_CRAWLER_PATH
 fh = open('%spage-%s.html' % (local_path, str(webpage.pk)), 'w')
 fh.write(html)
 fh.close()
+
+# Apply code
 
 print 'done'
