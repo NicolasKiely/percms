@@ -55,4 +55,4 @@ for arg in script_args:
         args[arg_split[0]] = arg_split[1]
 
 # Run script
-eval(source.source)
+exec(source.source)
