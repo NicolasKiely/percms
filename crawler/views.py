@@ -130,6 +130,7 @@ def edit_state(request, dashboard):
     config = models.Crawler_Config.objects.get(name=p['config'])
     fname = p['name']
     fnext = p['next']
+    fuselatest = 'uselatest' in p
     script, source = get_script_by_name(p['source'])
     if fnext == '':
         next_state = None
@@ -140,6 +141,7 @@ def edit_state(request, dashboard):
     state.name = fname
     state.source = source
     state.next_state = next_state
+    state.use_latest_source = fuselatest
     state.save()
 
     parent_dash = dashboard.get_parent('config')

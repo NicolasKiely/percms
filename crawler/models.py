@@ -128,14 +128,27 @@ class Crawler_State(models.Model):
     # Source code to execute on state visit
     source = models.ForeignKey(Source, on_delete=models.CASCADE, null=True)
 
+    # Overrides source versioning to always use latest version
+    use_latest_source = models.BooleanField(default=False)
+
     # Set state null
     next_state = models.ForeignKey('Crawler_State', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.config.name +':'+ self.name
 
+    def get_source(self):
+        if self.use_latest_source and self.source:
+            return self.source.script.get_latest_source()
+        else:
+            return self.source
+
     def get_code(self):
-        return str(self.source) if self.source else ''
+        source = self.get_source()
+        if source:
+            return str(source)
+        else:
+            return ''
 
     def get_next(self):
         return self.next_state.name if self.next_state else ''
@@ -151,6 +164,10 @@ class Crawler_State(models.Model):
             {'label': 'Name:', 'name': 'name', 'value': self.name},
             {'label': 'Script:', 'name': 'source', 'value': self.get_code()},
             {'label': 'Next:', 'name': 'next', 'value': self.get_next()},
+            {
+                'label': 'Use Latest Source:', 'name': 'uselatest',
+                'type': 'checkbox', 'value': self.use_latest_source
+            },
             {'type': 'hidden', 'name': 'pk', 'value': self.pk},
             config
         ]
@@ -185,6 +202,9 @@ class Crawler(models.Model):
 
     # Crawler status
     status = models.CharField(max_length=64, choices=statuses, default='inactive')
+
+    # Time of last use of crawler
+    #last_used = models.DateTimeField(null=True)
 
 
     def get_domain(self):

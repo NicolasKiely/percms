@@ -107,8 +107,6 @@ headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9',
     'Accept-Language': 'en-US,en;q=0.8',
     'Accept-Encoding': 'identity',
-    'Cache-Control': 'max-age=0',
-    'Connection': 'keep-alive',
     'Referer': url,
     'User-Agent': ' '.join([
         'Mozilla/5.0 (X11; Linux x86_64)',
@@ -132,11 +130,13 @@ execl_args = [
     'python',
     'python',
     'script_executor.py',
-    str(crawler_state.source),
+    str(crawler_state.get_source()),
     'domain='+ site.domain,
     'path='+ path,
     'marker.id='+ str(marker.pk),
     'webpage.id='+ str(webpage.pk)
 ]
 print ' '.join(execl_args)
+# TODO: Mark page as done
+marker.to_crawl = False
 os.execlp(*execl_args)

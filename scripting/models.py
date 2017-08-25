@@ -34,6 +34,9 @@ class Script(models.Model):
     def nav_link(self):
         return self.dashboard_link() +' | '+ self.view_link()
 
+    def get_latest_source(self):
+        return Source.objects.order_by('-version').filter(script=self)[0]
+
     def to_form_fields(self):
         return [
             {'label': 'Name:', 'name': 'name', 'value': self.name},
