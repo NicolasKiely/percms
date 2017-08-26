@@ -94,6 +94,8 @@ else:
             next_state = crawler_config.initial_state
 
         print 'Moving to state:'+ next_state.name
+        crawler_instance.active_state = next_state
+        crawler_instance.save()
         sys.exit(0)
 
     else:
@@ -139,9 +141,8 @@ execl_args = [
     'webpage.id='+ str(webpage.pk)
 ]
 print ' '.join(execl_args)
-marker.to_crawl = False
 if crawler_state.id == crawler_config.initial_state.id:
     # If in initial state, push forward
     crawler_instance.active_state = crawler_state.next_state
-    crawler_instance.save()
+    #crawler_instance.save()
 os.execlp(*execl_args)
