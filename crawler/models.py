@@ -191,6 +191,15 @@ class Webpage_Mark(models.Model):
     # Does this page need to be crawled?
     to_crawl = models.BooleanField(default=False)
 
+    def __str__(self):
+        mark = '[+]' if self.to_crawl else '[-]'
+        return '%s %s%s (%s)' % (
+            mark, self.webpage.website.domain, self.webpage.path, str(self.state)
+        )
+
+    class Meta:
+        unique_together = ('webpage', 'state')
+
 
 class Crawler(models.Model):
     ''' Running/Sleeping instance of crawler '''
