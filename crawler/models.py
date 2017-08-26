@@ -90,6 +90,12 @@ class Webpage(models.Model):
 
     # Webpage path
     path = models.CharField(max_length=255, default='/')
+
+    def __str__(self):
+        return self.website.domain + self.path
+
+    class Meta:
+        unique_together = ('website', 'path')
  
 
 class Crawler_Config(models.Model):
