@@ -19,6 +19,8 @@
                 Go to initial state
 '''
 
+# TODO: Transit into next crawler state
+
 import django
 import os
 import sys
@@ -137,6 +139,9 @@ execl_args = [
     'webpage.id='+ str(webpage.pk)
 ]
 print ' '.join(execl_args)
-# TODO: Mark page as done
 marker.to_crawl = False
+if crawler_state.id == crawler_config.initial_state.id:
+    # If in initial state, push forward
+    crawler_instance.active_state = crawler_state.next_state
+    crawler_instance.save()
 os.execlp(*execl_args)
