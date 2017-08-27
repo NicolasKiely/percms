@@ -33,6 +33,46 @@ import crawler.models
 from percms import safesettings
 
 
+def state_has_active_markers(crawler_state):
+    ''' Returns true if crawler state has active pages to crawl '''
+    markers = crawler.models.Webpage_Mark.objects.filter(
+        state=crawler_state, to_crawl=True
+    )
+    return len(markers) > 0
+
+
+def revert_crawler(crawler):
+    ''' Revers crawler to initial state, and returns state '''
+    crawler.active_state = crawler.config.initial_state
+    if crawler.active_state is None:
+        print 'Configuration "%s" has no preset state' % (
+            str(crawler.config),
+        )
+        sys.exit(0)
+
+
+def get_active_state(crawler):
+    ''' Loads active state of crawler; sets to initial state if null '''
+    if crawler.active_state is None:
+        # Default to initial state
+        revert_crawler(crawler)
+
+    else:
+        # Return active state with markers left
+        while not state_has_active_markers(crawler.active_state):
+            # Nothing to crawl on this state, skip
+            print 'Skiping state '+str(crawler.active_state)
+
+            crawler.active_state = crawler.active_state.next_state
+
+            if crawler.active_state is None:
+                revert_crawler(crawler)
+                break
+
+    crawler.save()
+    return crawler.active_state
+
+
 # Get a crawler 
 try:
     crawler_instance = crawler.models.Crawler.objects.get(status='inactive')
@@ -47,12 +87,7 @@ if crawler_config is None:
     sys.exit(0)
 
 # Get active state
-crawler_state = crawler_instance.active_state
-if crawler_state is None:
-    crawler_state = crawler_config.initial_state
-    if crawler_state is None:
-        print 'Configuration "%s" has no preset state' % crawler_config.name
-        sys.exit(0)
+crawler_state = get_active_state(crawler_instance)
 print 'Using crawler configuration "%s:%s"' % (crawler_config.name, crawler_state.name)
 
 # Get domain
@@ -138,7 +173,8 @@ execl_args = [
     'domain='+ site.domain,
     'path='+ path,
     'marker.id='+ str(marker.pk),
-    'webpage.id='+ str(webpage.pk)
+    'webpage.id='+ str(webpage.pk),
+    'crawler.id='+ str(crawler_instance.pk)
 ]
 print ' '.join(execl_args)
 if crawler_state.id == crawler_config.initial_state.id:
