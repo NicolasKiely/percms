@@ -19,8 +19,6 @@
                 Go to initial state
 '''
 
-# TODO: Transit into next crawler state
-
 import django
 import os
 import sys
@@ -132,6 +130,9 @@ else:
     marker = crawler.models.Webpage_Mark.objects.filter(
         state=crawler_state, to_crawl=True
     )[0]
+
+    webpage = marker.webpage
+    path = webpage.path
 
 
 url = site.domain + path

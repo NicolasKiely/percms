@@ -1,6 +1,8 @@
 ''' Runtime header for crawler scripts, to simplify things '''
 
 from . import models
+from percms import safesettings
+import bs4
 
 
 class Runtime(object):
@@ -16,7 +18,7 @@ class Runtime(object):
     def get_webpage(self, path, create=True):
         ''' Getter for a webpage by path '''
         try:
-            webpage = models.Webpage.objects.filter(
+            webpage = models.Webpage.objects.get(
                 website=self.website, path=path
             )
         except models.Webpage.DoesNotExist as ex:
@@ -26,6 +28,14 @@ class Runtime(object):
             else:
                 return None
         return webpage
+
+
+    def load_dom(self):
+        ''' Get webpage source html '''
+        local_path = safesettings.UPLOAD_CRAWLER_PATH
+        with open('%spage-%s.html' % (local_path, str(self.webpage.pk)), 'r') as fh:
+            html = fh.read()
+        return bs4.BeautifulSoup(html, 'html.parser')
 
 
     def mark_webpage(self, path, state_name=None, to_crawl=True):
@@ -40,17 +50,9 @@ class Runtime(object):
             # Default to using next state
             state = self.crawler.active_state.next_state
 
-        try:
-            marker = models.Webpage_Mark.objects.get(webpage=webpage, state=state)
-        except models.Webpage_Mark.DoesNotExist as ex:
-            marker = models.Webpage_Mark(webpage=webpage, state=state)
+        marker, x = models.Webpage_Mark.objects.get_or_create(
+            webpage=webpage, state=state
+        )
 
         marker.to_crawl = to_crawl
         marker.save()
-
-                
-
-    def finished(self):
-        ''' Indicate successful finish of crawler '''
-        self.marker.to_crawl = False
-        #self.marker.save()
