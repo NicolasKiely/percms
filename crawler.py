@@ -41,14 +41,25 @@ def state_has_active_markers(crawler_state):
     return len(markers) > 0
 
 
-def revert_crawler(crawler):
+def revert_crawler(crawler_instance):
     ''' Revers crawler to initial state, and returns state '''
-    crawler.active_state = crawler.config.initial_state
-    if crawler.active_state is None:
+    crawler_instance.active_state = crawler_instance.config.initial_state
+    if crawler_instance.active_state is None:
         print 'Configuration "%s" has no preset state' % (
-            str(crawler.config),
+            str(crawler_instance.config),
         )
         sys.exit(0)
+
+    # Re-Mark home page
+    home_page, x = crawler.models.Webpage.objects.get_or_create(
+        website=crawler_instance.domain, path='/'
+    )
+
+    home_mark, x = crawler.models.Webpage_Mark.objects.get_or_create(
+        state=crawler_instance.active_state, webpage=home_page
+    )
+    home_mark.to_crawl = True
+    home_mark.save()
 
 
 def get_active_state(crawler):
@@ -118,23 +129,9 @@ if crawler_state.id == crawler_config.initial_state.id:
 
 else:
     # Get marker for this state
-    markers = crawler.models.Webpage_Mark.objects.filter(
+    marker = crawler.models.Webpage_Mark.objects.filter(
         state=crawler_state, to_crawl=True
-    )
-
-    if len(markers) == 0:
-        # No webpages to crawl for this state, move to next
-        next_state = crawler_state.next_state
-        if next_state is None:
-            next_state = crawler_config.initial_state
-
-        print 'Moving to state:'+ next_state.name
-        crawler_instance.active_state = next_state
-        crawler_instance.save()
-        sys.exit(0)
-
-    else:
-        marker = markers[0]
+    )[0]
 
 
 url = site.domain + path
@@ -177,8 +174,12 @@ execl_args = [
     'crawler.id='+ str(crawler_instance.pk)
 ]
 print ' '.join(execl_args)
-if crawler_state.id == crawler_config.initial_state.id:
+#if crawler_state.id == crawler_config.initial_state.id:
     # If in initial state, push forward
-    crawler_instance.active_state = crawler_state.next_state
+#    crawler_instance.active_state = crawler_state.next_state
     #crawler_instance.save()
+
+# TODO: Fork script executor and pipe I/O to manage it
+marker.to_crawl = False
+marker.save()
 os.execlp(*execl_args)
