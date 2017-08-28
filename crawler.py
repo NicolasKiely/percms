@@ -152,6 +152,9 @@ headers = {
         'Chrome/56.0.2924.76 Safari/537.36'
     ]),
 }
+if crawler_instance.cookies:
+    headers['cookie'] = crawler_instance.cookies
+
 request = urllib2.Request(url, None, headers)
 response= urllib2.urlopen(request)
 html = response.read()
