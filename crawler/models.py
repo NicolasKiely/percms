@@ -221,6 +221,9 @@ class Crawler(models.Model):
     # Time of last use of crawler
     #last_used = models.DateTimeField(null=True)
 
+    # Cookie field for use by crawler scripts
+    cookies = models.CharField(max_length=4096, default='')
+
 
     def get_domain(self):
         return self.domain.domain if self.domain else ''
