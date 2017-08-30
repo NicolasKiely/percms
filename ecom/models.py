@@ -38,7 +38,7 @@ class Supplier(models.Model):
 class Product(models.Model):
     ''' Product from ecommerce supplier '''
     name = models.CharField('Supplier name', max_length=255)
-    description = models.CharField('Supplier description', max_length=255)
+    description = models.CharField('Supplier description', max_length=4096)
     staged = models.BooleanField(default=False)
     blacklist = models.BooleanField(default=False)
     inventory = models.IntegerField(default=0)
