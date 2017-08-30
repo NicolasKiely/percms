@@ -26,18 +26,24 @@ def add_product(supplier_name, prod_data):
     if 'webpage.id' in prod_data:
         prod.webpage = Webpage.objects.get(pk=prod_data['webpage.id'])
     prod.save()
+    return prod
 
 
-def save_image(supplier_name, image_url):
+def save_product_image(supplier_name, product, image_url):
     ''' Saves image and returns object '''
     # Create metadata entry
-    meta_file = Metal_File(
-        name=image_URL,
-        category=supplier_name.replace(' ', '-') + '-image',
-        dt_uploaded = timezone.now(),
-        is_img=True
-    )
-    meta_file.save()
+    img_name = image_url.replace('/', '-')
+    img_cat = supplier_name.replace(' ', '-') + '-image'
+    try:
+        meta_file = Meta_File.objects.get(name=img_name, category=img_cat)
+    except Meta_file.DoesNotExist:
+        meta_file = Meta_File(
+            name=image_URL,
+            category=supplier_name.replace(' ', '-') + '-image',
+            dt_uploaded = timezone.now(),
+            is_img=True
+        )
+        meta_file.save()
     sid = str(meta_file.id)
     save_path = safesettings.UPLOAD_IMAGE_PATH + sid
 
@@ -50,3 +56,5 @@ def save_image(supplier_name, image_url):
         for chunk in image_source.chunks():
             dest.write(chunk)
 
+    product.images.add(image_source)
+    product.save()

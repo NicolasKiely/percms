@@ -4,6 +4,7 @@ from django.db import models
 
 from common.core import view_link, edit_link
 from crawler.models import Website, Webpage
+from filemanager.models import Meta_File
 
 
 class Supplier(models.Model):
@@ -45,6 +46,7 @@ class Product(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True)
     webpage = models.ForeignKey(Webpage, on_delete=models.SET_NULL, null=True)
     price_cents = models.IntegerField(null=True)
+    images = models.ManyToManyField(Meta_File)
 
     def __str__(self):
         return self.name
