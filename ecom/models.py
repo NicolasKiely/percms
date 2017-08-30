@@ -44,6 +44,7 @@ class Product(models.Model):
     inventory = models.IntegerField(default=0)
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True)
     webpage = models.ForeignKey(Webpage, on_delete=models.SET_NULL, null=True)
+    price_cents = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
