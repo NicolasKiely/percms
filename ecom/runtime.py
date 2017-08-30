@@ -1,6 +1,7 @@
 from django.utils import timezone
 
 from . import models
+from percms import safesettings
 from crawler.models import Webpage
 from filemanager.models import Meta_File
 import urllib2
@@ -25,7 +26,13 @@ def add_product(supplier_name, prod_data):
 
     if 'webpage.id' in prod_data:
         prod.webpage = Webpage.objects.get(pk=prod_data['webpage.id'])
+
+    # Save images
+    for image in prod_data.get('images', []):
+        save_product_image(supplier_name, prod, image)
+
     prod.save()
+
     return prod
 
 
@@ -36,10 +43,10 @@ def save_product_image(supplier_name, product, image_url):
     img_cat = supplier_name.replace(' ', '-') + '-image'
     try:
         meta_file = Meta_File.objects.get(name=img_name, category=img_cat)
-    except Meta_file.DoesNotExist:
+    except Meta_File.DoesNotExist:
         meta_file = Meta_File(
-            name=image_URL,
-            category=supplier_name.replace(' ', '-') + '-image',
+            name=img_name,
+            category=img_cat,
             dt_uploaded = timezone.now(),
             is_img=True
         )
@@ -53,8 +60,7 @@ def save_product_image(supplier_name, product, image_url):
 
     # Save to file
     with open(save_path, 'wb+') as dest:
-        for chunk in image_source.chunks():
-            dest.write(chunk)
+        dest.write(image_source.read())
 
-    product.images.add(image_source)
     product.save()
+    product.images.add(meta_file)
