@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 from common.core import view_link, edit_link
-from crawler.models import Website
+from crawler.models import Website, Webpage
 
 
 class Supplier(models.Model):
@@ -43,6 +43,7 @@ class Product(models.Model):
     blacklist = models.BooleanField(default=False)
     inventory = models.IntegerField(default=0)
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True)
+    webpage = models.ForeignKey(Webpage, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name
