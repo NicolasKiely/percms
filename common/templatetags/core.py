@@ -94,7 +94,7 @@ def do_common_text_input(form):
 
 
 def build_input_string(label, ftype, value, name, options):
-    input_str = ''
+    input_str = u''
     if ftype == 'hidden':
         input_str += form_input_template.format("hidden", name, value, '')
 
@@ -125,6 +125,13 @@ def build_input_string(label, ftype, value, name, options):
             input_str += form_select_template.format(name, value, opt_str)
 
         else:
-            input_str += form_input_template.format(ftype, name, value, '')
+            if type(value) is unicode:
+                input_str += form_input_template.format(
+                    ftype, name, value.replace(u'\xa0', ''), ''
+                )
+            else:
+                input_str += form_input_template.format(
+                    ftype, name, value, ''
+                )
         input_str += '</div>'
     return input_str
