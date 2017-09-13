@@ -178,10 +178,6 @@ execl_args = [
     'crawler.id='+ str(crawler_instance.pk)
 ]
 print ' '.join(execl_args)
-#if crawler_state.id == crawler_config.initial_state.id:
-    # If in initial state, push forward
-#    crawler_instance.active_state = crawler_state.next_state
-    #crawler_instance.save()
 
 # TODO: Fork script executor and pipe I/O to manage it
 marker.to_crawl = False
