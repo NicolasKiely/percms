@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^percms/app/crawler/', include('crawler.urls', namespace='crawler')),
     url(r'^percms/app/script/', include('scripting.urls', namespace='script')),
     url(r'^percms/app/ecom/', include('ecom.urls', namespace='ecom')),
+    url(r'^percms/app/alerts/', include('alerts.urls', namespace='alerts')),
     url(r'^$', include('home.urls')),
     url(r'^percms/admin/', include(admin.site.urls)),
     url(r'', include('percms.fallback_urls', namespace='fallback'))
