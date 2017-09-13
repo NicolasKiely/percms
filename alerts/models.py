@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from common.core import view_link, edit_link
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 class Alert(models.Model):
     message = models.CharField('Message to Display', max_length=4096)
     name = models.CharField('Name of alert type', max_length=256)
+    stamp = models.DateTimeField('Timestamp of message')
 
     def __str__(self):
         return self.name
@@ -20,8 +22,10 @@ class Alert(models.Model):
         return '<a href="%s">Alert Dashboard</a>' % url
 
     def to_form_fields(self):
+        stamp = self.stamp if self.stamp else timezone.now()
         return [
             {'label': 'Name', 'name': 'name', 'value': self.name},
             {'label': 'Message', 'name': 'message', 'value': self.message},
+            {'label': 'Time', 'name': 'stamp', 'value': str(stamp)},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
