@@ -9,7 +9,7 @@ App_Dashboard.namespace = 'alerts'
 
 # Alerts dashboard
 Alert_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Alert)
-Alert_Dashboard.name = 'Messages'
+Alert_Dashboard.name = 'Message'
 Alert_Dashboard.namespace = 'message'
 Alert_Dashboard.listing_headers = ['Name']
 Alert_Dashboard.get_listing_record = \
