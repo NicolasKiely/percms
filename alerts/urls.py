@@ -1,9 +1,11 @@
 from django.conf.urls import url
 from . import views
 
-from .dashboard import App_Dashboard
+from . import dashboard
 
 
 urlpatterns = [
-    App_Dashboard.url_view_dashboard(r'dashboard/$')
-]
+    dashboard.App_Dashboard.url_view_dashboard(r'^dashboard/$'),
+
+] \
+    + dashboard.Alert_Dashboard.create_standard_urls()
