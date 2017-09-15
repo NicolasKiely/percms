@@ -157,11 +157,13 @@ if crawler_instance.cookies:
 
 request = urllib2.Request(url, None, headers)
 response= urllib2.urlopen(request)
-html = response.read()
+html_raw = response.read()
+html = html_raw.decode('utf-8')
 
 # Fetch page
 local_path = safesettings.UPLOAD_CRAWLER_PATH
 fh = open('%spage-%s.html' % (local_path, str(webpage.pk)), 'w')
+
 fh.write(html.encode('utf-8', 'ignore'))
 fh.close()
 
