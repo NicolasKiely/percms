@@ -29,3 +29,22 @@ class API_Key(models.Model):
             {'label': 'Secret', 'name': 'secret', 'value': self.secret},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
+
+
+# Currency Pair
+class Pair(models.Model):
+    name = models.CharField('Name of Currency Pair', max_length=16, unique=True)
+
+
+# Candlestick data
+class Candle_Stick(models.Model):
+    pair    = models.ForeignKey(Pair, on_delete=models.CASCADE)
+    stamp   = models.DateTimeField('Start time')
+    p_high  = models.FloatField()
+    p_low   = models.FloatField()
+    p_close = models.FloatField()
+    p_open  = models.FloatField()
+    volume  = models.FloatField()
+
+    class Meta:
+        unique_together = ('pair', 'stamp')
