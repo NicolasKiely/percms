@@ -25,3 +25,6 @@ except crypto.models.API_Key.DoesNotExist:
     sys.exit(1)
 
 polo = crypto.poloniex_api.poloniex(api_key.key, api_key.secret)
+
+#print polo.returnTicker()['BTC_ETH']
+print polo.returnMarketTradeHistory('BTC_ETH')[0]

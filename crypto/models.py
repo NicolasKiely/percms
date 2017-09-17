@@ -31,6 +31,11 @@ class API_Key(models.Model):
         ]
 
 
+# Represents investments in an exchange
+class Wallet(models.Model):
+    cash = models.FloatField('Free cash')
+    
+
 # Currency Pair
 class Pair(models.Model):
     name = models.CharField('Name of Currency Pair', max_length=16, unique=True)
