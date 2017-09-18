@@ -61,12 +61,14 @@ class Wallet(models.Model):
 class Candle_Stick(models.Model):
     pair    = models.ForeignKey(Pair, on_delete=models.CASCADE)
     stamp   = models.DateTimeField('Start time')
-    p_high  = models.FloatField()
-    p_low   = models.FloatField()
-    p_close = models.FloatField()
-    p_open  = models.FloatField()
-    volume  = models.FloatField()
-    period  = models.IntegerField()
+    p_high  = models.FloatField('High')
+    p_low   = models.FloatField('Low')
+    p_close = models.FloatField('Close')
+    p_open  = models.FloatField('Open')
+    volume  = models.FloatField('Volume')
+    q_volume = models.FloatField('Quoted Volume')
+    w_average = models.FloatField('Weighted Average')
+    period  = models.IntegerField('Period in seconds')
 
     class Meta:
         unique_together = ('pair', 'stamp')
