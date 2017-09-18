@@ -31,14 +31,30 @@ class API_Key(models.Model):
         ]
 
 
+class Exchange(models.Model):
+    name = models.CharField(max_length=256, unique=True)
+
+
+# Represents currency
+class Currency(models.Model):
+    symbol = models.CharField('Symbol of currency', max_length=16, unique=True)
+    name = models.CharField('Optional descriptive name', max_length=255, null=True)
+
+    
+
+# Currency Pair at an exchange
+class Pair(models.Model):
+    c1 = models.CharField('First currency', max_length=16)
+    c2 = models.CharField('Second currency', max_length=16)
+    exc = models.ForeignKey(Exchange, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('c1', 'c2', 'exc')
+
+
 # Represents investments in an exchange
 class Wallet(models.Model):
     cash = models.FloatField('Free cash')
-    
-
-# Currency Pair
-class Pair(models.Model):
-    name = models.CharField('Name of Currency Pair', max_length=16, unique=True)
 
 
 # Candlestick data
@@ -50,6 +66,7 @@ class Candle_Stick(models.Model):
     p_close = models.FloatField()
     p_open  = models.FloatField()
     volume  = models.FloatField()
+    period  = models.IntegerField()
 
     class Meta:
         unique_together = ('pair', 'stamp')
