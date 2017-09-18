@@ -34,6 +34,9 @@ class API_Key(models.Model):
 class Exchange(models.Model):
     name = models.CharField(max_length=256, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 # Represents currency
 class Currency(models.Model):
@@ -47,6 +50,9 @@ class Pair(models.Model):
     c1 = models.CharField('First currency', max_length=16)
     c2 = models.CharField('Second currency', max_length=16)
     exc = models.ForeignKey(Exchange, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '[%s_%s %s]' % (self.c1, self.c2, self.exc.name[:3])
 
     class Meta:
         unique_together = ('c1', 'c2', 'exc')
@@ -69,6 +75,16 @@ class Candle_Stick(models.Model):
     q_volume = models.FloatField('Quoted Volume')
     w_average = models.FloatField('Weighted Average')
     period  = models.IntegerField('Period in seconds')
+
+    def __str__(self):
+        return '<%s %s: o=%s c=%s l=%s h=%s v=%s qv=%s wa=%s p=%s>' % (
+            self.pair, self.stamp,
+            self.p_open, self.p_close,
+            self.p_low, self.p_high,
+            self.volume, self.q_volume,
+            self.w_average,
+            self.period
+        )
 
     class Meta:
         unique_together = ('pair', 'stamp')
