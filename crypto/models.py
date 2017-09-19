@@ -76,6 +76,10 @@ class Candle_Stick(models.Model):
     w_average = models.FloatField('Weighted Average')
     period  = models.IntegerField('Period in seconds')
 
+
+    def is_hollow(self): return self.p_close > self.p_open
+    def is_filled(self): return self.p_close <= self.p_open
+
     def __str__(self):
         return '<%s %s: o=%s c=%s l=%s h=%s v=%s qv=%s wa=%s p=%s>' % (
             self.pair, self.stamp,
