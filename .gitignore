@@ -106,3 +106,4 @@ migrations/
 # Project utility stuff
 dj.txt
 startserver.sh
+temp.txt
