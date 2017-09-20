@@ -37,6 +37,21 @@ def default_view_app_dashboard(request, dashboard):
     return dashboard.render(request, context)
 
 
+class Dashboard_Panel(object):
+    ''' Custom panel object for dashboards '''
+    def __init__(self, title, link=None):
+        self.title = title
+        self.link = link
+
+    def render_to_json(self):
+        ''' Returns json panel '''
+        if self.link:
+            data = { 'title': self.title, 'link': self.link }
+        else:
+            data = { 'title': self.title }
+        return data
+
+
 class App_Dashboard(object):
     ''' Dashboard manager for app '''
     def __init__(self):
@@ -44,6 +59,7 @@ class App_Dashboard(object):
         self.namespace = ''
         self.view_dashboard = dashboard_view_closure(self, default_view_app_dashboard)
         self.children = []
+        self.panels = []
 
     def render(self, request, context):
         context['title'] = self.name +' Dashboard'

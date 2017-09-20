@@ -41,7 +41,7 @@ runtime_factory.load_data(t_start, t_end)
 currency_1_amount = 1.0
 currency_2_amount = 0.0
 
-transfer_percentage = (1.0 - 0.0020)
+transfer_percentage = 1.0 - 0.0020
 
 # Iterate over time
 print 'Time\t% Growth\tPrice'
