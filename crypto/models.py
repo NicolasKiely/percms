@@ -2,6 +2,10 @@ from __future__ import unicode_literals
 
 from django.db import models
 from common.core import view_link, edit_link
+import scripting.models
+from django.utils import timezone
+from datetime import timedelta
+
 
 # Create your models here.
 class API_Key(models.Model):
@@ -92,3 +96,30 @@ class Candle_Stick(models.Model):
 
     class Meta:
         unique_together = ('pair', 'stamp')
+
+
+# Back test
+class Back_Test(models.Model):
+    script = models.ForeignKey(scripting.models.Source, null=True, on_delete=models.SET_NULL)
+    pair = models.ForeignKey(Pair, on_delete=models.SET_NULL, null=True)
+    dt_start = models.DateTimeField('Start of test')
+    dt_stop = models.DateTimeField('End of test')
+    status = models.CharField('Activity status', max_length=64)
+
+    def __str__(self):
+        return '%s on %s [%s-%s]' % (self.script, self.pair, self.dt_start, self.dt_stop)
+
+    def to_form_fields(self):
+        script_name = '' if self.script is None else str(self.script)
+        currency_pair = '' if self.pair is None else self.pair.c1+'_'+self.pair.c2
+        exchange = '' if self.pair is None else self.pair.exchange.name
+        dt_start = self.dt_start if self.dt_start else timezone.now() - timedelta(days=31)
+        dt_stop = self.dt_stop if self.dt_stop else timezone.now()
+        return [
+            {'label': 'Script', 'name': 'script', 'value': script_name},
+            {'label': 'Currency Pair', 'name': 'pair', 'value': currency_pair},
+            {'label': 'Exchange', 'name': 'exchange', 'value': exchange},
+            {'label': 'Start Date', 'name': 'dt_start', 'value': dt_start.date()},
+            {'label': 'Stop Date', 'name': 'dt_stop', 'value': dt_stop.date()},
+            {'type': 'hidden', 'name': 'pk', 'value': self.pk}
+        ]
