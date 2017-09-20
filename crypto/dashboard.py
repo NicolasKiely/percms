@@ -33,3 +33,6 @@ BT_Dashboard.listing_headers = ['Script']
 BT_Dashboard.get_listing_record = \
     lambda x: [str(x.script)]
 
+BT_Dashboard.post_add = dbd.dashboard_view_closure(
+    BT_Dashboard, views.add_backtest
+)

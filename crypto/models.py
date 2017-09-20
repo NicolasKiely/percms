@@ -6,6 +6,10 @@ import scripting.models
 from django.utils import timezone
 from datetime import timedelta
 
+BACK_TEST_READY = 'Ready'
+BACK_TEST_TESTING = 'Testing'
+BACK_TEST_FINISHED = 'Finished'
+
 
 # Create your models here.
 class API_Key(models.Model):
@@ -104,7 +108,7 @@ class Back_Test(models.Model):
     pair = models.ForeignKey(Pair, on_delete=models.SET_NULL, null=True)
     dt_start = models.DateTimeField('Start of test')
     dt_stop = models.DateTimeField('End of test')
-    status = models.CharField('Activity status', max_length=64)
+    status = models.CharField('Activity status', max_length=64, default=BACK_TEST_READY)
 
     def __str__(self):
         return '%s on %s [%s-%s]' % (self.script, self.pair, self.dt_start, self.dt_stop)
