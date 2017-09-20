@@ -109,6 +109,7 @@ class Back_Test(models.Model):
     dt_start = models.DateTimeField('Start of test')
     dt_stop = models.DateTimeField('End of test')
     status = models.CharField('Activity status', max_length=64, default=BACK_TEST_READY)
+    finished = models.BooleanField('Is finished?', default=True)
 
     def __str__(self):
         return '%s on %s [%s-%s]' % (self.script, self.pair, self.dt_start, self.dt_stop)
