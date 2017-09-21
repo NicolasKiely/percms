@@ -35,7 +35,7 @@ def edit_key(request, dashboard):
 
 @login_required
 def add_backtest(request, dashboard):
-    p = request.POST
+    #p = request.POST
     #script, source = get_script_by_name(p['script'])
     #c1, c2 = p['pair'].split('_')
     #pair = utils.get_currency_pair(p['exchange'], c1, c2)
@@ -47,7 +47,6 @@ def add_backtest(request, dashboard):
     #    dt_stop = dtt.datetime.strptime(p['dt_stop'], '%Y-%m-%d')
     #)
     #backtest.save()
-    args = {}
-    batch_interface.request('crypto', 'backtest', args)
+    batch_interface.request('crypto', 'backtest', request.POST)
 
     return HttpResponseRedirect(dashboard.reverse_dashboard())
