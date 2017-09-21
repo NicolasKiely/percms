@@ -1,12 +1,18 @@
 ''' Background server for running batch processes '''
 import sys
+import os
 import BaseHTTPServer
 import percms.settings
-#from SimpleHTTPServer import SimpleHTTPRequestHandler
 import batch_interface
-import crypto.batch
 import json
 import urlparse
+import django
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'percms.settings'
+django.setup()
+
+import crypto.batch
+
 
 # To add more batch modules, add them here
 BATCH_MODULES = {
@@ -50,16 +56,22 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         if response_code == 200:
             req_len = int(req.headers.getheader('content-length'))
             request = req.rfile.read(req_len)
-            post_args = urlparse.parse_qs(request, keep_blank_values=False) 
+            post_args = urlparse.parse_qs(request, keep_blank_values=True) 
 
             args = {k: v[0] for k,v in post_args.iteritems() if v and len(v)}
-            handler(**args)
             
 
         req.send_response(response_code)
         req.send_header('Content-type', 'application/json')
         req.end_headers()
         req.wfile.write(json.dumps(output))
+
+        if response_code == 200:
+            pid = os.fork()
+            if pid == 0:
+                # Child process runs handler
+                handler(**args)
+                sys.exit(0)
 
 
 
