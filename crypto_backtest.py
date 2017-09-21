@@ -44,7 +44,7 @@ currency_2_amount = 0.0
 transfer_percentage = 1.0 - 0.0020
 
 # Iterate over time
-print 'Time\t% Growth\tPrice'
+print 'Time\t% Growth\tPrice\tSignal'
 for i in range(0, runtime_factory.num_candles):
     # Evaluate strategy for i'th candlestick
     runtime = runtime_factory.runtime(i)
@@ -52,21 +52,25 @@ for i in range(0, runtime_factory.num_candles):
 
     candle = runtime_factory.candles[i]
 
+    buy_signal = 0
     if runtime.confidence > 90:
         # Calculate transfer from cur1 to cur2
         if runtime.signal == crypto.runtime.BUY_SIGNAL:
             #print 'Buy!'
+            buy_signal = 1
             transfer = currency_1_amount
             currency_1_amount -= transfer
             currency_2_amount += transfer_percentage * (transfer / candle.p_close)
         elif runtime.signal == crypto.runtime.SELL_SIGNAL:
             #print 'Sell!'
+            buy_signal = -1
             transfer = currency_2_amount
             currency_1_amount += transfer_percentage * (transfer * candle.p_close)
             currency_2_amount -= transfer
     
-    print '%s\t%s\t%s' % (
+    print '%s\t%s\t%s\t%s' % (
         candle.stamp.strftime('%Y-%m-%d %H:%M'),
         (currency_1_amount + currency_2_amount*candle.p_close) - 1.0,
-        candle.p_close
+        candle.p_close,
+        buy_signal
     )
