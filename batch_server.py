@@ -7,12 +7,29 @@ import batch_interface
 import json
 import urlparse
 import django
+import threading
+import Queue
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'percms.settings'
 django.setup()
 
 import crypto.batch
 
+work_queue = Queue.Queue(10)
+
+class Worker_Thread(threading.Thread):
+    def run(self):
+        try:
+            while True:
+                func, args = work_queue.get()
+                if func==None and args==None:
+                    break
+                print 'Thread running'
+                func(**args)
+
+        except KeyboardInterrupt:
+            raise KeyboardInterrupt
+        
 
 # To add more batch modules, add them here
 BATCH_MODULES = {
@@ -67,20 +84,25 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         req.wfile.write(json.dumps(output))
 
         if response_code == 200:
-            pid = os.fork()
-            if pid == 0:
-                # Child process runs handler
-                handler(**args)
-                sys.exit(0)
+            try:
+                #handler(**args)
+                work_queue.put( (handler, args) )
+            except Exception as ex:
+                print '%s: %s' % (type(ex), ex)
 
 
 
 Batch_Handler.protocol_version = 'HTTP/1.0'
 server = BaseHTTPServer.HTTPServer(bind_address, Batch_Handler)
 
+worker = Worker_Thread()
+worker.start()
+
 try:
     server.serve_forever()
 except KeyboardInterrupt:
     print '\nShutting Down'
+    work_queue.put( (None, None) )
+    worker.join()
 
 server.server_close()
