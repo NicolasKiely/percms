@@ -116,7 +116,9 @@ class Back_Test(models.Model):
     results_file = models.ForeignKey(Meta_File, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return '%s on %s [%s-%s]' % (self.script, self.pair, self.dt_start, self.dt_stop)
+        return '%s on %s [%s - %s]' % (
+            self.script, self.pair, self.dt_start.date(), self.dt_stop.date()
+        )
 
     def to_form_fields(self):
         script_name = '' if self.script is None else str(self.script)
