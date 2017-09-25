@@ -1,5 +1,6 @@
 import time
 import sys
+import traceback
 from django.utils import timezone
 from scripting.utils import get_script_by_name
 
@@ -30,8 +31,13 @@ def run_backtest(backtest, fout):
     fout.write('Time\t% Growth\tPrice\tSignal\n')
     for i in range(0, runtime_factory.num_candles):
         # Evaluate strategy for i'th candlestick
-        runtime = runtime_factory.runtime(i)
-        exec(backtest.script.source)
+        try:
+            global runtime
+            runtime = runtime_factory.runtime(i)
+            exec(backtest.script.source)
+        except Exception as ex:
+            trace = traceback.format_exc()
+            raise Backtest_Exception('Script Exception: %s' % trace)
 
         candle = runtime_factory.candles[i]
 
