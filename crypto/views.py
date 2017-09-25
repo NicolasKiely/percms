@@ -5,7 +5,6 @@ import datetime as dtt
 
 from . import models
 from . import utils
-from scripting.utils import get_script_by_name
 import batch_interface
 
 
@@ -36,9 +35,6 @@ def edit_key(request, dashboard):
 @login_required
 def add_backtest(request, dashboard):
     p = request.POST
-    #script, source = get_script_by_name(p['script'])
-    #c1, c2 = p['pair'].split('_')
-    #pair = utils.get_currency_pair(p['exchange'], c1, c2)
     #backtest = models.Back_Test(
     #    status = models.BACK_TEST_READY,
     #    script = source,
@@ -48,7 +44,7 @@ def add_backtest(request, dashboard):
     #)
     #backtest.save()
     batch_interface.request('crypto', 'backtest', {
-        'exchange': p['exchange'],
+        'exchange_name': p['exchange'],
         'currencies': p['pair'],
         'script_name': p['script'],
         'dt_start': p['dt_start'],

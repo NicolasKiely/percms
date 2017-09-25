@@ -119,7 +119,7 @@ class Back_Test(models.Model):
     def to_form_fields(self):
         script_name = '' if self.script is None else str(self.script)
         currency_pair = '' if self.pair is None else self.pair.c1+'_'+self.pair.c2
-        exchange = '' if self.pair is None else self.pair.exchange.name
+        exchange = '' if self.pair is None else self.pair.exc.name
         dt_start = self.dt_start if self.dt_start else timezone.now() - timedelta(days=31)
         dt_stop = self.dt_stop if self.dt_stop else timezone.now()
         return [
