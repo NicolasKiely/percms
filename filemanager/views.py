@@ -51,6 +51,16 @@ def describe(request, pk):
     return core.render(request, 'filemanager/describe.html', **context)
 
 
+def download(request, pk):
+    ''' Download link for data '''
+    meta_file = get_object_or_404(Meta_File, pk=pk)
+    file_path = meta_file.get_file_path()
+    with open(file_path, 'r') as fh:
+        response = HttpResponse(fh.read())
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment; filename="%s"' % meta_file.name
+        return response
+
 def view_by_name(request, resource):
     ''' Loads file by name '''
     try:

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from percms import safesettings
+from django.core.urlresolvers import reverse
 
 
 class Meta_File(models.Model):
@@ -18,6 +19,10 @@ class Meta_File(models.Model):
             return '/static/images/%s'% sid
         else:
             return '/static/files/%s'% sid
+
+    def get_download_url(self):
+        return reverse('file:download', args=(self.pk,))
+        
 
     def get_file_path(self):
         sid = str(self.id)
