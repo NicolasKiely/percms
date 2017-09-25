@@ -29,10 +29,12 @@ Key_Dashboard.post_edit = dbd.dashboard_view_closure(
 BT_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Back_Test)
 BT_Dashboard.name = 'Back Test'
 BT_Dashboard.namespace = 'backtest'
-BT_Dashboard.listing_headers = ['Script']
+BT_Dashboard.listing_headers = ['Script', 'Status']
 BT_Dashboard.get_listing_record = \
-    lambda x: [str(x.script)]
+    lambda x: [str(x.script), str(x.status)]
 
 BT_Dashboard.post_add = dbd.dashboard_view_closure(
     BT_Dashboard, views.add_backtest
 )
+
+BT_Dashboard.model_view_template = 'crypto/backtest_view.html'

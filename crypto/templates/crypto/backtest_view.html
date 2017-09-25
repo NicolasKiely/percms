@@ -1,0 +1,25 @@
+{% extends "common/base.html" %}
+{% load core %}
+
+
+{% block html_body %}
+  {# Title/Nav Panel #}
+  {% open_box %}
+    <h2>{{ model }}: <u>{{ name }}</u></h2>
+    <div class="text-center">
+      {{ object.nav_link | safe }}
+    </div>
+  {% close_box %}
+
+  {# Status Panel #}
+  {% open_box %}
+    <h2>Status: <u>{{ object.status }}</u></h2>
+    {% if object.error_msg %}
+    <div class="row"><div class="col-sm-offset-2 col-sm-8">
+      <div class="panel panel-danger log-panel">
+        <div class="panel-heading"><b>Error:</b> {{ object.error_msg }}</div>
+      </div>
+    </div>
+    {% endif %}
+  {% close_box %}
+{% endblock %}

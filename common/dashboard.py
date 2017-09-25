@@ -281,6 +281,7 @@ class Model_Dashboard(object):
         context['title'] = self.name + ' View'
         context['name'] = str(obj)
         context['model'] = self.name
+        context['object'] = obj
         return render(request, self.model_view_template, **context)
 
     def url_view_dashboard(self, route):
