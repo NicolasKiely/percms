@@ -23,8 +23,9 @@ class Worker_Thread(threading.Thread):
             while True:
                 func, args = work_queue.get()
                 if func==None and args==None:
+                    # Exit condition
                     break
-                print 'Thread running'
+                # Call handler on args
                 func(**args)
 
         except KeyboardInterrupt:

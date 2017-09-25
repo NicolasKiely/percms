@@ -9,6 +9,7 @@ from datetime import timedelta
 BACK_TEST_READY = 'Ready'
 BACK_TEST_TESTING = 'Testing'
 BACK_TEST_FINISHED = 'Finished'
+BACK_TEST_FAILED = 'Failed'
 
 
 # Create your models here.
@@ -110,6 +111,7 @@ class Back_Test(models.Model):
     dt_stop = models.DateTimeField('End of test')
     status = models.CharField('Activity status', max_length=64, default=BACK_TEST_READY)
     finished = models.BooleanField('Is finished?', default=True)
+    error_msg = models.CharField('Error message', max_length=1024, default='')
 
     def __str__(self):
         return '%s on %s [%s-%s]' % (self.script, self.pair, self.dt_start, self.dt_stop)
