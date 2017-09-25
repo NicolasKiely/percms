@@ -85,7 +85,8 @@ def POST_backtest(currencies, exchange_name, script_name, dt_start, dt_stop):
             file_name='test_'+str(backtest.pk),
             is_image=False
         )
-        fpath = filemanager.utils.get_meta_file_path(meta_file)
+        fpath = meta_file.get_file_path()
+        backtest.results_file = meta_file
         with open(fpath, 'w') as fout:
             run_backtest(backtest, fout)
 
