@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from common.core import view_link, edit_link
 import scripting.models
+from filemanager.models import Meta_File
 from django.utils import timezone
 from datetime import timedelta
 
@@ -112,6 +113,7 @@ class Back_Test(models.Model):
     status = models.CharField('Activity status', max_length=64, default=BACK_TEST_READY)
     finished = models.BooleanField('Is finished?', default=True)
     error_msg = models.CharField('Error message', max_length=1024, default='')
+    results_file = models.ForeignKey(Meta_File, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return '%s on %s [%s-%s]' % (self.script, self.pair, self.dt_start, self.dt_stop)

@@ -6,6 +6,7 @@ from PIL import Image
 from common import core
 from percms import safesettings
 from .models import Meta_File
+from .utils import save_file
 
 
 def upload(request):
@@ -27,28 +28,17 @@ def upload(request):
                 is_image = False
 
             # Create and save file
-            meta_file = Meta_File(
-                name=request.POST['name'],
+            meta_file = save_file(
+                data = fh.read(),
                 category=request.POST['category'],
-                dt_uploaded=now,
-                is_img=is_image
+                file_name=request.POST['name'],
+                is_image=is_image
             )
-            meta_file.save()
             
-            # Save file contents
-            sid = str(meta_file.id)
-            if meta_file.is_img:
-                save_path = safesettings.UPLOAD_IMAGE_PATH + sid
-            else:
-                save_path = safesettings.UPLOAD_FILE_PATH + sid
-
-            with open(save_path, 'wb+') as dest:
-                for chunk in fh.chunks():
-                    dest.write(chunk)
 
             # Pass file information back to page
             context['file'] = meta_file
-            context['file_url'] = 'images/'+ sid
+            context['file_url'] = 'images/'+ str(meta_file.id)
 
     return core.render(request, 'filemanager/upload.html', **context)
 

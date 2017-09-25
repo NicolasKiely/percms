@@ -6,6 +6,7 @@ from scripting.utils import get_script_by_name
 from . import models
 from . import utils
 from . import runtime as crypto_runtime
+import filemanager.utils
 
 
 
@@ -78,7 +79,15 @@ def POST_backtest(currencies, exchange_name, script_name, dt_start, dt_stop):
         c1, c2 = currencies.split('_')
         pair = utils.get_currency_pair(exchange_name, c1, c2)
         backtest.pair = pair
-        run_backtest(backtest, sys.stdout)
+
+        meta_file = filemanager.utils.create_file_record(
+            category='crypto_backtest',
+            file_name='test_'+str(backtest.pk),
+            is_image=False
+        )
+        fpath = filemanager.utils.get_meta_file_path(meta_file)
+        with open(fpath, 'w') as fout:
+            run_backtest(backtest, fout)
 
         backtest.status=models.BACK_TEST_FINISHED
 
