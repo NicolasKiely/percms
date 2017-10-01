@@ -18,22 +18,21 @@ class Backtest_Exception(Exception):
     pass
 
 
-def pull_candle_data(polo, c1, c2, t_start, t_end):
+def pull_candle_data(polo, c1, c2, t_start, t_end, period):
     ''' Pulls candlestick data for given currency pair in time frame '''
     pair_name = c1+'_'+c2
-    exc, _ = crypto.models.Exchange.objects.get_or_create(name='Poloniex')
-    pair, _ = crypto.models.Pair.objects.get_or_create(c1=c1, c2=c2, exc=exc)
-    period = 300
+    exc, _ = models.Exchange.objects.get_or_create(name='Poloniex')
+    pair, _ = models.Pair.objects.get_or_create(c1=c1, c2=c2, exc=exc)
     data = polo.returnChartData(pair_name, start=t_start, end=t_end, period=period)
     for x in data:
         dt = datetime.datetime.fromtimestamp(x['date'])
         dtz = timezone.make_aware(dt, timezone.get_current_timezone())
         try:
-            candle = crypto.models.Candle_Stick.objects.get(
+            candle = models.Candle_Stick.objects.get(
                 pair = pair, stamp = dtz
             )
-        except crypto.models.Candle_Stick.DoesNotExist:
-            candle = crypto.models.Candle_Stick(pair=pair, stamp=dtz)
+        except models.Candle_Stick.DoesNotExist:
+            candle = models.Candle_Stick(pair=pair, stamp=dtz)
 
         candle.p_high    = x['high']
         candle.p_low     = x['low']
@@ -44,6 +43,7 @@ def pull_candle_data(polo, c1, c2, t_start, t_end):
         candle.w_average = x['weightedAverage']
         candle.period    = period
         candle.save()
+        print candle
 
 
 def run_backtest(backtest, fout):
@@ -143,7 +143,7 @@ def POST_backtest(currencies, exchange_name, script_name, dt_start, dt_stop):
     backtest.save()
 
 
-def POST_poloniex_candles_pull(currencies, dt_start, dt_stop, api_key_name):
+def POST_poloniex_candles_pull(currencies, dt_start, dt_stop, api_key_name, period):
     ''' Handler for pulling down candlestick data for poloniex '''
     # Get api key
     try:
@@ -152,19 +152,16 @@ def POST_poloniex_candles_pull(currencies, dt_start, dt_stop, api_key_name):
         print 'API key "%s" not found' % api_key_name
         return
 
-    polo = crypto.poloniex_api.poloniex(api_key.key, api_key.secret)
+    polo = poloniex_api.poloniex(api_key.key, api_key.secret)
 
     exchange_name = 'Poloniex'
     c1, c2 = currencies.split('_')
 
     scrape_start = datetime.datetime.strptime(dt_start, '%Y-%m-%d')
-    scrape_stop = datetime.datatime.strptime(dt_stop, '%Y-%m-%d')
+    scrape_stop = datetime.datetime.strptime(dt_stop, '%Y-%m-%d')
 
     t_int_start = int(time.mktime(scrape_start.timetuple()))
     t_int_stop = int(time.mktime(scrape_stop.timetuple()))
 
-    pull_candle_data(polo, c1, c2, t_int_start, t_int_end)
+    pull_candle_data(polo, c1, c2, t_int_start, t_int_stop, int(period))
 
-
-def POST_test(**args):
-    print args
