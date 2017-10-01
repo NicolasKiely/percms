@@ -2,6 +2,7 @@ import time
 import sys
 import traceback
 from django.utils import timezone
+import datetime
 from scripting.utils import get_script_by_name
 
 from . import models
@@ -153,5 +154,17 @@ def POST_poloniex_candles_pull(currencies, dt_start, dt_stop, api_key_name):
 
     polo = crypto.poloniex_api.poloniex(api_key.key, api_key.secret)
 
-    t_start = int(time.mktime(dt_start.timetuple()))
-    t_end = t_start + day_count*(60*60*24)
+    exchange_name = 'Poloniex'
+    c1, c2 = currencies.split('_')
+
+    scrape_start = datetime.datetime.strptime(dt_start, '%Y-%m-%d')
+    scrape_stop = datetime.datatime.strptime(dt_stop, '%Y-%m-%d')
+
+    t_int_start = int(time.mktime(scrape_start.timetuple()))
+    t_int_stop = int(time.mktime(scrape_stop.timetuple()))
+
+    pull_candle_data(polo, c1, c2, t_int_start, t_int_end)
+
+
+def POST_test(**args):
+    print args
