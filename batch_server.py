@@ -14,19 +14,28 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'percms.settings'
 django.setup()
 
 import crypto.batch
+import scripting.utils
 
 work_queue = Queue.Queue(10)
 
 class Worker_Thread(threading.Thread):
     def run(self):
         try:
+            logger = utils.Logging_Runtime('Batch_Server')
             while True:
                 func, args = work_queue.get()
                 if func==None and args==None:
                     # Exit condition
                     break
                 # Call handler on args
-                func(**args)
+                try:
+                    func(**args)
+
+                except KeyboardInterrupt:
+                    raise KeyboardInterrupt
+
+                except Exception as ex:
+                    logger.log(type(ex), str(ex))
 
         except KeyboardInterrupt:
             raise KeyboardInterrupt
