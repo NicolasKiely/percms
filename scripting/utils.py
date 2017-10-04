@@ -27,10 +27,15 @@ def get_script_by_name(script_str):
 
 class Logging_Runtime(object):
     ''' Scripting runtime logging tool '''
-    def __init__(self, app_name):
+    def __init__(self, app_name, callback=None):
         ''' Initialize logger to use app name '''
         self.app_name = app_name
 
+
+    def write(self, msg):
+        if self.callback:
+            self.callback(msg)
+        
 
     def log(self, short_message='', long_message=''):
         ''' Log message to scripting database '''
