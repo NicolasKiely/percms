@@ -11,6 +11,8 @@ class Runtime(object):
         self.signal = ''
         self.confidence = 0
         self.data = data
+        self.stoploss = 0
+        self.stoploss_enabled = False
 
     def set_time(self, stamp):
         ''' Sets current time '''
@@ -21,6 +23,18 @@ class Runtime(object):
         ''' Signals a buy, with an integer confidence between 0 and 100 '''
         self.signal = BUY_SIGNAL
         self.confidence = confidence
+
+
+    def set_stoploss(self, stoploss):
+        ''' Enables stoploss '''
+        self.stoploss = stoploss
+        self.stoploss_enabled = True
+
+
+    def update_stoploss(self, stoploss, use_max=True):
+        if self.stoploss_enabled:
+            if (use_max and stoploss > self.stoploss) or not(use_max):
+                self.stoploss = stoploss
 
 
     def signal_sell(self, confidence=100):
