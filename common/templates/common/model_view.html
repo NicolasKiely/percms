@@ -41,6 +41,10 @@
       {% endfor %}
     </table>
     {% endif %}
+
+    {% if panel.form %}
+      {{ panel.form | common_form | safe }}
+    {% endif %}
   {% close_box %}
   {% endfor %}
 {% endblock %}
