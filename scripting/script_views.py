@@ -113,6 +113,8 @@ class HTML_Logger_Callback(object):
 
     def callback(self, msg): self.results += msg + '\n'
 
+log_url = lambda x: reverse('script:logging_view', args=(x.pk,))
+
 @login_required
 def test_run(request, dashboard):
     ''' Test run '''
@@ -121,13 +123,23 @@ def test_run(request, dashboard):
     results = ''
     logger_callback = HTML_Logger_Callback()
     logger = utils.Logging_Runtime('Script_Tester', logger_callback)
-    exec(source.source)
+    try:
+        exec(source.source)
+    except Exception as ex:
+        logger.log(str(type(ex)), str(ex))
 
     context = {
         'panels': [
             {
                 'title': 'Test',
                 'pre': logger_callback.results,
+                'table': {
+                    'headers': ['Log Message', 'URL'],
+                    'rows': [
+                        [str(msg), '<a href="%s">Open</a>' % log_url(msg)]
+                        for msg in logger.messages
+                    ]
+                },
                 'form': {
                     'action': dashboard.namespace +':test_run',
                     'csrf': get_token(request),
