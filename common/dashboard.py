@@ -211,7 +211,7 @@ class Model_Dashboard(object):
                 'rows': [
                     self.get_listing_record(x) +
                     [self.edit_link(x) +' | '+ self.view_link(x),]
-                    for x in self.model.objects.filter(**filters)[:10]
+                    for x in self.model.objects.filter(**filters).order_by('-pk')[:50]
                 ]
             }
         }
@@ -226,7 +226,7 @@ class Model_Dashboard(object):
                 'rows': [
                     self.get_listing_record(x) +
                     [self.edit_link(x) +' | '+ self.view_link(x),]
-                    for x in self.model.objects.filter(**filters)[:5]
+                    for x in self.model.objects.filter(**filters).order_by('-pk')[:5]
                 ]
             }
         }
@@ -241,7 +241,7 @@ class Model_Dashboard(object):
                 'rows': [
                     self.get_listing_record(x) +
                     [self.edit_link(x) +' | '+ self.view_link(x)]
-                    for x in self.model.objects.filter(**filters)[:5]
+                    for x in self.model.objects.filter(**filters).order_by('-pk')[:5]
                 ]
             }
         }
