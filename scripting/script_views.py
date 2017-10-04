@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from .models import Script, Source
 from django.middleware.csrf import get_token
 from . import utils
+import traceback
 
 def get_last_source(script, create_new=False):
     ''' Fetch last source file from script '''
@@ -126,7 +127,10 @@ def test_run(request, dashboard):
     try:
         exec(source.source)
     except Exception as ex:
-        logger.log(str(type(ex)), str(ex))
+        logger.log(
+            str(type(ex))+' '+str(ex),
+            'Exception:\n%s\n\nScript:\n\t%s' %(traceback.format_exc(), str(source))
+        )
 
     context = {
         'panels': [

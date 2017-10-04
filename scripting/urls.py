@@ -13,7 +13,6 @@ urlpatterns = [
     dashboard.Script_Dashboard.url_post_add(r'^script/add/$'),
     dashboard.Script_Dashboard.url_post_edit(r'script/edit/$'),
     dashboard.Script_Dashboard.url_post_delete(r'^script/delete/$'),
-    #url(r'script/test_run/$', script_views.test_run, name='test_run'),
     url(r'^script/test_run/$',
         dashboard_view_closure(dashboard.Script_Dashboard, script_views.test_run),
         name='test_run'

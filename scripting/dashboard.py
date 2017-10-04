@@ -1,6 +1,6 @@
 from common.dashboard import App_Dashboard, Model_Dashboard, dashboard_view_closure
 from .models import Script, Source, Log_Message
-from . import script_views
+from . import script_views, log_views
 
 
 # App dashboard
@@ -51,3 +51,7 @@ Log_Dashboard.namespace = 'logging'
 Log_Dashboard.listing_headers = ['Message']
 Log_Dashboard.get_listing_record = \
     lambda x: [str(x)]
+
+Log_Dashboard.view_public = dashboard_view_closure(
+   Log_Dashboard, log_views.view_public
+)
