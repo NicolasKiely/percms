@@ -50,7 +50,7 @@ def run_backtest(backtest, fout):
     ''' Run backtest '''
     # Initialize runtime
     runtime_factory = crypto_runtime.Runtime_Factory(backtest.pair)
-    runtime_factory.load_data(backtest.dt_start, backtest.dt_stop)
+    runtime_factory.load_data(backtest.dt_start, backtest.dt_stop, period=14400)
 
     # Setup currencies
     currency_1_amount = 1.0
