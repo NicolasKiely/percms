@@ -61,6 +61,9 @@ class Pair(models.Model):
     c2 = models.CharField('Second currency', max_length=16)
     exc = models.ForeignKey(Exchange, on_delete=models.CASCADE)
 
+    data_start = models.DateTimeField('Start date of contigous data pulled', null=True)
+    data_stop = models.DateTimeField('End date of contigous data pulled', null=True)
+
     def __str__(self):
         return '[%s_%s %s]' % (self.c1, self.c2, self.exc.name[:3])
 
