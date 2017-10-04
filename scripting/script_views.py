@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from .models import Script, Source
+from django.middleware.csrf import get_token
 
 def get_last_source(script, create_new=False):
     ''' Fetch last source file from script '''
@@ -93,9 +94,37 @@ def view_public(request, dashboard, pk):
     context = {
         'panels': [
             {
-                'title': 'Latest Source',
-                'pre': source.source
-            }
+                'title': 'Test',
+                'form': {
+                    'action': dashboard.namespace +':test_run',
+                    'csrf': get_token(request),
+                    'fields': [{'type': 'hidden', 'name': 'pk', 'value': obj.pk}]
+                }
+            },
+            {'title': 'Latest Source', 'pre': source.source}
+        ]
+    }
+    return dashboard.view_model(request, obj, context)
+
+
+@login_required
+def test_run(request, dashboard):
+    ''' Test run '''
+    obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
+    source = Source.objects.order_by('-version').filter(script=obj)[0]
+    results = 'Test run'
+    context = {
+        'panels': [
+            {
+                'title': 'Test',
+                'pre': results,
+                'form': {
+                    'action': dashboard.namespace +':test_run',
+                    'csrf': get_token(request),
+                    'fields': [{'type': 'hidden', 'name': 'pk', 'value': obj.pk}]
+                }
+            },
+            {'title': 'Latest Source', 'pre': source.source}
         ]
     }
     return dashboard.view_model(request, obj, context)

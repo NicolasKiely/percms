@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from . import views, script_views
 from . import dashboard
+from common.dashboard import dashboard_view_closure
 
 urlpatterns = [
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
@@ -12,6 +13,11 @@ urlpatterns = [
     dashboard.Script_Dashboard.url_post_add(r'^script/add/$'),
     dashboard.Script_Dashboard.url_post_edit(r'script/edit/$'),
     dashboard.Script_Dashboard.url_post_delete(r'^script/delete/$'),
+    #url(r'script/test_run/$', script_views.test_run, name='test_run'),
+    url(r'^script/test_run/$',
+        dashboard_view_closure(dashboard.Script_Dashboard, script_views.test_run),
+        name='test_run'
+    ),
 
     # Source pages
     url(r'^script/source/commit/$', script_views.commit, name='commit'),
