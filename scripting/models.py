@@ -79,3 +79,21 @@ class Source(models.Model):
             {'label': 'Version: ', 'name': 'version', 'value': self.version},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
+
+
+class Log_Message(models.Model):
+    ''' Simple logging system to be used for apps using scripting system '''
+    stamp = models.DateTimeField('Start date of contigous data pulled')
+    app_name = models.TextField('Name of app to register message')
+    short_message = models.TextField('Short description of message')
+    long_message = models.TextField('Long description of message')
+
+    def __str__(self):
+        return '[%s] %s: %s' % (self.stamp, self.app_name, self.short_message)
+
+    def to_form_fields(self):
+        return [
+            {'label': 'App Name', 'name': 'app', 'value': self.app_name},
+            {'label': 'Short Message', 'name': 'short', 'value': self.short_message},
+            {'label': 'Long Message', 'name': 'long', 'value': self.long_message},
+        ]

@@ -1,5 +1,6 @@
 ''' Utilities for scripting '''
-from .models import Script, Source
+from .models import Script, Source, Log_Message
+from django.utils import timezone
 
 
 def get_script_by_name(script_str):
@@ -22,3 +23,21 @@ def get_script_by_name(script_str):
         source = Source.objects.get(script=script, version=script_version)
 
     return script, source
+
+
+class Logging_Runtime(object):
+    ''' Scripting runtime logging tool '''
+    def __init__(self, app_name):
+        ''' Initialize logger to use app name '''
+        self.app_name = app_name
+
+
+    def log(self, short_message='', long_message=''):
+        ''' Log message to scripting database '''
+        msg = Log_Message(
+            stamp = timezone.now(),
+            app_name = self.app_name,
+            short_message = short_message,
+            long_message = long_message
+        )
+        msg.save()

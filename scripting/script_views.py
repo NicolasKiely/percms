@@ -83,3 +83,19 @@ def delete_source(request, dashboard):
     scriptpk = source.script.pk
     source.delete()
     return HttpResponseRedirect(reverse('script:script_editor', args=(scriptpk,)))
+
+
+@login_required
+def view_public(request, dashboard, pk):
+    ''' View script '''
+    obj = get_object_or_404(dashboard.model, pk=pk)
+    source = Source.objects.order_by('-version').filter(script=obj)[0]
+    context = {
+        'panels': [
+            {
+                'title': 'Latest Source',
+                'pre': source.source
+            }
+        ]
+    }
+    return dashboard.view_model(request, obj, context)

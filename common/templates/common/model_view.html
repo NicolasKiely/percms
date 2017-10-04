@@ -21,6 +21,7 @@
 
     {# Panel Text #}
     <p>{{ panel.text }}</p>
+    {% if panel.pre %}<pre>{{ panel.pre }}</pre>{% endif %}
 
     {# Panel table #}
     {% if 'table' in panel %}
