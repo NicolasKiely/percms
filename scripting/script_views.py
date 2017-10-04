@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from .models import Script, Source
 from django.middleware.csrf import get_token
+from . import utils
 
 def get_last_source(script, create_new=False):
     ''' Fetch last source file from script '''
@@ -107,17 +108,26 @@ def view_public(request, dashboard, pk):
     return dashboard.view_model(request, obj, context)
 
 
+class HTML_Logger_Callback(object):
+    def __init__(self): self.results = ''
+
+    def callback(self, msg): self.results += msg + '\n'
+
 @login_required
 def test_run(request, dashboard):
     ''' Test run '''
     obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
     source = Source.objects.order_by('-version').filter(script=obj)[0]
-    results = 'Test run'
+    results = ''
+    logger_callback = HTML_Logger_Callback()
+    logger = utils.Logging_Runtime('Script_Tester', logger_callback)
+    exec(source.source)
+
     context = {
         'panels': [
             {
                 'title': 'Test',
-                'pre': results,
+                'pre': logger_callback.results,
                 'form': {
                     'action': dashboard.namespace +':test_run',
                     'csrf': get_token(request),

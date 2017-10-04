@@ -25,16 +25,21 @@ def get_script_by_name(script_str):
     return script, source
 
 
+class Logger_Callback(object):
+    ''' Callback for runtime '''
+    def callback(self, msg):
+        print msg
+
 class Logging_Runtime(object):
     ''' Scripting runtime logging tool '''
     def __init__(self, app_name, callback=None):
         ''' Initialize logger to use app name '''
         self.app_name = app_name
+        self.callback = callback if callback else Logger_Callback()
 
 
     def write(self, msg):
-        if self.callback:
-            self.callback(msg)
+        self.callback.callback(msg)
         
 
     def log(self, short_message='', long_message=''):
