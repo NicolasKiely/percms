@@ -36,6 +36,7 @@ class Logging_Runtime(object):
         ''' Initialize logger to use app name '''
         self.app_name = app_name
         self.callback = callback if callback else Logger_Callback()
+        self.messages = []
 
 
     def write(self, msg):
@@ -51,3 +52,4 @@ class Logging_Runtime(object):
             long_message = long_message
         )
         msg.save()
+        self.messages.append(msg)
