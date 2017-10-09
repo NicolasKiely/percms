@@ -21,7 +21,7 @@ work_queue = Queue.Queue(10)
 class Worker_Thread(threading.Thread):
     def run(self):
         try:
-            logger = utils.Logging_Runtime('Batch_Server')
+            logger = scripting.utils.Logging_Runtime('Batch_Server')
             while True:
                 func, args = work_queue.get()
                 if func==None and args==None:

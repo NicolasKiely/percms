@@ -10,6 +10,7 @@ from . import utils
 from . import runtime as crypto_runtime
 from . import poloniex_api
 import filemanager.utils
+import scripting.utils
 
 
 
@@ -58,7 +59,7 @@ def run_backtest(backtest, fout):
     transfer_percentage = 1.0 - 0.0020
 
     # Iterate over time
-    fout.write('Time\t% Growth\tPrice\tSignal\n')
+    fout.write('Time\t% Growth\tPrice\tSignal\tStoploss\n')
     for i in range(0, runtime_factory.num_candles):
         # Evaluate strategy for i'th candlestick
         try:
@@ -72,27 +73,40 @@ def run_backtest(backtest, fout):
         candle = runtime_factory.candles[i]
 
         buy_signal = 0
-        if runtime.confidence > 90:
+        if runtime_factory.stoploss_enabled and candle.p_close < runtime_factory.stoploss:
+            # Stoploss
+            buy_signal = -2
+
+        elif runtime.confidence > 90:
             # Calculate transfer from cur1 to cur2
             if runtime.signal == crypto_runtime.BUY_SIGNAL:
                 # Buy
                 buy_signal = 1
-                transfer = currency_1_amount
-                currency_1_amount -= transfer
-                currency_2_amount += transfer_percentage * (transfer / candle.p_close)
 
             elif runtime.signal == crypto_runtime.SELL_SIGNAL:
                 # Sell
                 buy_signal = -1
-                transfer = currency_2_amount
-                currency_1_amount += transfer_percentage * (transfer * candle.p_close)
-                currency_2_amount -= transfer
+
+        if buy_signal > 0:
+            # Buy
+            transfer = currency_1_amount
+            currency_1_amount -= transfer
+            currency_2_amount += transfer_percentage * (transfer / candle.p_close)
+
+        elif buy_signal < 0:
+            # Sell
+            transfer = currency_2_amount
+            currency_1_amount += transfer_percentage * (transfer * candle.p_close)
+            currency_2_amount -= transfer
+            runtime_factory.stoploss_enabled = False
+            runtime_factory.stoploss = 0
         
-        fout.write('%s\t%s\t%s\t%s\n' % (
+        fout.write('%s\t%s\t%s\t%s\t%s\n' % (
             candle.stamp.strftime('%Y-%m-%d %H:%M'),
             (currency_1_amount + currency_2_amount*candle.p_close) - 1.0,
             candle.p_close,
-            buy_signal
+            buy_signal,
+            runtime_factory.stoploss
         ))
 
 
@@ -141,6 +155,15 @@ def POST_backtest(currencies, exchange_name, script_name, dt_start, dt_stop):
     # Save results
     backtest.finished = True
     backtest.save()
+
+
+def POST_poloniex_candles_update(currencies, api_key_name, period):
+    ''' Handler for pulling down candlestick data from poloniex for 5min, 4hr, 1d '''
+    # Get api key
+    #try:
+    #    api_key = models.API_Key.objects.get(name=api_key_name)
+    #except models.API_Key.DoesNotExist:
+        
 
 
 def POST_poloniex_candles_pull(currencies, dt_start, dt_stop, api_key_name, period):

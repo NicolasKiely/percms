@@ -7,12 +7,11 @@ SELL_SIGNAL = 'SELL'
 
 class Runtime(object):
     ''' Stores argument information '''
-    def __init__(self, data):
+    def __init__(self, factory, data):
         self.signal = ''
         self.confidence = 0
         self.data = data
-        self.stoploss = 0
-        self.stoploss_enabled = False
+        self.factory = factory
 
     def set_time(self, stamp):
         ''' Sets current time '''
@@ -25,16 +24,18 @@ class Runtime(object):
         self.confidence = confidence
 
 
-    def set_stoploss(self, stoploss):
+    def set_stoploss(self, stoploss, use_max=True):
         ''' Enables stoploss '''
-        self.stoploss = stoploss
-        self.stoploss_enabled = True
+        self.factory.stoploss_enabled = True
+        if (use_max and stoploss > self.factory.stoploss) or not(use_max):
+            self.factory.stoploss = stoploss
 
 
     def update_stoploss(self, stoploss, use_max=True):
-        if self.stoploss_enabled:
-            if (use_max and stoploss > self.stoploss) or not(use_max):
-                self.stoploss = stoploss
+        ''' Update stoploss if enabled '''
+        if self.factory.stoploss_enabled:
+            if (use_max and stoploss > self.factory.stoploss) or not(use_max):
+                self.factory.stoploss = stoploss
 
 
     def signal_sell(self, confidence=100):
@@ -48,6 +49,8 @@ class Runtime_Factory(object):
         self.currencies = currencies
         self.candles = None
         self.num_candles = 0
+        self.stoploss = 0
+        self.stoploss_enabled = False
 
 
     def load_data(self, t_start=None, t_end=None, period=300):
@@ -62,4 +65,4 @@ class Runtime_Factory(object):
 
 
     def runtime(self, i):
-        return Runtime(self.candles[:i])
+        return Runtime(self, self.candles[:i])
