@@ -4,6 +4,22 @@ import json
 import time
 import hmac,hashlib
 
+# Name of USDT - Cryptocurrency pairs
+USDT_PAIRS = [
+    ('USDT', 'BTC'),
+    ('USDT', 'XRP'),
+    ('USDT', 'ETH'),
+    ('USDT', 'BCH'),
+    ('USDT', 'STR'),
+    ('USDT', 'LTC'),
+    ('USDT', 'DASH'),
+    ('USDT', 'ZEC'),
+    ('USDT', 'ETC'),
+    ('USDT', 'XMR'),
+    ('USDT', 'NXT'),
+    ('USDT', 'REP')
+]
+
 def createTimeStamp(datestr, format="%Y-%m-%d %H:%M:%S"):
     return time.mktime(time.strptime(datestr, format))
 

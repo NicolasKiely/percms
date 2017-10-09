@@ -29,7 +29,7 @@ class Worker_Thread(threading.Thread):
                     break
                 # Call handler on args
                 try:
-                    func(**args)
+                    func(logger, **args)
 
                 except KeyboardInterrupt:
                     raise KeyboardInterrupt

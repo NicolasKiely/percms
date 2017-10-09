@@ -110,7 +110,7 @@ def run_backtest(backtest, fout):
         ))
 
 
-def POST_backtest(currencies, exchange_name, script_name, dt_start, dt_stop):
+def POST_backtest(logger, currencies, exchange_name, script_name, dt_start, dt_stop):
     ''' Handler for backtest batch test '''
     # Create new test record
     backtest = models.Back_Test(
@@ -157,16 +157,36 @@ def POST_backtest(currencies, exchange_name, script_name, dt_start, dt_stop):
     backtest.save()
 
 
-def POST_poloniex_candles_update(currencies, api_key_name, period):
+def POST_poloniex_candles_update(logger, api_key_name, period):
     ''' Handler for pulling down candlestick data from poloniex for 5min, 4hr, 1d '''
     # Get api key
-    #try:
-    #    api_key = models.API_Key.objects.get(name=api_key_name)
-    #except models.API_Key.DoesNotExist:
+    try:
+        api_key = models.API_Key.objects.get(name=api_key_name)
+    except models.API_Key.DoesNotExist:
+        logger.log('API Key Error', 'API Key "%s" not found' % api_key_name)
+        return
+
+    polo = poloniex_api.poloniex(api_key.key, api_key.secret)
+
+    # Get list of currency pairs
+    exc = models.Exchange.objects.get(name='Poloniex')
+    for c1, c2 in poloniex_api.USDT_PAIRS:
+        # TODO: calculate t_start t_stop
+        messages = ['Period=%s, Pair=%s_%s' % (period, c1, c2)]
+
+        # Check if any data has been pulled for this currency
+        pair, _ = models.Pair.objects.get_or_create(exc=exc, c1=c1, c2=c2)
+        if pair.data_start == None:
+            # No initial date, search for beginning
+            messages.append('No initial date detected, searching for beginning')
+        else:
+            # Use end date
+            pass
         
+        logger.log('Candle Scraper Testing', '\n'.join(messages))
 
 
-def POST_poloniex_candles_pull(currencies, dt_start, dt_stop, api_key_name, period):
+def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_name, period):
     ''' Handler for pulling down candlestick data for poloniex '''
     # Get api key
     try:
