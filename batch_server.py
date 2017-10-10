@@ -9,6 +9,7 @@ import urlparse
 import django
 import threading
 import Queue
+import traceback
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'percms.settings'
 django.setup()
@@ -35,7 +36,7 @@ class Worker_Thread(threading.Thread):
                     raise KeyboardInterrupt
 
                 except Exception as ex:
-                    logger.log(type(ex), str(ex))
+                    logger.log('Unhandled Exception', traceback.format_exc())
 
         except KeyboardInterrupt:
             raise KeyboardInterrupt
