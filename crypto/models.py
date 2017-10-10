@@ -79,7 +79,7 @@ class Wallet(models.Model):
 # Candlestick data
 class Candle_Stick(models.Model):
     pair    = models.ForeignKey(Pair, on_delete=models.CASCADE)
-    stamp   = models.DateTimeField('Start time')
+    stamp   = models.DateTimeField('Start time', db_index=True)
     p_high  = models.FloatField('High')
     p_low   = models.FloatField('Low')
     p_close = models.FloatField('Close')

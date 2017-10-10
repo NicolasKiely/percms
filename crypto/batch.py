@@ -13,18 +13,27 @@ import filemanager.utils
 import scripting.utils
 
 
+def pulling_date_chunk_size(period):
+    ''' Returns number of days to pull data from in one chunk '''
+    return int(period)/30
+
 
 # Exception to log on backtest results page
 class Backtest_Exception(Exception):
     pass
 
 
-def pull_candle_data(polo, c1, c2, t_start, t_end, period):
+def fetch_candle_data(polo, c1_c2, scrape_start, scrape_stop, period):
+    ''' Fetches candlestick period data between given datetimes for currencies '''
+    t_int_start = int(time.mktime(scrape_start.timetuple()))
+    t_int_end = int(time.mktime(scrape_stop.timetuple()))
+    return polo.returnChartData(c1_c2, start=t_int_start, end=t_int_end, period=period)
+
+
+def save_candle_data(polo, c1, c2, period, data):
     ''' Pulls candlestick data for given currency pair in time frame '''
-    pair_name = c1+'_'+c2
     exc, _ = models.Exchange.objects.get_or_create(name='Poloniex')
     pair, _ = models.Pair.objects.get_or_create(c1=c1, c2=c2, exc=exc)
-    data = polo.returnChartData(pair_name, start=t_start, end=t_end, period=period)
     for x in data:
         dt = datetime.datetime.fromtimestamp(x['date'])
         dtz = timezone.make_aware(dt, timezone.get_current_timezone())
@@ -44,7 +53,6 @@ def pull_candle_data(polo, c1, c2, t_start, t_end, period):
         candle.w_average = x['weightedAverage']
         candle.period    = period
         candle.save()
-        print candle
 
 
 def run_backtest(backtest, fout):
@@ -158,7 +166,13 @@ def POST_backtest(logger, currencies, exchange_name, script_name, dt_start, dt_s
 
 
 def POST_poloniex_candles_update(logger, api_key_name, period):
-    ''' Handler for pulling down candlestick data from poloniex for 5min, 4hr, 1d '''
+    ''' Handler for pulling down candlestick data from poloniex for 5min, 4hr, 1d
+
+    5 min  = 300
+    1 hour = 3600
+    4 hour = 14400
+    1 day  = 86400
+    '''
     # Get api key
     try:
         api_key = models.API_Key.objects.get(name=api_key_name)
@@ -176,14 +190,67 @@ def POST_poloniex_candles_update(logger, api_key_name, period):
 
         # Check if any data has been pulled for this currency
         pair, _ = models.Pair.objects.get_or_create(exc=exc, c1=c1, c2=c2)
-        if pair.data_start == None:
-            # No initial date, search for beginning
-            messages.append('No initial date detected, searching for beginning')
+        if pair.data_stop == None:
+            # No end date, start from beginning
+            if pair.data_start == None:
+                # No initial date, search for beginning
+                messages.append(
+                    'No initial date detected, initializing search for beginning'
+                )
+                pair.data_start = datetime.datetime(2012, 01, 01)
+            else:
+                messages.append(
+                    'No end date detected, continuing search for beginning'
+                )
+            days_ahead = pulling_date_chunk_size(period)
+            end_date = pair.data_start + datetime.timedelta(days_ahead)
+            messages.append(
+                'Looking at time frame %s to %s' % (pair.data_start, end_date)
+            )
+
+            # Try to pull data
+            data = fetch_candle_data(
+                polo, c1+'_'+c2, pair.data_start, end_date, int(period)
+            )
+            if len(data) < 1 or data[0]['date'] == 0:
+                # No data, continue on
+                messages.append('No data in this time period')
+                pair.data_start = end_date
+
+            else:
+                # First data set found
+                messages.append('Data: '+ ''.join(['\n\t'+str(d) for d in data]))
+                save_candle_data(polo, c1, c2, int(period), data)
+                pair.data_stop = end_date
+
+            pair.save()
+
         else:
-            # Use end date
-            pass
+            # Continue on scraping
+            start_date = pair.data_stop
+            if start_date > timezone.now():
+                start_date = timezone.now() - datetime.timedelta(1)
+            days_ahead = pulling_date_chunk_size(period)
+            end_date = start_date + datetime.timedelta(days_ahead)
+
+            messages.append(
+                'Looking at time frame %s to %s' % (start_date, end_date)
+            )
+
+            data = fetch_candle_data(
+                polo, c1+'_'+c2, start_date, end_date, int(period)
+            )
+            if len(data) < 1 or data[0]['date'] == 0:
+                messages.append('No data in this time period')
+            else:
+                messages.append('Data: '+ ''.join(['\n\t'+str(d) for d in data]))
+                save_candle_data(polo, c1, c2, int(period), data)
+                pair.data_stop = end_date
+
+            pair.save()
         
         logger.log('Candle Scraper Testing', '\n'.join(messages))
+        logger.write('Currency '+c1+'_'+c2+' processed')
 
 
 def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_name, period):
@@ -202,9 +269,8 @@ def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_na
 
     scrape_start = datetime.datetime.strptime(dt_start, '%Y-%m-%d')
     scrape_stop = datetime.datetime.strptime(dt_stop, '%Y-%m-%d')
-
-    t_int_start = int(time.mktime(scrape_start.timetuple()))
-    t_int_stop = int(time.mktime(scrape_stop.timetuple()))
-
-    pull_candle_data(polo, c1, c2, t_int_start, t_int_stop, int(period))
+    
+    p = int(period)
+    data = fetch_candle_data(polo, currencies, scrape_start, scrape_stop, p)
+    save_candle_data(polo, c1, c2, p, data)
 
