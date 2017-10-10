@@ -110,7 +110,9 @@ class Candle_Stick(models.Model):
 # Back test
 class Back_Test(models.Model):
     script = models.ForeignKey(scripting.models.Source, null=True, on_delete=models.SET_NULL)
-    pair = models.ForeignKey(Pair, on_delete=models.SET_NULL, null=True)
+    exc = models.ForeignKey(Exchange, on_delete=models.SET_NULL, null=True)
+    base_currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True)
+    pairs = models.ManyToManyField(Pair)
     dt_start = models.DateTimeField('Start of test')
     dt_stop = models.DateTimeField('End of test')
     status = models.CharField('Activity status', max_length=64, default=BACK_TEST_READY)
@@ -118,22 +120,51 @@ class Back_Test(models.Model):
     error_msg = models.CharField('Error message', max_length=1024, default='')
     results_file = models.ForeignKey(Meta_File, on_delete=models.SET_NULL, null=True)
 
+    def get_exchange_str(self):
+        return self.exc.name if self.exc else 'Poloniex'
+
+    def get_base_str(self):
+        return self.base_currency.symbol if self.base_currency else 'USDT'
+
+    def get_trade_str(self):
+        try:
+            return ' '.join([p.symbol for p in self.pairs])
+        except ValueError:
+            return 'BTC'
+
+    def get_start_str(self):
+        dt = self.dt_start if self.dt_start else timezone.now()
+        return dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    def get_stop_str(self):
+        dt = self.dt_stop if self.dt_stop else timezone.now()
+        return dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    def get_script_str(self):
+        if self.script:
+            return str(self.script)
+        else:
+            try:
+                script = Back_Test.objects.order_by('-pk')[0:1].get().script
+                return str(script.script) if script else ''
+            except Back_Test.DoesNotExist:
+                return ''
+
+
     def __str__(self):
         return '%s on %s [%s - %s]' % (
-            self.script, self.pair, self.dt_start.date(), self.dt_stop.date()
+            self.script, self.get_base_str(),
+            self.get_start_str(), self.get_stop_str()
         )
 
     def to_form_fields(self):
-        script_name = '' if self.script is None else str(self.script)
-        currency_pair = '' if self.pair is None else self.pair.c1+'_'+self.pair.c2
-        exchange = '' if self.pair is None else self.pair.exc.name
         dt_start = self.dt_start if self.dt_start else timezone.now() - timedelta(days=31)
-        dt_stop = self.dt_stop if self.dt_stop else timezone.now()
         return [
-            {'label': 'Script', 'name': 'script', 'value': script_name},
-            {'label': 'Currency Pair', 'name': 'pair', 'value': currency_pair},
-            {'label': 'Exchange', 'name': 'exchange', 'value': exchange},
-            {'label': 'Start Date', 'name': 'dt_start', 'value': dt_start.date()},
-            {'label': 'Stop Date', 'name': 'dt_stop', 'value': dt_stop.date()},
+            {'label': 'Script', 'name': 'script', 'value': self.get_script_str()},
+            {'label': 'Exchange', 'name': 'exchange', 'value': self.get_exchange_str()},
+            {'label': 'Base Currency', 'name': 'base', 'value': self.get_base_str()},
+            {'label': 'Trade Currencies', 'name': 'trade', 'value': self.get_trade_str()},
+            {'label': 'Start Date', 'name': 'dt_start', 'value': self.get_start_str()},
+            {'label': 'Stop Date', 'name': 'dt_stop', 'value': self.get_stop_str()},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]

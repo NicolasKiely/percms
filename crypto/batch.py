@@ -185,7 +185,6 @@ def POST_poloniex_candles_update(logger, api_key_name, period):
     # Get list of currency pairs
     exc = models.Exchange.objects.get(name='Poloniex')
     for c1, c2 in poloniex_api.USDT_PAIRS:
-        # TODO: calculate t_start t_stop
         messages = ['Period=%s, Pair=%s_%s' % (period, c1, c2)]
 
         # Check if any data has been pulled for this currency
