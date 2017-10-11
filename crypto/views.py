@@ -35,17 +35,10 @@ def edit_key(request, dashboard):
 @login_required
 def add_backtest(request, dashboard):
     p = request.POST
-    #backtest = models.Back_Test(
-    #    status = models.BACK_TEST_READY,
-    #    script = source,
-    #    pair = pair,
-    #    dt_start = dtt.datetime.strptime(p['dt_start'], '%Y-%m-%d'),
-    #    dt_stop = dtt.datetime.strptime(p['dt_stop'], '%Y-%m-%d')
-    #)
-    #backtest.save()
     batch_interface.request('crypto', 'backtest', {
         'exchange_name': p['exchange'],
-        'currencies': p['pair'],
+        'base_currency': p['base'],
+        'trade_currencies': p['trade'],
         'script_name': p['script'],
         'dt_start': p['dt_start'],
         'dt_stop': p['dt_stop']

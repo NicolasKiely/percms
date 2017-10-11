@@ -128,12 +128,13 @@ class Back_Test(models.Model):
 
     def get_trade_str(self):
         try:
-            return ' '.join([p.symbol for p in self.pairs])
+            return ' '.join([p.symbol for p in self.pairs.all()])
         except ValueError:
             return 'BTC'
 
     def get_start_str(self):
-        dt = self.dt_start if self.dt_start else timezone.now()
+        #dt = self.dt_start if self.dt_start else timezone.now() - timedelta(days=31)
+        dt = self.dt_start if self.dt_start else timezone.now() - timedelta(days=2)
         return dt.strftime('%Y-%m-%d %H:%M:%S')
 
     def get_stop_str(self):
@@ -158,7 +159,6 @@ class Back_Test(models.Model):
         )
 
     def to_form_fields(self):
-        dt_start = self.dt_start if self.dt_start else timezone.now() - timedelta(days=31)
         return [
             {'label': 'Script', 'name': 'script', 'value': self.get_script_str()},
             {'label': 'Exchange', 'name': 'exchange', 'value': self.get_exchange_str()},
