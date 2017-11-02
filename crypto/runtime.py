@@ -93,6 +93,8 @@ class Runtime_Factory(object):
             candles = pair.candle_stick_set.filter(
                 **filter_args
             ).order_by('stamp').all()[:]
+            if len(candles) == 0:
+                continue
 
             candles_df = pd.DataFrame({
                 name+'_open': [c.p_open for c in candles],
@@ -104,7 +106,12 @@ class Runtime_Factory(object):
             df_list.append(candles_df)
             self.candles[pair.c2] = candles
             
-        self.df = pd.concat(df_list, axis=1)
+        try:
+            self.df = pd.concat(df_list, axis=1)
+        except TypeError as ex:
+            with open("temp.txt", "w") as fh:
+                fh.write('\n\n'.join(map(str, df_list)))
+                raise ex
 
     def runtime(self, c_name):
         ''' Build runtime at time i '''
