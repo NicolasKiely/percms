@@ -6,18 +6,29 @@ import hmac,hashlib
 
 # Name of USDT - Cryptocurrency pairs
 USDT_PAIRS = [
-    ('USDT', 'BTC'),
-    ('USDT', 'XRP'),
-    ('USDT', 'ETH'),
     ('USDT', 'BCH'),
-    ('USDT', 'STR'),
-    ('USDT', 'LTC'),
+    ('USDT', 'BTC'),
     ('USDT', 'DASH'),
-    ('USDT', 'ZEC'),
     ('USDT', 'ETC'),
-    ('USDT', 'XMR'),
+    ('USDT', 'ETH'),
+    ('USDT', 'LTC'),
     ('USDT', 'NXT'),
-    ('USDT', 'REP')
+    ('USDT', 'REP'),
+    ('USDT', 'STR'),
+    ('USDT', 'XMR'),
+    ('USDT', 'XRP'),
+    ('USDT', 'ZEC'),
+
+    ('BTC', 'DASH'),
+    ('BTC', 'ETC'),
+    ('BTC', 'ETH'),
+    ('BTC', 'LTC'),
+    ('BTC', 'NXT'),
+    ('BTC', 'REP'),
+    ('BTC', 'STR'),
+    ('BTC', 'XMR'),
+    ('BTC', 'XRP'),
+    ('BTC', 'ZEC')
 ]
 
 def createTimeStamp(datestr, format="%Y-%m-%d %H:%M:%S"):

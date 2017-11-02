@@ -99,6 +99,7 @@ filemanager/static/images/*
 filemanager/static/files/*
 crawler/static/crawler/*
 *.sqlite3
+*.sqlite3-journal
 manage.py
 wsgi.py
 migrations/
@@ -107,3 +108,4 @@ migrations/
 dj.txt
 startserver.sh
 temp.txt
+*.ipynb
