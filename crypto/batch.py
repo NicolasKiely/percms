@@ -64,6 +64,7 @@ def run_backtest(backtest, fout):
 
     # Setup initial postition values: all currency in base
     base_amount = 1.0
+    transfer_rate = 0.80
     base_name = backtest.base_currency.symbol
     c_names = [p.c2 for p in backtest.pairs.all()]
     balances = {c: 0.0 for c in c_names}
@@ -75,10 +76,11 @@ def run_backtest(backtest, fout):
 
     # Iterate over time
     # Header: Time, Portfolio growth, Positions ... , Balances ...
-    header = 'Time\t%%Growth\t%s\t%s\t%s\n' % (
+    header = 'Time\t%%Growth\t%s\t%s\t%s\t%s\n' % (
         '\t'.join(['Pos_'+c for c in c_names]),
         '\t'.join(['Bal_'+c for c in c_names]),
-        '\t'.join([base_name+'_'+c for c in c_names])
+        '\t'.join([base_name+'_'+c for c in c_names]),
+        '\t'.join(['STOP_'+c for c in c_names])
     )
     fout.write(header)
 
@@ -100,8 +102,9 @@ def run_backtest(backtest, fout):
                 raise Backtest_Exception('Script Exception: %s' % trace)
 
             candle = runtime.data.iloc[-1]
-            rates[c_name] = candle['close']
-            if runtime.is_stoploss_enabled() and p_close<runtime.get_stoploss():
+            candle_close = candle['close']
+            rates[c_name] = candle_close
+            if runtime.is_stoploss_enabled() and candle_close<runtime.get_stoploss():
                 # Stoploss
                 positions[c_name] = 'STOP'
 
@@ -119,7 +122,7 @@ def run_backtest(backtest, fout):
             # Handle sells
             p = positions[c_name]
             rate = rates[c_name]
-            if p != 'STOP' and p != 'SELL':
+            if not (p == 'STOP' or p == 'SELL'):
                 continue
             # Sell back base currency
             transfer = balances[c_name]
@@ -135,7 +138,7 @@ def run_backtest(backtest, fout):
             if p != 'LONG':
                 continue
             # Buy using base currency
-            transfer = base_amount
+            transfer = base_amount * transfer_rate
             base_amount -= transfer
             balances[c_name] += transfer_percentage * (transfer / rate)
 
@@ -143,12 +146,13 @@ def run_backtest(backtest, fout):
         for c_name in c_names:
             total_portfolio += balances[c_name] * rates[c_name]
 
-        fout.write('%s\t%s%%\t%s\t%s\t%s\n' % (
+        fout.write('%s\t%s%%\t%s\t%s\t%s\t%s\n' % (
             runtime_factory.trunc_df.index[-1].strftime('%Y-%m-%d %H:%M:%S'),
             100.0 * (total_portfolio-1.0),
             '\t'.join([str(positions[c]) for c in c_names]),
             '\t'.join([str(balances[c]) for c in c_names]),
-            '\t'.join([str(rates[c]) for c in c_names])
+            '\t'.join([str(rates[c]) for c in c_names]),
+            '\t'.join([str(runtime_factory.stoploss[c]) for c in c_names])
         ))
 
 

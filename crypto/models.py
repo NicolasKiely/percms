@@ -107,6 +107,54 @@ class Candle_Stick(models.Model):
         unique_together = ('pair', 'stamp')
 
 
+class Portfolio(models.Model):
+    ''' Management of portfolio '''
+    script = models.ForeignKey(scripting.models.Source, null=True, on_delete=models.SET_NULL)
+    exc = models.ForeignKey(Exchange, on_delete=models.SET_NULL, null=True)
+    base_currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True)
+    key = models.ForeignKey(API_Key, on_delete=models.SET_NULL, null=True)
+    pairs = models.ManyToManyField(Pair)
+    active = models.BooleanField(default=False)
+    last_eval = models.DateTimeField(null=True)
+
+    def get_exchange_str(self):
+        return self.exc.name if self.exc else ''
+
+    def get_base_str(self):
+        return self.base_currency.symbol if self.base_currency else ''
+
+    def get_trade_str(self):
+        try:
+            return ' '.join([p.c2 for p in self.pairs.all()])
+        except ValueError:
+            return ''
+
+    def get_script_str(self):
+        if self.script:
+            return str(self.script)
+        else:
+            return ''
+
+    def __str__(self):
+        return '%s on %s' % (self.script, self.get_base_str())
+
+    def get_api_key(self):
+        if self.key:
+            return self.key.name
+        else:
+            return ''
+
+    def to_form_fields(self):
+        return [
+            {'label': 'Script', 'name': 'script', 'value': self.get_script_str()},
+            {'label': 'Exchange', 'name': 'exchange', 'value': self.get_exchange_str()},
+            {'label': 'API Key', 'name': 'key', 'value': self.get_api_key()},
+            {'label': 'Base Currency', 'name': 'base', 'value': self.get_base_str()},
+            {'label': 'Trade Currencies', 'name': 'trade', 'value': self.get_trade_str()},
+            {'type': 'checkbox', 'label': 'Active', 'name': 'active', 'value': self.active},
+            {'type': 'hidden', 'name': 'pk', 'value': self.pk}
+        ]
+
 # Back test
 class Back_Test(models.Model):
     script = models.ForeignKey(scripting.models.Source, null=True, on_delete=models.SET_NULL)

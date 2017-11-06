@@ -38,3 +38,20 @@ BT_Dashboard.post_add = dbd.dashboard_view_closure(
 )
 
 BT_Dashboard.model_view_template = 'crypto/backtest_view.html'
+
+
+# Portfolio dashboard
+Port_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Portfolio)
+Port_Dashboard.name = 'Portfolio'
+Port_Dashboard.namespace = 'portfolio'
+Port_Dashboard.listing_headers = ['Account', 'Script']
+Port_Dashboard.get_listing_record = \
+    lambda x: [str(x.key), str(x.script)]
+
+Port_Dashboard.post_add = dbd.dashboard_view_closure(
+    Port_Dashboard, views.add_portfolio
+)
+
+Port_Dashboard.post_edit = dbd.dashboard_view_closure(
+    Port_Dashboard, views.edit_portfolio
+)
