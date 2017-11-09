@@ -334,3 +334,9 @@ def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_na
     data = fetch_candle_data(polo, currencies, scrape_start, scrape_stop, p)
     save_candle_data(polo, c1, c2, p, data)
 
+
+def POST_eval_portfolios(logger):
+    ''' Runs update on active portfolios '''
+    portfolios = models.Portfolio.objects.filter(active=True).all()
+    for portfolio in portfolios:
+        logger.write('Portfolio %s' % portfolio)

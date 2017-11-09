@@ -88,9 +88,10 @@ def edit_portfolio(request, dashboard):
     portfolio.exc = models.Exchange.objects.get(name=exchange_name)
     portfolio.key = models.API_Key.objects.get(name=p['key'])
     portfolio.base_currency = base
-    portfolio.active = 'active' in p and p['active']
+    portfolio.active = 'active' in p
     
     # Get trade pairs
+    portfolio.pairs.clear()
     for trade_currency in p['trade'].split(' '):
         trade_name = trade_currency.strip(',')
         try:
