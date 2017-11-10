@@ -4,6 +4,8 @@ import traceback
 from django.utils import timezone
 import datetime
 import pandas as pd
+import urllib2
+import decimal
 
 from scripting.utils import get_script_by_name
 from . import models
@@ -154,6 +156,23 @@ def run_backtest(backtest, fout):
             '\t'.join([str(rates[c]) for c in c_names]),
             '\t'.join([str(runtime_factory.stoploss[c]) for c in c_names])
         ))
+
+
+def eval_poloniex_portfolio(logger, portfolio):
+    ''' Evaluates portfolio on poloniex exchange '''
+    api_key = portfolio.key
+    polo = poloniex_api.poloniex(str(api_key.key), str(api_key.secret))
+    try:
+        polo_balances = polo.returnBalances()
+    except urllib2.HTTPError as ex:
+        logger.write('Error, do not have permission to access account balance')
+        raise Backtest_Exception(str(ex))
+
+    base_name = backtest.base_currency.symbol
+    balances = {k: float(v) for k,v in polo_balances.iteritems()}
+    for c, v in balances.iteritems():
+        if v > 0:
+            print c, v
 
 
 def POST_backtest(
@@ -338,5 +357,12 @@ def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_na
 def POST_eval_portfolios(logger):
     ''' Runs update on active portfolios '''
     portfolios = models.Portfolio.objects.filter(active=True).all()
+    Poloniex = models.Exchange.objects.get(name='Poloniex')
+
     for portfolio in portfolios:
         logger.write('Portfolio %s' % portfolio)
+
+        # Get active balance
+        if portfolio.exc == Poloniex:
+            logger.write('Poloniex exchange using account %s' % portfolio.key.name)
+            eval_poloniex_portfolio(logger, portfolio)
