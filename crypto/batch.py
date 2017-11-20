@@ -66,7 +66,7 @@ def run_backtest(backtest, fout):
 
     # Setup initial postition values: all currency in base
     base_amount = 1.0
-    transfer_rate = 0.80
+    transfer_rate = 1.0
     base_name = backtest.base_currency.symbol
     c_names = [p.c2 for p in backtest.pairs.all()]
     balances = {c: 0.0 for c in c_names}
@@ -171,8 +171,8 @@ def eval_poloniex_portfolio(logger, portfolio):
     base_name = backtest.base_currency.symbol
     balances = {k: float(v) for k,v in polo_balances.iteritems()}
     for c, v in balances.iteritems():
-        if v > 0:
-            print c, v
+        #if v > 0:
+        print c, v
 
 
 def POST_backtest(
