@@ -168,11 +168,11 @@ def eval_poloniex_portfolio(logger, portfolio):
         logger.write('Error, do not have permission to access account balance')
         raise Backtest_Exception(str(ex))
 
-    base_name = backtest.base_currency.symbol
+    base_name = portfolio.base_currency.symbol
     balances = {k: float(v) for k,v in polo_balances.iteritems()}
     for c, v in balances.iteritems():
-        #if v > 0:
-        print c, v
+        if v > 0:
+            print c, v
 
 
 def POST_backtest(
