@@ -168,11 +168,76 @@ def eval_poloniex_portfolio(logger, portfolio):
         logger.write('Error, do not have permission to access account balance')
         raise Backtest_Exception(str(ex))
 
+    portfolio_pairs = portfolio.pairs.all()
+    c_names = [p.c2 for p in portfolio.pairs.all()]
+    balances = {c: 0.0 for c in c_names}
+
     base_name = portfolio.base_currency.symbol
-    balances = {k: float(v) for k,v in polo_balances.iteritems()}
-    for c, v in balances.iteritems():
-        if v > 0:
-            print c, v
+    base_amount = 0.0
+
+    for c, v in polo_balances.iteritems():
+        fv = float(v)
+        if c == base_name:
+            base_amount = fv
+
+        elif fv > 0:
+            balances[c] = fv
+            c_names.append(c)
+
+    print "Base amount: ", base_name, base_amount
+    for c in c_names:
+        print c, balances[c]
+
+    # Initialize runtime
+    runtime_factory = crypto_runtime.Runtime_Factory(portfolio.pairs.all())
+    dt_stop = timezone.now()
+    dt_start = dt_stop - datetime.timedelta(days=365)
+    runtime_factory.load_data(dt_start, dt_stop, period=14400)
+    positions = {c: '....' for c in c_names}
+
+    # Calculate positions
+    for c_name in c_names:
+        # Iterate over currencies
+        try:
+            global runtime
+            runtime = runtime_factory.runtime(c_name)
+            exec(portfolio.script.source)
+        except Exception as ex:
+            trace = traceback.format_exc()
+            print trace
+            raise Backtest_Exception('Script Exception: %s' % trace)
+
+        candle = runtime.data.iloc[-1]
+        if runtime.is_stoploss_enabled() and candle_close<runtime.get_stoploss():
+            # Stoploss
+            positions[c_name] = 'STOP'
+
+        elif runtime.signal == 'LONG':
+            positions[c_name] = 'LONG'
+
+        elif runtime.signal == 'SELL':
+            positions[c_name] = 'SELL'
+
+        else:
+            positions[c_name] = '....'
+
+    # Act on position: sells first, then buys
+    for c_name in c_names:
+        # Handle sells
+        p = positions[c_name]
+        bal = balances[c_name]
+        if not (p == 'STOP' or p == 'SELL'):
+            continue
+        if bal > 0:
+            print 'Sell '+ c_name +' for '+ bal
+    
+    for c_name in c_names:
+        # Handle buys
+        if p != 'LONG':
+            continue
+        if base_amount > 0:
+            print 'Buy '+ c_name +' for '
+
 
 
 def POST_backtest(

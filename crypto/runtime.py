@@ -119,11 +119,11 @@ class Runtime_Factory(object):
 
         return Runtime(self, c_name, pd.DataFrame(
             {
-                'open': self.trunc_df[c_name+'_open'],
-                'close': self.trunc_df[c_name+'_close'],
-                'high': self.trunc_df[c_name+'_high'],
-                'low': self.trunc_df[c_name+'_low'],
-                'volume': self.trunc_df[c_name+'_volume']
+                'open': df[c_name+'_open'],
+                'close': df[c_name+'_close'],
+                'high': df[c_name+'_high'],
+                'low': df[c_name+'_low'],
+                'volume': df[c_name+'_volume']
             },
-            index = self.trunc_df.index
+            index = df.index
         ))

@@ -28,6 +28,7 @@ USDT_PAIRS = [
     ('BTC', 'STR'),
     ('BTC', 'XMR'),
     ('BTC', 'XRP'),
+    ('BTC', 'VTC'),
     ('BTC', 'ZEC')
 ]
 
