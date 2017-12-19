@@ -19,6 +19,25 @@ import scripting.utils
 
 work_queue = Queue.Queue(10)
 
+
+def load_modules(batch_modules, do_reload):
+    ''' Loads modules '''
+    callbacks = {}
+
+    # Load batch handler methods from modules
+    for app_name, module in batch_modules.iteritems():
+        if do_reload:
+            reload(module)
+
+        for member in dir(module):
+            lmember = member.lower()
+            if lmember.startswith('post_'):
+                path = '/%s/%s' % (app_name, lmember[5:])
+                callbacks[path] = getattr(module, member)
+
+    return callbacks
+
+
 class Worker_Thread(threading.Thread):
     def run(self):
         try:
@@ -43,27 +62,21 @@ class Worker_Thread(threading.Thread):
         
 
 # To add more batch modules, add them here
+global BATCH_MODULES
 BATCH_MODULES = {
     'crypto': crypto.batch
 }
 
 
 # Map of server URL paths to callback functions
-CALLBACKS = {}
+global CALLBACKS
+CALLBACKS = load_modules(BATCH_MODULES, False)
 
 
 # Port/Address
 port = percms.settings.BATCH_PORT
 bind_address = ('127.0.0.1', batch_interface.PORT)
 
-
-# Load batch handler methods from modules
-for app_name, module in BATCH_MODULES.iteritems():
-    for member in dir(module):
-        lmember = member.lower()
-        if lmember.startswith('post_'):
-            path = '/%s/%s' % (app_name, lmember[5:])
-            CALLBACKS[path] = getattr(module, member)
             
 
 print '\n'.join(['Loading '+s for s in CALLBACKS.keys()])
@@ -74,19 +87,38 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(req):
         output = {'status': 'success', 'message': ''}
         response_code = 200
-        try:
-            handler = CALLBACKS[req.path.lower()]
+        handler = None
+        global CALLBACKS
+        global BATCH_MODULES
 
-        except KeyError as ex:
-            response_code = 404
-            output = {'status': 'error', 'message': 'Command not found'}
+        req_path = req.path.lower()
+        if req_path == '/batch/help':
+            output = {'status': 'info'}
+            message = 'Functions: '
+            for k, v in CALLBACKS.iteritems():
+                message += '\n'+ k + '\n\t'+ v.__doc__.replace('\n', '\n\t')
 
-        if response_code == 200:
-            req_len = int(req.headers.getheader('content-length'))
-            request = req.rfile.read(req_len)
-            post_args = urlparse.parse_qs(request, keep_blank_values=True) 
+            output['message'] = message
 
-            args = {k: v[0] for k,v in post_args.iteritems() if v and len(v)}
+        elif req_path == '/batch/reload':
+            output['message'] = 'Reloaded'
+
+            CALLBACKS = load_modules(BATCH_MODULES, True)
+
+        else:
+            try:
+                handler = CALLBACKS[req_path]
+
+            except KeyError as ex:
+                response_code = 404
+                output = {'status': 'error', 'message': 'Command not found'}
+
+            if response_code == 200:
+                req_len = int(req.headers.getheader('content-length'))
+                request = req.rfile.read(req_len)
+                post_args = urlparse.parse_qs(request, keep_blank_values=True) 
+
+                args = {k: v[0] for k,v in post_args.iteritems() if v and len(v)}
             
 
         req.send_response(response_code)
@@ -94,7 +126,7 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         req.end_headers()
         req.wfile.write(json.dumps(output))
 
-        if response_code == 200:
+        if response_code == 200 and handler:
             try:
                 #handler(**args)
                 work_queue.put( (handler, args) )

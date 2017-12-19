@@ -244,7 +244,21 @@ def POST_backtest(
         logger, base_currency, trade_currencies, exchange_name,
         script_name, dt_start, dt_stop
     ):
-    ''' Handler for backtest batch test '''
+    ''' Handler for backtest batch test
+
+        base_currency:
+            Currency to trade against (eg BTC)
+        trade_currencies:
+            Space-separated list of currencies to trade (commas okay)
+        exchange_name:
+            Name of exchange for data usage
+        script_name:
+            Name of script to run strategy on
+        dt_start:
+            Start time of simulation
+        dt_stop:
+            Stop time of sumulation
+    '''
     # Create new test record
     backtest = models.Back_Test(
         dt_start=dt_start, dt_stop=dt_stop,
