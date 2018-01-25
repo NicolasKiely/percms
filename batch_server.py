@@ -39,6 +39,7 @@ def load_modules(batch_modules, do_reload):
 
 
 class Worker_Thread(threading.Thread):
+    current_job = None
     def run(self):
         try:
             logger = scripting.utils.Logging_Runtime('Batch_Server')
@@ -49,7 +50,9 @@ class Worker_Thread(threading.Thread):
                     break
                 # Call handler on args
                 try:
+                    self.current_job = (func, args)
                     func(logger, **args)
+                    self.current_job = None
 
                 except KeyboardInterrupt:
                     raise KeyboardInterrupt
@@ -93,10 +96,11 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         req_path = req.path.lower()
         if req_path == '/batch/help':
-            output = {'status': 'info'}
+            output['status'] = 'info'
             message = 'Functions: '
             for k, v in CALLBACKS.iteritems():
-                message += '\n'+ k + '\n\t'+ v.__doc__.replace('\n', '\n\t')
+                doc = v.__doc__ if v.__doc__ else ''
+                message += '\n'+ k + '\n\t'+ doc.replace('\n', '\n\t')
 
             output['message'] = message
 
@@ -104,6 +108,26 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             output['message'] = 'Reloaded'
 
             CALLBACKS = load_modules(BATCH_MODULES, True)
+
+        elif req_path == '/batch/jobs':
+            output['status'] = 'info'
+            jobs = list(work_queue.queue)
+            message = ''
+            for i, worker in enumerate(workers):
+                if worker.current_job:
+                    job_name = worker.current_job[0].__name__
+                    message += 'Worker %s: %s\n' % (i, job_name)
+                else:
+                    message += 'Worker %s: free\n' % (i,)
+
+            if work_queue.empty():
+                message += 'Empty queue\n'
+
+            elif work_queue.full():
+                message += 'Work queue full!\n'
+
+            message += '\n\t'.join([f.__name__ for f, a in jobs])
+            output['message'] = message
 
         else:
             try:
@@ -138,14 +162,19 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 Batch_Handler.protocol_version = 'HTTP/1.0'
 server = BaseHTTPServer.HTTPServer(bind_address, Batch_Handler)
 
-worker = Worker_Thread()
-worker.start()
+num_workers = 1
+workers = [Worker_Thread() for i in range(0, num_workers)]
+#worker = Worker_Thread()
+#worker.start()
+for worker in workers:
+    worker.start()
 
 try:
     server.serve_forever()
 except KeyboardInterrupt:
     print '\nShutting Down'
     work_queue.put( (None, None) )
-    worker.join()
+    for worker in workers:
+        worker.join()
 
 server.server_close()
