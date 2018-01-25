@@ -31,6 +31,7 @@ right_box_class = ' '.join([
 
 form_open_template = '<form class="form-horizontal" action="{}" method="post">'
 form_input_template = '<input class="form-control" type="{}" name="{}" value="{}" {}>'
+form_area_template = '<textarea class="form-control" name="{}" rows="8">{}</textarea>'
 form_select_template = '<select class="form-control" name="{}" value="{}">{}</select>'
 form_option_template = '<option value="{}">{}</option>'
 form_selected_template = '<option value="{}" selected="true">{}</option>'
@@ -124,6 +125,9 @@ def build_input_string(label, ftype, value, name, options):
 
             input_str += form_select_template.format(name, value, opt_str)
 
+        elif ftype == 'area':
+            input_str += form_area_template.format(name, value)
+            
         else:
             if type(value) is unicode:
                 input_str += form_input_template.format(
