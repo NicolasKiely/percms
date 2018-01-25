@@ -104,3 +104,19 @@ def edit_portfolio(request, dashboard):
 
     portfolio.save()
     return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+
+@login_required
+def add_exchange(request, dashboard):
+    p = request.POST
+    exc = models.Exchange(name=p['name'])
+    exc.save()
+    return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+@login_required
+def edit_exchange(request, dashboard):
+    p = request.POST
+    exc = get_object_or_404(models.Exchange, pk=p['pk'])
+    exc.name = p['name']
+    exc.save()
+    return HttpResponseRedirect(dashboard.reverse_dashboard())

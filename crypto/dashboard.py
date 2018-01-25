@@ -55,3 +55,20 @@ Port_Dashboard.post_add = dbd.dashboard_view_closure(
 Port_Dashboard.post_edit = dbd.dashboard_view_closure(
     Port_Dashboard, views.edit_portfolio
 )
+
+
+# Exchange dashboard
+Exc_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Exchange)
+Exc_Dashboard.name = 'Exchange'
+Exc_Dashboard.namespace = 'exchange'
+Exc_Dashboard.listing_headers = ['Name']
+Exc_Dashboard.get_listing_record = \
+    lambda x: [str(x.name)]
+
+Exc_Dashboard.post_add = dbd.dashboard_view_closure(
+    Exc_Dashboard, views.add_exchange
+)
+
+Exc_Dashboard.post_edit = dbd.dashboard_view_closure(
+    Exc_Dashboard, views.edit_exchange
+)

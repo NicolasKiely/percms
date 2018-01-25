@@ -47,6 +47,12 @@ class Exchange(models.Model):
     def __str__(self):
         return self.name
 
+    def to_form_fields(self):
+        return [
+            {'label': 'Name', 'name': 'name', 'value': self.name},
+            {'type': 'hidden', 'name': 'pk', 'value': self.pk}
+        ]
+
 
 # Represents currency
 class Currency(models.Model):
@@ -75,6 +81,13 @@ class Pair(models.Model):
 class Wallet(models.Model):
     cash = models.FloatField('Free cash')
 
+
+class Candle_Marker(models.Model):
+    pair = models.ForeignKey(Pair, on_delete=models.CASCADE)
+    period  = models.IntegerField('Period in seconds')
+    data_start = models.DateTimeField('Start date of contigous data pulled', null=True)
+    data_stop = models.DateTimeField('End date of contigous data pulled', null=True)
+    
 
 # Candlestick data
 class Candle_Stick(models.Model):

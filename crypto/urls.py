@@ -8,4 +8,5 @@ urlpatterns = [
 ] \
     + dashboard.Key_Dashboard.create_standard_urls() \
     + dashboard.BT_Dashboard.create_standard_urls() \
-    + dashboard.Port_Dashboard.create_standard_urls()
+    + dashboard.Port_Dashboard.create_standard_urls() \
+    + dashboard.Exc_Dashboard.create_standard_urls()
