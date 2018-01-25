@@ -1,0 +1,25 @@
+{% extends "common/base.html" %}
+{% load core %}
+
+{% block html_body %}
+  {# Title/Nav Panel #}
+  {% open_box %}
+    <h2>{{ model }}: <u>{{ name }}</u></h2>
+    <div class="text-center">
+      {{ object.nav_link | safe }}
+    </div>
+  {% close_box %}
+
+  {# Data pull markers #}
+  {% open_box %}
+    <h2>Markers</h2>
+    <table class="table table-striped">
+      <tr>
+        <th>Pair</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Freq</th>
+      </tr>
+    </table>
+  {% close_box %}
+{% endblock %}
