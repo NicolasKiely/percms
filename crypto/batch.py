@@ -326,12 +326,12 @@ def POST_backtest(
     backtest.save()
 
 
-def POST_poloniex_candles_update(logger, api_key_name, period):
+def POST_poloniex_candles_update(logger, api_key_name):
     ''' Handler for pulling down candlestick data from poloniex for 5min, 4hr, 1d
 
     api_key_name:
         Name of api key to use to connect with poloniex
-    period:
+    period (deprecated):
         Timeframe of candlestick data to pull
         5 min  = 300
         1 hour = 3600
@@ -349,49 +349,57 @@ def POST_poloniex_candles_update(logger, api_key_name, period):
 
     # Get list of currency pairs
     exc = models.Exchange.objects.get(name='Poloniex')
-    for c1, c2 in poloniex_api.USDT_PAIRS:
+    markers = []
+    for pair in exc.pair_set.all():
+        for marker in pair.candle_marker_set.filter(active=True).all():
+            markers.append(marker)
+
+    for marker in markers:
+        period = marker.period
+        pair = marker.pair
+        c1 = pair.c1
+        c2 = pair.c2
         messages = ['Period=%s, Pair=%s_%s' % (period, c1, c2)]
 
         # Check if any data has been pulled for this currency
-        pair, _ = models.Pair.objects.get_or_create(exc=exc, c1=c1, c2=c2)
-        if pair.data_stop == None:
+        if marker.data_stop == None:
             # No end date, start from beginning
-            if pair.data_start == None:
+            if marker.data_start == None:
                 # No initial date, search for beginning
                 messages.append(
                     'No initial date detected, initializing search for beginning'
                 )
-                pair.data_start = datetime.datetime(2012, 01, 01)
+                marker.data_start = datetime.datetime(2012, 01, 01)
             else:
                 messages.append(
                     'No end date detected, continuing search for beginning'
                 )
             days_ahead = pulling_date_chunk_size(period)
-            end_date = pair.data_start + datetime.timedelta(days_ahead)
+            end_date = marker.data_start + datetime.timedelta(days_ahead)
             messages.append(
-                'Looking at time frame %s to %s' % (pair.data_start, end_date)
+                'Looking at time frame %s to %s' % (marker.data_start, end_date)
             )
 
             # Try to pull data
             data = fetch_candle_data(
-                polo, c1+'_'+c2, pair.data_start, end_date, int(period)
+                polo, c1+'_'+c2, marker.data_start, end_date, int(period)
             )
             if len(data) < 1 or data[0]['date'] == 0:
                 # No data, continue on
                 messages.append('No data in this time period')
-                pair.data_start = end_date
+                marker.data_start = end_date
 
             else:
                 # First data set found
-                messages.append('Data: '+ ''.join(['\n\t'+str(d) for d in data]))
+                messages.append('Data size: '+ str(len(data)))
                 save_candle_data(polo, c1, c2, int(period), data)
-                pair.data_stop = end_date
+                marker.data_stop = end_date
 
-            pair.save()
+            marker.save()
 
         else:
             # Continue on scraping
-            start_date = pair.data_stop
+            start_date = marker.data_stop
             if start_date > timezone.now():
                 start_date = timezone.now() - datetime.timedelta(1)
             days_ahead = pulling_date_chunk_size(period)
@@ -407,11 +415,11 @@ def POST_poloniex_candles_update(logger, api_key_name, period):
             if len(data) < 1 or data[0]['date'] == 0:
                 messages.append('No data in this time period')
             else:
-                messages.append('Data: '+ ''.join(['\n\t'+str(d) for d in data]))
+                messages.append('Data: '+ str(len(data)))
                 save_candle_data(polo, c1, c2, int(period), data)
-                pair.data_stop = end_date
+                marker.data_stop = end_date
 
-            pair.save()
+            marker.save()
         
         logger.log('Candle Scraper Testing', '\n'.join(messages))
         logger.write('Currency '+c1+'_'+c2+' processed')
