@@ -193,6 +193,21 @@ class Portfolio(models.Model):
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
 
+
+# Represents a position for a portfolio
+class Portfolio_Position(models.Model):
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+    pair = models.ForeignKey(Pair, on_delete=models.CASCADE)
+    position = models.CharField('Position on pair', max_length=32, null=True, default='....')
+    stoploss = models.FloatField('Stoploss value', null=True)
+
+    def __str__(self):
+        return '[%s %s : %s]' % (self.pair.exc.name, self.pair.name(), self.position)
+
+    class Meta:
+        unique_together = ('portfolio', 'pair')
+
+
 # Back test
 class Back_Test(models.Model):
     script = models.ForeignKey(scripting.models.Source, null=True, on_delete=models.SET_NULL)

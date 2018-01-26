@@ -169,7 +169,8 @@ def eval_poloniex_portfolio(logger, portfolio):
         raise Backtest_Exception(str(ex))
 
     portfolio_pairs = portfolio.pairs.all()
-    c_names = [p.c2 for p in portfolio.pairs.all()]
+    c_names = [p.c2 for p in portfolio_pairs]
+    pair_lookup = {p.c2: p for p in portfolio_pairs}
     balances = {c: 0.0 for c in c_names}
 
     base_name = portfolio.base_currency.symbol
@@ -223,9 +224,17 @@ def eval_poloniex_portfolio(logger, portfolio):
 
     # Act on position: sells first, then buys
     for c_name in c_names:
-        # Handle sells
+        # Log position
         p = positions[c_name]
         bal = balances[c_name]
+
+        pos_record, created = models.Portfolio_Position.objects.get_or_create(
+            portfolio=portfolio, pair=pair_lookup[c_name]
+        )
+        pos_record.position = p
+        pos_record.save()
+
+        # Handle sells
         if not (p == 'STOP' or p == 'SELL'):
             continue
         if bal > 0:

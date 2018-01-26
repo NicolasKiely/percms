@@ -27,11 +27,13 @@
       <tr>
         <th>Pair</th>
         <th>Balance</th>
+        <th>Positions</th>
       </tr>
       {% for pair in pairs %}
       <tr>
         <td>{{ pair.name }}</td>
         <td>{{ pair.balance }}</td>
+        <td>{{ pair.position }}</td>
       </tr>
       {% endfor %}
     </table>
