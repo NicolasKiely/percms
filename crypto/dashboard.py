@@ -73,4 +73,8 @@ Exc_Dashboard.post_edit = dbd.dashboard_view_closure(
     Exc_Dashboard, views.edit_exchange
 )
 
+Exc_Dashboard.view_public = dbd.dashboard_view_closure(
+    Exc_Dashboard, views.view_exchange
+)
+
 Exc_Dashboard.model_view_template = 'crypto/exchange_view.html'

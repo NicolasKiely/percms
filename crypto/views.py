@@ -107,6 +107,25 @@ def edit_portfolio(request, dashboard):
 
 
 @login_required
+def view_exchange(request, dashboard, pk):
+    obj = get_object_or_404(dashboard.model, pk=pk)
+    markers = []
+    pairs = obj.pair_set.all()
+    for pair in pairs:
+        pair_str = pair.c1 +'_'+ pair.c2
+
+        # Get monitoring markers
+        for marker in pair.candle_marker_set.filter(active=True).all():
+            markers.append({
+                'pair': pair_str, 'period': str(marker.period),
+                'start': str(marker.data_start), 'end': str(marker.data_stop)
+            })
+
+    context = { 'markers': markers }
+    return dashboard.view_model(request, obj, context)
+    
+
+@login_required
 def add_exchange(request, dashboard):
     p = request.POST
     exc = models.Exchange(name=p['name'])

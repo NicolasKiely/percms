@@ -20,6 +20,14 @@
         <th>End</th>
         <th>Freq</th>
       </tr>
+      {% for marker in markers %}
+      <tr>
+        <td>{{ marker.pair }}</td>
+        <td>{{ marker.start }}</td>
+        <td>{{ marker.end }}</td>
+        <td>{{ marker.period }}</td>
+      </tr>
+      {% endfor %}
     </table>
   {% close_box %}
 {% endblock %}
