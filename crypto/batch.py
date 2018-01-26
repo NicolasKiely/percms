@@ -192,7 +192,7 @@ def eval_poloniex_portfolio(logger, portfolio):
     runtime_factory = crypto_runtime.Runtime_Factory(portfolio.pairs.all())
     dt_stop = timezone.now()
     dt_start = dt_stop - datetime.timedelta(days=365)
-    runtime_factory.load_data(dt_start, dt_stop, period=14400)
+    runtime_factory.load_data(dt_start, dt_stop, period=portfolio.period)
     positions = {c: '....' for c in c_names}
 
     # Calculate positions

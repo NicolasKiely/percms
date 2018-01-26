@@ -89,6 +89,9 @@ class Pair(models.Model):
     data_start = models.DateTimeField('Start date of contigous data pulled', null=True)
     data_stop = models.DateTimeField('End date of contigous data pulled', null=True)
 
+    def name(self):
+        return self.c1 +'_'+ self.c2
+
     def __str__(self):
         return '[%s_%s %s]' % (self.c1, self.c2, self.exc.name[:3])
 

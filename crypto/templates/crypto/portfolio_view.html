@@ -1,0 +1,39 @@
+{% extends "common/base.html" %}
+{% load core %}
+
+{% block html_body %}
+  {# Title/Nav Panel #}
+  {% open_box %}
+    <h2>{{ model }}: <u>{{ name }}</u></h2>
+    <div class="text-center">
+      {{ object.nav_link | safe }}
+    </div>
+
+    <div>
+      <p>
+        <b>Base Currency</b>: <u>{{ base.name }}</u>
+      </p>
+      <p>
+        <b>Base Balance</b>: <u>{{ base.balance }}</u>
+      </p>
+    </div>
+  {% close_box %}
+
+  {# Portfolio Position #}
+  {% open_box %}
+    <h2>Position</h2>
+
+    <table class="table table-striped">
+      <tr>
+        <th>Pair</th>
+        <th>Balance</th>
+      </tr>
+      {% for pair in pairs %}
+      <tr>
+        <td>{{ pair.name }}</td>
+        <td>{{ pair.balance }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% close_box %}
+{% endblock %}

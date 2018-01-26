@@ -5,6 +5,7 @@ import datetime as dtt
 
 from . import models
 from . import utils
+from . import poloniex_api
 import batch_interface
 from scripting.utils import get_script_by_name
 
@@ -105,6 +106,39 @@ def edit_portfolio(request, dashboard):
 
     portfolio.save()
     return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+
+@login_required
+def view_portfolio(request, dashboard, pk):
+    obj = get_object_or_404(dashboard.model, pk=pk)
+    pairs = [p for p in obj.pairs.all()]
+    balances = {p.name(): 0.0 for p in pairs}
+    base_name = obj.base_currency.symbol
+    base_amt = 0.0
+
+    if obj.exc.name == 'Poloniex':
+        # Read poloniex balance
+        polo = poloniex_api.poloniex(str(obj.key.key), str(obj.key.secret))
+        balance_vals = polo.returnBalances()
+        for c, v in balance_vals.iteritems():
+            fv = float(v)
+            if fv > 0:
+                if base_name == c:
+                    base_amt = fv
+                else:
+                    balances[c] = fv
+
+    context = {
+        'pairs': [
+            {'name': p.c2, 'balance': balances[p.name()]}
+            for p in pairs
+        ],
+        'base': {
+            'name': base_name,
+            'balance': base_amt
+        }
+    }
+    return dashboard.view_model(request, obj, context)
 
 
 @login_required

@@ -56,6 +56,12 @@ Port_Dashboard.post_edit = dbd.dashboard_view_closure(
     Port_Dashboard, views.edit_portfolio
 )
 
+Port_Dashboard.view_public = dbd.dashboard_view_closure(
+    Port_Dashboard, views.view_portfolio
+)
+
+Port_Dashboard.model_view_template = 'crypto/portfolio_view.html'
+
 
 # Exchange dashboard
 Exc_Dashboard = dbd.Model_Dashboard(App_Dashboard, models.Exchange)
