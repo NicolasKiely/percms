@@ -58,11 +58,11 @@ def save_candle_data(polo, c1, c2, period, data):
         candle.save()
 
 
-def run_backtest(backtest, fout):
+def run_backtest(backtest, fout, period=14400):
     ''' Run backtest '''
     # Initialize runtime
     runtime_factory = crypto_runtime.Runtime_Factory(backtest.pairs.all())
-    runtime_factory.load_data(backtest.dt_start, backtest.dt_stop, period=14400)
+    runtime_factory.load_data(backtest.dt_start, backtest.dt_stop, period=period)
 
     # Setup initial postition values: all currency in base
     base_amount = 1.0
@@ -242,7 +242,7 @@ def eval_poloniex_portfolio(logger, portfolio):
 
 def POST_backtest(
         logger, base_currency, trade_currencies, exchange_name,
-        script_name, dt_start, dt_stop
+        script_name, dt_start, dt_stop, period=14400
     ):
     ''' Handler for backtest batch test
 
@@ -258,6 +258,8 @@ def POST_backtest(
             Start time of simulation
         dt_stop:
             Stop time of sumulation
+        period:
+            Candlestick Period (default=14400)
     '''
     # Create new test record
     backtest = models.Back_Test(
@@ -327,10 +329,14 @@ def POST_backtest(
 def POST_poloniex_candles_update(logger, api_key_name, period):
     ''' Handler for pulling down candlestick data from poloniex for 5min, 4hr, 1d
 
-    5 min  = 300
-    1 hour = 3600
-    4 hour = 14400
-    1 day  = 86400
+    api_key_name:
+        Name of api key to use to connect with poloniex
+    period:
+        Timeframe of candlestick data to pull
+        5 min  = 300
+        1 hour = 3600
+        4 hour = 14400
+        1 day  = 86400
     '''
     # Get api key
     try:
@@ -412,7 +418,19 @@ def POST_poloniex_candles_update(logger, api_key_name, period):
 
 
 def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_name, period):
-    ''' Handler for pulling down candlestick data for poloniex '''
+    ''' Handler for pulling down candlestick data for poloniex (obsolete)
+    
+    Currencies:
+        Currency pair (eg USDT_BTC)
+    dt_start:
+        Begining to time range
+    dt_stop:
+        End of time range
+    api_key_name:
+        API key name to use
+    period:
+        Candlestick timeframe (eg 300, 14400)
+    '''
     # Get api key
     try:
         api_key = models.API_Key.objects.get(name=api_key_name)
@@ -431,6 +449,70 @@ def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_na
     p = int(period)
     data = fetch_candle_data(polo, currencies, scrape_start, scrape_stop, p)
     save_candle_data(polo, c1, c2, p, data)
+
+
+def POST_debug_polo_account(logger, api_key_name, pair=None):
+    ''' Posts information about poloniex portfolio
+    api_key_name:
+        Account name
+    pair (optional):
+        Currency pair to list open orders and trade history
+    '''
+    Poloniex = models.Exchange.objects.get(name='Poloniex')
+    try:
+        api_key = models.API_Key.objects.get(name=api_key_name)
+    except models.API_Key.DoesNotExist:
+        print 'API key "%s" not found' % api_key_name
+        return
+
+    polo = poloniex_api.poloniex(str(api_key.key), str(api_key.secret))
+    balances = polo.returnBalances()
+
+    # Print balance
+    print 'Balance'
+    for c, v in balances.iteritems():
+        fv = float(v)
+        if fv > 0:
+            print '%s: %s' % (c, fv)
+
+    if pair:
+        # Print orders for pair
+        print 'Open Orders:'
+        print polo.returnOpenOrders(pair)
+
+        print 'Trade History:'
+        print polo.returnTradeHistory(pair)
+
+
+def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
+    Poloniex = models.Exchange.objects.get(name='Poloniex')
+    try:
+        api_key = models.API_Key.objects.get(name=api_key_name)
+    except models.API_Key.DoesNotExist:
+        print 'API key "%s" not found' % api_key_name
+        return
+    polo = poloniex_api.poloniex(str(api_key.key), str(api_key.secret))
+    ticker = polo.returnTicker()
+    pair_ticker = ticker[pair]
+
+    try:
+        price = float(pair_ticker['last'])
+        print price
+        orders = polo.returnOpenOrders(pair)
+        for order in orders:
+            order_no = order['orderNumber']
+            print 'Cancelling order #%s' % (order_no)
+            print polo.cancel(pair, order_no)
+
+        if trade.lower() != 'sell':
+            q = polo.buy(str(pair), str(price*1.001), str(amount))
+        else:
+            q = polo.sell(str(pair), str(price*0.999), str(amount))
+        print q
+
+    except Exception as ex:
+        print 'Buy failed'
+        print ex
 
 
 def POST_eval_portfolios(logger):

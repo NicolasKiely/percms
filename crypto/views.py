@@ -113,10 +113,48 @@ def add_exchange(request, dashboard):
     exc.save()
     return HttpResponseRedirect(dashboard.reverse_dashboard())
 
+
 @login_required
 def edit_exchange(request, dashboard):
     p = request.POST
     exc = get_object_or_404(models.Exchange, pk=p['pk'])
     exc.name = p['name']
+
+    # Parse list of pairs
+    marker_map = {} # Mapping of currency tuple to list of periods
+    tracking_pairs = p['pairs'].split('\n')
+    for tracker in tracking_pairs:
+        pair_name, periods = [s.strip() for s in tracker.split(':')]
+        pair_tuple = tuple(pair_name.split('_'))
+        marker_map[pair_tuple] = [int(p.strip()) for p in periods.split(',')]
+        
+
+    # Get old trading pairs
+    pairs = exc.pair_set.all()
+    for pair in pairs:
+        # Get monitoring markers
+        for marker in pair.candle_marker_set.all():
+            marker.active = False
+            marker.save()
+    
+    # Update trading pairs
+    for pair_name, periods in marker_map.iteritems():
+        # Get currency pair
+        c1, c2 = pair_name
+        pair, created = models.Pair.objects.get_or_create(
+            exc=exc, c1=c1, c2=c2
+        )
+        if not created:
+            pair.save()
+
+        # Get markers
+        for period in periods:
+            marker, created = models.Candle_Marker.objects.get_or_create(
+                pair=pair, period=period
+            )
+            marker.active = True
+            marker.save()
+
+
     exc.save()
     return HttpResponseRedirect(dashboard.reverse_dashboard())

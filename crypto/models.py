@@ -47,9 +47,28 @@ class Exchange(models.Model):
     def __str__(self):
         return self.name
 
+    def list_pairs(self):
+        records = [] 
+        for pair in self.pair_set.all():
+            pair_str = pair.c1 +'_'+ pair.c2
+            markers = pair.candle_marker_set.all()
+            if len(markers) == 0:
+                continue
+            period_str = ', '.join([
+                str(marker.period)
+                for marker in pair.candle_marker_set.all()
+            ])
+            records.append(pair_str +': '+ period_str)
+
+        return '\n'.join(records)
+
     def to_form_fields(self):
         return [
             {'label': 'Name', 'name': 'name', 'value': self.name},
+            {
+                'label': 'Tracked Pairs', 'type': 'area',
+                'name': 'pairs', 'value': self.list_pairs()
+            },
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
 
@@ -84,6 +103,7 @@ class Wallet(models.Model):
 
 class Candle_Marker(models.Model):
     pair = models.ForeignKey(Pair, on_delete=models.CASCADE)
+    active = models.BooleanField(default=False)
     period  = models.IntegerField('Period in seconds')
     data_start = models.DateTimeField('Start date of contigous data pulled', null=True)
     data_stop = models.DateTimeField('End date of contigous data pulled', null=True)
