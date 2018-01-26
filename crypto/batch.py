@@ -388,6 +388,7 @@ def POST_poloniex_candles_update(logger, api_key_name):
                 # No data, continue on
                 messages.append('No data in this time period')
                 marker.data_start = end_date
+                time.sleep(0.25)
 
             else:
                 # First data set found
