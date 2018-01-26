@@ -42,7 +42,8 @@ def add_backtest(request, dashboard):
         'trade_currencies': p['trade'],
         'script_name': p['script'],
         'dt_start': p['dt_start'],
-        'dt_stop': p['dt_stop']
+        'dt_stop': p['dt_stop'],
+        'period': p['period']
     })
 
     return HttpResponseRedirect(dashboard.reverse_dashboard())

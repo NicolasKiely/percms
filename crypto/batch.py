@@ -264,7 +264,8 @@ def POST_backtest(
     # Create new test record
     backtest = models.Back_Test(
         dt_start=dt_start, dt_stop=dt_stop,
-        status=models.BACK_TEST_TESTING, finished=False
+        status=models.BACK_TEST_TESTING, finished=False,
+        period=period
     )
     backtest.save()
 
@@ -307,7 +308,7 @@ def POST_backtest(
             
             # Run script on results file
             with open(fpath, 'w') as fout:
-                run_backtest(backtest, fout)
+                run_backtest(backtest, fout, period=period)
 
             # Finis
             backtest.status=models.BACK_TEST_FINISHED

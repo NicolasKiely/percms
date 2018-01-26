@@ -149,6 +149,7 @@ class Portfolio(models.Model):
     pairs = models.ManyToManyField(Pair)
     active = models.BooleanField(default=False)
     last_eval = models.DateTimeField(null=True)
+    period = models.IntegerField('Candle Freq', default=14400)
 
     def get_exchange_str(self):
         return self.exc.name if self.exc else ''
@@ -184,6 +185,7 @@ class Portfolio(models.Model):
             {'label': 'API Key', 'name': 'key', 'value': self.get_api_key()},
             {'label': 'Base Currency', 'name': 'base', 'value': self.get_base_str()},
             {'label': 'Trade Currencies', 'name': 'trade', 'value': self.get_trade_str()},
+            {'label': 'Frequency', 'name': 'period', 'value': self.period},
             {'type': 'checkbox', 'label': 'Active', 'name': 'active', 'value': self.active},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
@@ -200,6 +202,7 @@ class Back_Test(models.Model):
     finished = models.BooleanField('Is finished?', default=True)
     error_msg = models.CharField('Error message', max_length=1024, default='')
     results_file = models.ForeignKey(Meta_File, on_delete=models.SET_NULL, null=True)
+    period = models.IntegerField('Candle Freq', default=14400)
 
     def get_exchange_str(self):
         return self.exc.name if self.exc else 'Poloniex'
@@ -247,5 +250,6 @@ class Back_Test(models.Model):
             {'label': 'Trade Currencies', 'name': 'trade', 'value': self.get_trade_str()},
             {'label': 'Start Date', 'name': 'dt_start', 'value': self.get_start_str()},
             {'label': 'Stop Date', 'name': 'dt_stop', 'value': self.get_stop_str()},
+            {'label': 'Frequency', 'name': 'period', 'value': self.period},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]
