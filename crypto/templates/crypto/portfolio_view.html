@@ -28,12 +28,14 @@
         <th>Pair</th>
         <th>Balance</th>
         <th>Positions</th>
+        <th>Stoploss</th>
       </tr>
       {% for pair in pairs %}
       <tr>
         <td>{{ pair.name }}</td>
         <td>{{ pair.balance }}</td>
         <td>{{ pair.position }}</td>
+        <td>{{ pair.stoploss }}</td>
       </tr>
       {% endfor %}
     </table>
