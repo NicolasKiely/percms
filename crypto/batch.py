@@ -364,6 +364,7 @@ def POST_poloniex_candles_update(logger, api_key_name):
         for marker in pair.candle_marker_set.filter(active=True).all():
             markers.append(marker)
 
+    log_messages = []
     for marker in markers:
         period = marker.period
         pair = marker.pair
@@ -432,8 +433,10 @@ def POST_poloniex_candles_update(logger, api_key_name):
 
             marker.save()
         
-        logger.log('Candle Scraper Testing', '\n'.join(messages))
+        log_messages.append('\n'.join(messages))
         logger.write('Currency '+c1+'_'+c2+' processed')
+    logger.log('Candle Scraper Testing', '\n\n'.join(log_messages))
+    logger.write('\n')
 
 
 def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_name, period):
@@ -472,6 +475,7 @@ def POST_poloniex_candles_pull(logger, currencies, dt_start, dt_stop, api_key_na
 
 def POST_debug_polo_account(logger, api_key_name, pair=None):
     ''' Posts information about poloniex portfolio
+
     api_key_name:
         Account name
     pair (optional):
@@ -504,6 +508,17 @@ def POST_debug_polo_account(logger, api_key_name, pair=None):
 
 
 def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
+    ''' Place manual trade for an account
+
+    api_key_name:
+        Account name
+    pair:
+        Pair to trade
+    amount:
+        Amount to buy
+    trade:
+        "buy" or "sell" (defaults to "buy")
+    '''
     Poloniex = models.Exchange.objects.get(name='Poloniex')
     try:
         api_key = models.API_Key.objects.get(name=api_key_name)
