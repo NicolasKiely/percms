@@ -170,12 +170,20 @@ def eval_poloniex_portfolio(logger, portfolio):
 
     portfolio_pairs = portfolio.pairs.all()
     c_names = [p.c2 for p in portfolio_pairs]
+    c_name_set = set(c_names)
     pair_lookup = {p.c2: p for p in portfolio_pairs}
     balances = {c: 0.0 for c in c_names}
 
     base_name = portfolio.base_currency.symbol
     base_amount = 0.0
 
+    # Get latest ticker prices
+    ticker = polo.returnTicker()
+    ticker_prices = {}
+    for k, v in ticker.iteritems():
+        ticker_prices[k] = float(v['last'])
+
+    # Calculate balances
     for c, v in polo_balances.iteritems():
         fv = float(v)
         if c == base_name:
@@ -183,7 +191,9 @@ def eval_poloniex_portfolio(logger, portfolio):
 
         elif fv > 0:
             balances[c] = fv
-            c_names.append(c)
+            if not c in c_name_set:
+                c_names.append(c)
+                c_name_set.add(c)
 
     print "Base amount: ", base_name, base_amount
     for c in c_names:
@@ -195,6 +205,7 @@ def eval_poloniex_portfolio(logger, portfolio):
     dt_start = dt_stop - datetime.timedelta(days=365)
     runtime_factory.load_data(dt_start, dt_stop, period=portfolio.period)
     positions = {c: '....' for c in c_names}
+    stoplosses = {}
 
     # Calculate positions
     for c_name in c_names:
@@ -209,7 +220,13 @@ def eval_poloniex_portfolio(logger, portfolio):
             raise Backtest_Exception('Script Exception: %s' % trace)
 
         candle = runtime.data.iloc[-1]
-        if runtime.is_stoploss_enabled() and candle_close<runtime.get_stoploss():
+        last_price = ticker_prices[base_name+'_'+c_name]
+
+        if runtime.is_stoploss_enabled():
+            stoplosses[c_name] = runtime.get_stoploss()
+            print runtime.get_stoploss()
+
+        if runtime.is_stoploss_enabled() and last_price<runtime.get_stoploss():
             # Stoploss
             positions[c_name] = 'STOP'
 
@@ -232,20 +249,47 @@ def eval_poloniex_portfolio(logger, portfolio):
             portfolio=portfolio, pair=pair_lookup[c_name]
         )
         pos_record.position = p
+        if c_name in stoplosses:
+            pos_record.stoploss = stoplosses[c_name]
+        else:
+            pos_record.stoploss = None
         pos_record.save()
 
         # Handle sells
         if not (p == 'STOP' or p == 'SELL'):
             continue
         if bal > 0:
-            print 'Sell '+ c_name +' for '+ bal
+            print 'Sell '+ c_name +' for '+ str(bal)
     
     for c_name in c_names:
         # Handle buys
+        p = positions[c_name]
         if p != 'LONG':
             continue
+
         if base_amount > 0:
-            print 'Buy '+ c_name +' for '
+            limit = 0.50
+            pair_name = base_name +'_'+ c_name
+            m_price = ticker_prices[pair_name]
+            buy_price = m_price * 1.001
+            buy_amt = limit * base_amount / buy_price
+
+            print 'Buy %s of %s @ %s' % (buy_amt, c_name, buy_price)
+            orders = polo.returnOpenOrders(pair_name)
+
+            for order in orders:
+                order_no = order['orderNumber']
+                print 'Cancelling order #%s' % (order_no)
+                print polo.cancel(pair_name, order_no)
+                
+            #q = polo.buy(str(pair_name), str(buy_price), str(buy_amt))
+            q = {'orderNumber': 'test'}
+            logger.log('Buy Order Placed', '\n'.join([
+                'Order #: '+ str(q['orderNumber']),
+                'Buy Price: '+ str(buy_price),
+                'Buy Amount: '+ str(buy_amt)
+            ]))
+            break
 
 
 
@@ -543,6 +587,10 @@ def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
         else:
             q = polo.sell(str(pair), str(price*0.999), str(amount))
         print q
+
+    except urllib2.HTTPError as ex:
+        print 'HTTP error, buy failed'
+        print str(ex) +': '+ ex.read()
 
     except Exception as ex:
         print 'Buy failed'

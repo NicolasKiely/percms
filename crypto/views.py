@@ -115,6 +115,8 @@ def view_portfolio(request, dashboard, pk):
     balances = {p.name(): 0.0 for p in pairs}
     position_list = models.Portfolio_Position.objects.filter(portfolio=obj).all()
     positions = {p.pair.name(): p.position for p in position_list}
+    stop_str = lambda p: str(p.stoploss) if p.stoploss else ''
+    stoplosses = {p.pair.name(): stop_str(p) for p in position_list}
     base_name = obj.base_currency.symbol
     base_amt = 0.0
 
@@ -128,7 +130,7 @@ def view_portfolio(request, dashboard, pk):
                 if base_name == c:
                     base_amt = fv
                 else:
-                    balances[c] = fv
+                    balances[base_name+'_'+c] = fv
 
     for pair in pairs:
         if not(pair.name() in positions):
@@ -138,7 +140,8 @@ def view_portfolio(request, dashboard, pk):
         'pairs': [
             {
                 'name': p.c2, 'balance': balances[p.name()],
-                'position': positions[p.name()]
+                'position': positions[p.name()],
+                'stoploss': stoplosses[p.name()]
             }
             for p in pairs
         ],
