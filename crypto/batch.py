@@ -158,7 +158,7 @@ def run_backtest(backtest, fout, period=14400):
         ))
 
 
-def eval_poloniex_portfolio(logger, portfolio):
+def eval_poloniex_portfolio(logger, portfolio, commit=True):
     ''' Evaluates portfolio on poloniex exchange '''
     api_key = portfolio.key
     polo = poloniex_api.poloniex(str(api_key.key), str(api_key.secret))
@@ -213,7 +213,17 @@ def eval_poloniex_portfolio(logger, portfolio):
         try:
             global runtime
             runtime = runtime_factory.runtime(c_name)
+
+            # Load stoploss if applicable
+            if balances[c_name]:
+                pos_record, created = models.Portfolio_Position.objects.get_or_create(
+                    portfolio=portfolio, pair=pair_lookup[c_name]
+                )
+                if pos_record.stoploss:
+                    runtime.set_stoploss(pos_record.stoploss)
+
             exec(portfolio.script.source)
+
         except Exception as ex:
             trace = traceback.format_exc()
             print trace
@@ -224,7 +234,6 @@ def eval_poloniex_portfolio(logger, portfolio):
 
         if runtime.is_stoploss_enabled():
             stoplosses[c_name] = runtime.get_stoploss()
-            print runtime.get_stoploss()
 
         if runtime.is_stoploss_enabled() and last_price<runtime.get_stoploss():
             # Stoploss
@@ -249,7 +258,7 @@ def eval_poloniex_portfolio(logger, portfolio):
             portfolio=portfolio, pair=pair_lookup[c_name]
         )
         pos_record.position = p
-        if c_name in stoplosses:
+        if (c_name in stoplosses) and (p=='LONG' or bal>0):
             pos_record.stoploss = stoplosses[c_name]
         else:
             pos_record.stoploss = None
@@ -282,8 +291,11 @@ def eval_poloniex_portfolio(logger, portfolio):
                 print 'Cancelling order #%s' % (order_no)
                 print polo.cancel(pair_name, order_no)
                 
-            #q = polo.buy(str(pair_name), str(buy_price), str(buy_amt))
-            q = {'orderNumber': 'test'}
+            if commit:
+                q = polo.buy(str(pair_name), str(buy_price), str(buy_amt))
+            else:
+                q = {'orderNumber': 'test'}
+
             logger.log('Buy Order Placed', '\n'.join([
                 'Order #: '+ str(q['orderNumber']),
                 'Buy Price: '+ str(buy_price),
@@ -597,7 +609,7 @@ def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
         print ex
 
 
-def POST_eval_portfolios(logger):
+def POST_eval_portfolios(logger, commit=True):
     ''' Runs update on active portfolios '''
     portfolios = models.Portfolio.objects.filter(active=True).all()
     Poloniex = models.Exchange.objects.get(name='Poloniex')
@@ -608,4 +620,4 @@ def POST_eval_portfolios(logger):
         # Get active balance
         if portfolio.exc == Poloniex:
             logger.write('Poloniex exchange using account %s' % portfolio.key.name)
-            eval_poloniex_portfolio(logger, portfolio)
+            eval_poloniex_portfolio(logger, portfolio, commit)
