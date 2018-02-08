@@ -37,6 +37,9 @@ def save_candle_data(polo, c1, c2, period, data):
     ''' Pulls candlestick data for given currency pair in time frame '''
     exc, _ = models.Exchange.objects.get_or_create(name='Poloniex')
     pair, _ = models.Pair.objects.get_or_create(c1=c1, c2=c2, exc=exc)
+
+    candle_objs = []
+    max_id = models.Candle_Stick.objects.order_by('-id')[0].id
     for x in data:
         dt = datetime.datetime.fromtimestamp(x['date'])
         dtz = timezone.make_aware(dt, timezone.get_current_timezone())
@@ -44,8 +47,11 @@ def save_candle_data(polo, c1, c2, period, data):
             candle = models.Candle_Stick.objects.get(
                 pair = pair, stamp = dtz
             )
+            created = False
+
         except models.Candle_Stick.DoesNotExist:
             candle = models.Candle_Stick(pair=pair, stamp=dtz)
+            created = True
 
         candle.p_high    = x['high']
         candle.p_low     = x['low']
@@ -55,7 +61,14 @@ def save_candle_data(polo, c1, c2, period, data):
         candle.q_volume  = x['quoteVolume']
         candle.w_average = x['weightedAverage']
         candle.period    = period
-        candle.save()
+        if created:
+            max_id += 1
+            candle.id = max_id
+            candle_objs.append(candle)
+        else:
+            candle.save()
+
+    models.Candle_Stick.objects.bulk_create(candle_objs)
 
 
 def run_backtest(backtest, fout, period=14400):
@@ -609,10 +622,12 @@ def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
         print ex
 
 
-def POST_eval_portfolios(logger, commit=True):
+def POST_eval_portfolios(logger, commit='True'):
     ''' Runs update on active portfolios '''
     portfolios = models.Portfolio.objects.filter(active=True).all()
     Poloniex = models.Exchange.objects.get(name='Poloniex')
+
+    do_commit = (commit.lower() == 'true')
 
     for portfolio in portfolios:
         logger.write('Portfolio %s' % portfolio)
@@ -620,4 +635,4 @@ def POST_eval_portfolios(logger, commit=True):
         # Get active balance
         if portfolio.exc == Poloniex:
             logger.write('Poloniex exchange using account %s' % portfolio.key.name)
-            eval_poloniex_portfolio(logger, portfolio, commit)
+            eval_poloniex_portfolio(logger, portfolio, do_commit)
