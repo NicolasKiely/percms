@@ -45,12 +45,13 @@ def save_candle_data(polo, c1, c2, period, data):
         dtz = timezone.make_aware(dt, timezone.get_current_timezone())
         try:
             candle = models.Candle_Stick.objects.get(
-                pair = pair, stamp = dtz
+                pair = pair, stamp = dtz, period = period
             )
             created = False
+            old_data = candle.data_dict()
 
         except models.Candle_Stick.DoesNotExist:
-            candle = models.Candle_Stick(pair=pair, stamp=dtz)
+            candle = models.Candle_Stick(pair=pair, stamp=dtz, period=period)
             created = True
 
         candle.p_high    = x['high']
@@ -66,7 +67,13 @@ def save_candle_data(polo, c1, c2, period, data):
             candle.id = max_id
             candle_objs.append(candle)
         else:
-            candle.save()
+            new_data = candle.data_dict()
+            changed = False
+            for k, v in old_data.iteritems():
+                if v != new_data[k]:
+                    changed = True
+            if changed:
+                candle.save()
 
     models.Candle_Stick.objects.bulk_create(candle_objs)
 
@@ -440,6 +447,7 @@ def POST_poloniex_candles_update(logger, api_key_name):
         c1 = pair.c1
         c2 = pair.c2
         messages = ['Period=%s, Pair=%s_%s' % (period, c1, c2)]
+        profile_start = time.time()
 
         # Check if any data has been pulled for this currency
         if marker.data_stop == None:
@@ -464,6 +472,10 @@ def POST_poloniex_candles_update(logger, api_key_name):
             data = fetch_candle_data(
                 polo, c1+'_'+c2, marker.data_start, end_date, int(period)
             )
+            profile_fetch = time.time()
+            messages.append(
+                'Download time: %0.2fs' % (profile_fetch - profile_start)
+            )
             if len(data) < 1 or data[0]['date'] == 0:
                 # No data, continue on
                 messages.append('No data in this time period')
@@ -474,7 +486,16 @@ def POST_poloniex_candles_update(logger, api_key_name):
                 # First data set found
                 messages.append('Data size: '+ str(len(data)))
                 save_candle_data(polo, c1, c2, int(period), data)
-                marker.data_stop = end_date
+                profile_save = time.time()
+                messages.append(
+                    'Processing time: %0.2fs' % (profile_save - profile_fetch)
+                )
+                dt = datetime.datetime.fromtimestamp(data[0]['date'])
+                dtz = timezone.make_aware(dt, timezone.get_current_timezone())
+                marker.data_start = dtz
+                dt = datetime.datetime.fromtimestamp(data[-1]['date'])
+                dtz = timezone.make_aware(dt, timezone.get_current_timezone())
+                marker.data_stop = dtz
 
             marker.save()
 
@@ -493,12 +514,24 @@ def POST_poloniex_candles_update(logger, api_key_name):
             data = fetch_candle_data(
                 polo, c1+'_'+c2, start_date, end_date, int(period)
             )
+
+            profile_fetch = time.time()
+            messages.append(
+                'Download time: %0.2fs' % (profile_fetch - profile_start)
+            )
+
             if len(data) < 1 or data[0]['date'] == 0:
                 messages.append('No data in this time period')
             else:
                 messages.append('Data: '+ str(len(data)))
                 save_candle_data(polo, c1, c2, int(period), data)
-                marker.data_stop = end_date
+                profile_save = time.time()
+                messages.append(
+                    'Processing time: %0.2fs' % (profile_save - profile_fetch)
+                )
+                dt = datetime.datetime.fromtimestamp(data[-1]['date'])
+                dtz = timezone.make_aware(dt, timezone.get_current_timezone())
+                marker.data_stop = dtz
 
             marker.save()
         

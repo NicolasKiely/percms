@@ -86,9 +86,6 @@ class Pair(models.Model):
     c2 = models.CharField('Second currency', max_length=16)
     exc = models.ForeignKey(Exchange, on_delete=models.CASCADE)
 
-    data_start = models.DateTimeField('Start date of contigous data pulled', null=True)
-    data_stop = models.DateTimeField('End date of contigous data pulled', null=True)
-
     def name(self):
         return self.c1 +'_'+ self.c2
 
@@ -110,6 +107,10 @@ class Candle_Marker(models.Model):
     period  = models.IntegerField('Period in seconds')
     data_start = models.DateTimeField('Start date of contigous data pulled', null=True)
     data_stop = models.DateTimeField('End date of contigous data pulled', null=True)
+
+    def __str__(self):
+        a = '[x]' if self.active else '[ ]'
+        return '%s %s: %s' % (a, self.pair, self.period)
     
 
 # Candlestick data
@@ -129,6 +130,17 @@ class Candle_Stick(models.Model):
     def is_hollow(self): return self.p_close > self.p_open
     def is_filled(self): return self.p_close <= self.p_open
 
+    def data_dict(self):
+        return {
+            'p_high': self.p_high,
+            'p_low': self.p_low,
+            'p_close': self.p_close,
+            'p_open': self.p_open,
+            'volume': self.volume,
+            'q_volume': self.q_volume,
+            'w_average': self.w_average,
+        }
+
     def __str__(self):
         return '<%s %s: o=%s c=%s l=%s h=%s v=%s qv=%s wa=%s p=%s>' % (
             self.pair, self.stamp,
@@ -140,7 +152,7 @@ class Candle_Stick(models.Model):
         )
 
     class Meta:
-        unique_together = ('pair', 'stamp')
+        unique_together = ('pair', 'stamp', 'period')
 
 
 class Portfolio(models.Model):
