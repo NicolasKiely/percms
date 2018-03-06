@@ -91,6 +91,7 @@ def edit_portfolio(request, dashboard):
     portfolio.key = models.API_Key.objects.get(name=p['key'])
     portfolio.base_currency = base
     portfolio.active = 'active' in p
+    portfolio.period = int(p['period'])
     
     # Get trade pairs
     portfolio.pairs.clear()

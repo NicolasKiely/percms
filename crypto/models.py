@@ -238,17 +238,17 @@ class Back_Test(models.Model):
         return self.exc.name if self.exc else 'Poloniex'
 
     def get_base_str(self):
-        return self.base_currency.symbol if self.base_currency else 'USDT'
+        return self.base_currency.symbol if self.base_currency else 'BTC'
 
     def get_trade_str(self):
         try:
             return ' '.join([p.symbol for p in self.pairs.all()])
         except ValueError:
-            return 'BTC'
+            return 'ETH'
 
     def get_start_str(self):
         #dt = self.dt_start if self.dt_start else timezone.now() - timedelta(days=31)
-        dt = self.dt_start if self.dt_start else timezone.now() - timedelta(days=2)
+        dt = self.dt_start if self.dt_start else timezone.now() - timedelta(days=31)
         return dt.strftime('%Y-%m-%d %H:%M:%S')
 
     def get_stop_str(self):

@@ -287,8 +287,8 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
         # Handle sells
         if not (p == 'STOP' or p == 'SELL'):
             continue
-        if bal > 0:
-            print 'Sell '+ c_name +' for '+ str(bal)
+        #if bal > 0:
+        print 'Sell '+ c_name +' for '+ str(bal)
     
     for c_name in c_names:
         # Handle buys
