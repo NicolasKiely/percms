@@ -11,8 +11,9 @@ from . import models
 def calculate_buy_amount(base_amount, ticker, total_amount, position_limit, buy_limit):
     buy_price = ticker * 1.001
     buy_limit_amt = total_amount * buy_limit / buy_price
-    buy_amt = min(base_amount / buy_price, buy_limit_amt)
-    return buy_amt, buy_price
+    pos_limit_amt = (base_amount - total_amount*position_limit) / buy_price
+    buy_amt = min(base_amount / buy_price, buy_limit_amt, pos_limit_amt)
+    return max(buy_amt, 0.0), buy_price
 
 
 def eval_poloniex_portfolio(logger, portfolio, commit=True):
@@ -138,12 +139,12 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
         if p != 'LONG':
             continue
 
-        if base_amount > 0:
-            pair_name = base_name +'_'+ c_name
-            buy_amt, buy_price = calculate_buy_amount(
-                base_amount, ticker_prices[pair_name], total_amount,
-                portfolio.position_limit, portfolio.buy_limit
-            )
+        pair_name = base_name +'_'+ c_name
+        buy_amt, buy_price = calculate_buy_amount(
+            base_amount, ticker_prices[pair_name], total_amount,
+            portfolio.position_limit, portfolio.buy_limit
+        )
+        if base_amount > 0 and buy_amt > 0.0:
 
             print 'Buy %s of %s @ %s' % (buy_amt, c_name, buy_price)
             orders = polo.returnOpenOrders(pair_name)
