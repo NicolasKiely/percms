@@ -8,6 +8,12 @@ from . import runtime as crypto_runtime
 from . import models
 
 
+def calculate_buy_amount(base_amount, ticker, portfolio_total):
+    buy_price = ticker * 1.001
+    buy_amt = base_amount / buy_price
+    return buy_amt, buy_price
+
+
 def eval_poloniex_portfolio(logger, portfolio, commit=True):
     ''' Evaluates portfolio on poloniex exchange '''
     api_key = portfolio.key
@@ -25,7 +31,8 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
     balances = {c: 0.0 for c in c_names}
 
     base_name = portfolio.base_currency.symbol
-    base_amount = 0.0
+    base_amount = 0.0 # Amount of base Currency
+    total_amount = 0.0 # Total tracked portfolio amount
 
     # Get latest ticker prices
     ticker = polo.returnTicker()
@@ -38,12 +45,16 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
         fv = float(v)
         if c == base_name:
             base_amount = fv
+            total_amount += base_amount
 
         elif fv > 0:
-            balances[c] = fv
-            if not c in c_name_set:
-                c_names.append(c)
-                c_name_set.add(c)
+            if c in c_name_set:
+                balances[c] = fv
+                total_amount += fv * ticker_prices[base_name+'_'+c]
+            #balances[c] = fv
+            #if not c in c_name_set:
+            #    c_names.append(c)
+            #    c_name_set.add(c)
 
     print "Base amount: ", base_name, base_amount
     for c in c_names:
@@ -127,11 +138,10 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
             continue
 
         if base_amount > 0:
-            limit = 0.50
             pair_name = base_name +'_'+ c_name
-            m_price = ticker_prices[pair_name]
-            buy_price = m_price * 1.001
-            buy_amt = limit * base_amount / buy_price
+            buy_amt, buy_price = calculate_buy_amount(
+                base_amount, ticker_prices[pair_name], total_amount
+            )
 
             print 'Buy %s of %s @ %s' % (buy_amt, c_name, buy_price)
             orders = polo.returnOpenOrders(pair_name)
@@ -149,6 +159,9 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
             logger.log('Buy Order Placed', '\n'.join([
                 'Order #: '+ str(q['orderNumber']),
                 'Buy Price: '+ str(buy_price),
-                'Buy Amount: '+ str(buy_amt)
+                'Buy Amount: '+ str(buy_amt),
+                '',
+                'Current '+ base_name +' Amt: '+ str(base_amount),
+                'Total Portfolio Value: '+ str(total_amount)
             ]))
             break

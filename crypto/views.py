@@ -92,6 +92,8 @@ def edit_portfolio(request, dashboard):
     portfolio.base_currency = base
     portfolio.active = 'active' in p
     portfolio.period = int(p['period'])
+    portfolio.position_limit = float(p['pos_limit'])
+    portfolio.buy_limit = float(p['buy_limit'])
     
     # Get trade pairs
     portfolio.pairs.clear()
