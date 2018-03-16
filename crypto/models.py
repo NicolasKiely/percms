@@ -165,6 +165,8 @@ class Portfolio(models.Model):
     active = models.BooleanField(default=False)
     last_eval = models.DateTimeField(null=True)
     period = models.IntegerField('Candle Freq', default=14400)
+    position_limit = models.FloatField('% of portfolio to commit', default=1.0)
+    buy_limit = models.FloatField('% of portfolio to buy at a time', default=1.0)
 
     def get_exchange_str(self):
         return self.exc.name if self.exc else ''
@@ -201,6 +203,8 @@ class Portfolio(models.Model):
             {'label': 'Base Currency', 'name': 'base', 'value': self.get_base_str()},
             {'label': 'Trade Currencies', 'name': 'trade', 'value': self.get_trade_str()},
             {'label': 'Frequency', 'name': 'period', 'value': self.period},
+            {'label': 'Position Limit', 'name': 'pos_limit', 'value': self.position_limit},
+            {'label': 'Buy Limit', 'name': 'buy_limit', 'value': self.buy_limit},
             {'type': 'checkbox', 'label': 'Active', 'name': 'active', 'value': self.active},
             {'type': 'hidden', 'name': 'pk', 'value': self.pk}
         ]

@@ -149,6 +149,10 @@ def view_portfolio(request, dashboard, pk):
         'base': {
             'name': base_name,
             'balance': base_amt
+        },
+        'limit': {
+            'position': obj.position_limit,
+            'buy': obj.buy_limit
         }
     }
     return dashboard.view_model(request, obj, context)
