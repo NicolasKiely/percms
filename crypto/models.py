@@ -210,6 +210,25 @@ class Portfolio(models.Model):
         ]
 
 
+class Portfolio_History(models.Model):
+    ''' Value of portfolio at given time '''
+    stamp   = models.DateTimeField('Start time', db_index=True)
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+    base_holding = models.FloatField('Amount of base currency held')
+    total_holding = models.FloatField('Total portfolio value relative to base currency')
+    
+
+class Portfolio_Position_History(models.Model):
+    ''' Value of a currency pair position of a portfolio at a given time '''
+    history = models.ForeignKey(Portfolio_History, on_delete=models.CASCADE)
+    pair = models.ForeignKey(Pair, on_delete=models.CASCADE)
+
+    amount_held = models.FloatField('Amount of currency held')
+    value_held = models.FloatField('Value of holding wrt base currency')
+
+    class Meta:
+        unique_together = ('history', 'pair')
+
 # Represents a position for a portfolio
 class Portfolio_Position(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
