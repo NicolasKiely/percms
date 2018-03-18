@@ -229,6 +229,7 @@ class Portfolio_Position_History(models.Model):
     class Meta:
         unique_together = ('history', 'pair')
 
+
 # Represents a position for a portfolio
 class Portfolio_Position(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)

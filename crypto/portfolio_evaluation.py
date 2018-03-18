@@ -16,6 +16,14 @@ def calculate_buy_amount(base_amount, ticker, total_amount, position_limit, buy_
     return max(buy_amt, 0.0), buy_price
 
 
+def cancel_old_orders(polo, pair_name):
+    orders = polo.returnOpenOrders(pair_name)
+    for order in orders:
+        order_no = order['orderNumber']
+        print 'Cancelling order #%s' % (order_no)
+        print polo.cancel(pair_name, order_no)
+
+
 def eval_poloniex_portfolio(logger, portfolio, commit=True):
     ''' Evaluates portfolio on poloniex exchange '''
     api_key = portfolio.key
@@ -69,6 +77,8 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
     runtime_factory.load_data(dt_start, dt_stop, period=portfolio.period)
     positions = {c: '....' for c in c_names}
     stoplosses = {}
+
+    # Save current balance history
 
     # Calculate positions
     for c_name in c_names:
@@ -130,8 +140,26 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
         # Handle sells
         if not (p == 'STOP' or p == 'SELL'):
             continue
-        #if bal > 0:
-        print 'Sell '+ c_name +' for '+ str(bal)
+
+        if bal > 0:
+            pair_name = base_name +'_'+ c_name
+            print 'Sell '+ c_name +' for '+ str(bal)
+            cancel_old_orders(polo, pair_name)
+            sell_price = 0.999*ticker_prices[pair_name]
+
+            if commit:
+                q = polo.sell(str(pair_name), str(bal), sell_price)
+            else:
+                q = {'orderNumber': 'test'}
+            logger.log('Sell Order Placed', '\n'.join([
+                'Order #: '+ str(q['orderNumber']),
+                'Sell Price: '+ str(sell_price),
+                'Sell Amount: '+ str(bal),
+                '',
+                'Current '+ base_name +' Amt: '+ str(base_amount),
+                'Total Portfolio Value: '+ str(total_amount),
+                'Base to release: '+ str(sell_price*bal)
+            ]))
     
     for c_name in c_names:
         # Handle buys
@@ -145,14 +173,9 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
             portfolio.position_limit, portfolio.buy_limit
         )
         if base_amount > 0 and buy_amt > 0.0:
-
             print 'Buy %s of %s @ %s' % (buy_amt, c_name, buy_price)
-            orders = polo.returnOpenOrders(pair_name)
 
-            for order in orders:
-                order_no = order['orderNumber']
-                print 'Cancelling order #%s' % (order_no)
-                print polo.cancel(pair_name, order_no)
+            cancel_old_orders(polo, pair_name)
                 
             if commit:
                 q = polo.buy(str(pair_name), str(buy_price), str(buy_amt))
