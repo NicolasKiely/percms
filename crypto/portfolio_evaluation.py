@@ -79,6 +79,19 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
     stoplosses = {}
 
     # Save current balance history
+    history_record = models.Portfolio_History(
+        stamp=timezone.now(), portfolio=portfolio,
+        base_holding=base_amount, total_holding=total_amount
+    )
+    history_record.save()
+    for c in c_names:
+        amt = balances[c]
+        last_price = ticker_prices[base_name+'_'+c]
+        position_record = models.Portfolio_Position_History(
+            history=history_record, pair=pair_lookup[c],
+            amount_held=amt, value_held=amt*last_price
+        )
+        position_record.save()
 
     # Calculate positions
     for c_name in c_names:
@@ -148,7 +161,7 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
             sell_price = 0.999*ticker_prices[pair_name]
 
             if commit:
-                q = polo.sell(str(pair_name), str(bal), sell_price)
+                q = polo.sell(str(pair_name), str(sell_price), str(bal))
             else:
                 q = {'orderNumber': 'test'}
             logger.log('Sell Order Placed', '\n'.join([
