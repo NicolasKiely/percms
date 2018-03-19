@@ -242,7 +242,8 @@ def view_weekly_csv(request, pk):
     # Get records
     dt_start = timezone.now() - dtt.timedelta(days=7)
     records = models.Portfolio_History.objects.filter(
-        stamp__gte=dt_start
+        stamp__gte=dt_start,
+        portfolio=portfolio
     ).order_by('stamp').all()
 
     # Compile positions
