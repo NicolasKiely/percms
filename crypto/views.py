@@ -146,7 +146,7 @@ def view_portfolio(request, dashboard, pk):
             {
                 'name': p.c2, 'balance': balances[p.name()],
                 'position': positions[p.name()],
-                'stoploss': stoplosses[p.name()]
+                'stoploss': stoplosses.get(p.name(), 0.0)
             }
             for p in pairs
         ],
