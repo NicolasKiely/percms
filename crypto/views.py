@@ -258,6 +258,8 @@ def view_weekly_csv(request, pk):
 
     # Create response
     response = HttpResponse(content_type='text/csv')
+    file_name = 'weekly_portfolio_'+portfolio.key.name+'.csv'
+    response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
     writer = csv.writer(response)
 
     # Write header
