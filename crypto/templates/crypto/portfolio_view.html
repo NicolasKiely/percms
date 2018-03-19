@@ -15,6 +15,9 @@
       <p> <b>Position Limit</b>: <u>{{ limit.position }}</u> </p>
       <p> <b>Buy Limit</b>: <u>{{ limit.buy }}</u> </p>
     </div>
+    <div>
+      <p> <a href="{% url 'crypto:weekly_csv' portfolio_id %}">Weekly Performance</a> </p>
+    </div>
   {% close_box %}
 
   {# Portfolio Position #}

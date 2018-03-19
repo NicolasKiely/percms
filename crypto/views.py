@@ -1,7 +1,9 @@
+import csv
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 import datetime as dtt
+from django.utils import timezone
 
 from . import models
 from . import utils
@@ -155,7 +157,8 @@ def view_portfolio(request, dashboard, pk):
         'limit': {
             'position': obj.position_limit,
             'buy': obj.buy_limit
-        }
+        },
+        'portfolio_id': pk
     }
     return dashboard.view_model(request, obj, context)
 
@@ -231,3 +234,51 @@ def edit_exchange(request, dashboard):
 
     exc.save()
     return HttpResponseRedirect(dashboard.reverse_dashboard())
+
+
+def view_weekly_csv(request, pk):
+    portfolio = get_object_or_404(models.Portfolio, pk=pk)
+
+    # Get records
+    dt_start = timezone.now() - dtt.timedelta(days=7)
+    records = models.Portfolio_History.objects.filter(
+        stamp__gte=dt_start
+    ).order_by('stamp').all()
+
+    # Compile positions
+    position_records = []
+    pair_names = set()
+    for record in records:
+        positions = record.portfolio_position_history_set.all()
+        position_map = {p.pair.name(): p for p in positions}
+        position_records.append(position_map)
+
+        for pair_name in position_map.keys():
+            pair_names.add(pair_name)
+
+    # Create response
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response)
+
+    # Write header
+    pair_list = list(pair_names)
+    header = ['Time', 'Base Holding', 'Total Value']
+    for pair_name in pair_list:
+        # For each pair: Amount, Value
+        header.append(pair_name+' Amount')
+        header.append(pair_name+' Value')
+    writer.writerow(header)
+
+    # Write body
+    for record, position in zip(records, position_records):
+        row = [record.stamp, record.base_holding, record.total_holding]
+        for pair_name in pair_list:
+            # For each pair: Amount, Value
+            if pair_name in position:
+                row.append(position[pair_name].amount_held)
+                row.append(position[pair_name].value_held)
+            else:
+                row.append(0.0)
+                row.append(0.0)
+        writer.writerow(row)
+    return response

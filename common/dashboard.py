@@ -69,6 +69,10 @@ class App_Dashboard(object):
     def reverse_dashboard(self):
         return reverse(self.namespace+':dashboard')
 
+    def custom_url(self, route, view_func, name):
+        path = '^%s/%s$' % (self.namespace, route)
+        return url(path, view_func, name=name)
+
     def url_view_dashboard(self, route):
         ''' URL for dashboard '''
         return url(route, self.view_dashboard, name='dashboard')
