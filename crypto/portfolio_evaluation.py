@@ -6,12 +6,13 @@ from . import poloniex_api
 from . import backtest
 from . import runtime as crypto_runtime
 from . import models
+from . import exchange_interface
 
 
 def calculate_buy_amount(base_amount, ticker, total_amount, position_limit, buy_limit):
     buy_price = ticker * 1.001
     buy_limit_amt = total_amount * buy_limit / buy_price
-    pos_limit_amt = (base_amount - total_amount*position_limit) / buy_price
+    pos_limit_amt = (base_amount - total_amount*(1-position_limit)) / buy_price
     buy_amt = min(base_amount / buy_price, buy_limit_amt, pos_limit_amt)
     return max(buy_amt, 0.0), buy_price
 
