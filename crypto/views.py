@@ -8,6 +8,7 @@ from django.utils import timezone
 from . import models
 from . import utils
 from . import poloniex_api
+from . import exchange_interface
 import batch_interface
 from scripting.utils import get_script_by_name
 
@@ -125,17 +126,16 @@ def view_portfolio(request, dashboard, pk):
     base_name = obj.base_currency.symbol
     base_amt = 0.0
 
-    if obj.exc.name == 'Poloniex':
-        # Read poloniex balance
-        polo = poloniex_api.poloniex(str(obj.key.key), str(obj.key.secret))
-        balance_vals = polo.returnBalances()
-        for c, v in balance_vals.iteritems():
-            fv = float(v)
-            if fv > 0:
-                if base_name == c:
-                    base_amt = fv
-                else:
-                    balances[base_name+'_'+c] = fv
+    # Read balance
+    interface = exchange_interface.get_interface(obj.exc.name, obj.key)
+    balance_vals = interface.get_balance()
+    for c, v in balance_vals.iteritems():
+        fv = float(v)
+        if fv > 0:
+            if base_name == c:
+                base_amt = fv
+            else:
+                balances[base_name+'_'+c] = fv
 
     for pair in pairs:
         if not(pair.name() in positions):
