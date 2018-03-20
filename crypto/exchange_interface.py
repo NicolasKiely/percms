@@ -1,6 +1,7 @@
 from bittrex.bittrex import Bittrex, API_V2_0
 from . import models
 from . import poloniex_api
+from . import candle_sticks
 
 
 def get_interface(exchange_name, *args, **kwargs):
@@ -68,6 +69,9 @@ class Poloniex_Interface(Exchange_Interface):
 
     def get_balance(self):
         return self.connection.returnBalances()
+
+    def update_candles(self, logger):
+        candle_sticks.update_poloniex(logger, self.connection)
 
 
 class Bittrex_Interface(Exchange_Interface):
