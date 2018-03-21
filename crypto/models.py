@@ -51,12 +51,12 @@ class Exchange(models.Model):
         records = [] 
         for pair in self.pair_set.all():
             pair_str = pair.c1 +'_'+ pair.c2
-            markers = pair.candle_marker_set.all()
+            markers = pair.candle_marker_set.filter(active=True).all()
             if len(markers) == 0:
                 continue
             period_str = ', '.join([
                 str(marker.period)
-                for marker in pair.candle_marker_set.all()
+                for marker in pair.candle_marker_set.filter(active=True).all()
             ])
             records.append(pair_str +': '+ period_str)
 
