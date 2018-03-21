@@ -87,7 +87,6 @@ def update_bittrex(logger, bittrex):
         time = BITTREX_PERIODS[marker.period] # Get time period from pair
         pair = marker.pair
         pair_name = pair.c1 +'-'+ pair.c2
-        print pair_name
         candles = bittrex.get_candles(pair_name, time)['result']
 
         candle_objs = []
@@ -128,7 +127,7 @@ def update_bittrex(logger, bittrex):
                 if changed:
                     candle.save()
 
-        logger.write('Currency '+ pair_name +' processed')
+        logger.write('Currency '+ pair_name +' processed for Bittrex')
         models.Candle_Stick.objects.bulk_create(candle_objs)
 
 
@@ -237,6 +236,6 @@ def update_poloniex(logger, polo):
             marker.save()
         
         log_messages.append('\n'.join(messages))
-        logger.write('Currency '+c1+'_'+c2+' processed')
+        logger.write('Currency '+c1+'_'+c2+' processed for Poloniex')
     logger.log('Candle Scraper Testing', '\n\n'.join(log_messages))
     logger.write('\n')
