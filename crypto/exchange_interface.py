@@ -78,14 +78,19 @@ class Bittrex_Interface(Exchange_Interface):
     ''' Bittrex Interface '''
     def __init__(self, key):
         self.use_key(key)
-        self.connection = Bittrex(self.get_key_str(), self.get_key_secret())
+        self.connection = Bittrex(
+            self.get_key_str(), self.get_key_secret(), api_version=API_V2_0
+        )
 
     def get_balance(self):
         response = self.connection.get_balances()['result']
         balances = {}
         for record in response:
-            balance = record['Balance']
+            balance = record['Balance']['Balance']
+            currency = record['Currency']['Currency']
             if balance > 0.0:
-                balances[ record['Currency'] ] = balance
+                balances[ currency ] = balance
         return balances
         
+    def update_candles(self, logger):
+        candle_sticks.update_bittrex(logger, self.connection)

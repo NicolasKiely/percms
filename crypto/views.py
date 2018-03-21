@@ -209,7 +209,7 @@ def edit_exchange(request, dashboard):
     pairs = exc.pair_set.all()
     for pair in pairs:
         # Get monitoring markers
-        for marker in pair.candle_marker_set.all():
+        for marker in pair.candle_marker_set.filter(active=True).all():
             marker.active = False
             marker.save()
     

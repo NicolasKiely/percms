@@ -215,6 +215,12 @@ def POST_poloniex_candles_update(logger, api_key_name=None):
     interface.update_candles(logger)
 
 
+def POST_bittrex_candles_update(logger):
+    ''' Handler for pulling down exchange candlestick data '''
+    interface = exchange_interface.Bittrex_Interface(None)
+    interface.update_candles(logger)
+
+
 def POST_debug_polo_account(logger, api_key_name, pair=None):
     ''' Posts information about poloniex portfolio
 
