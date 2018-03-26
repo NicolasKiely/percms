@@ -62,10 +62,6 @@ def eval_poloniex_portfolio(logger, portfolio, commit=True):
             if c in c_name_set:
                 balances[c] = fv
                 total_amount += fv * ticker_prices[base_name+'_'+c]
-            #balances[c] = fv
-            #if not c in c_name_set:
-            #    c_names.append(c)
-            #    c_name_set.add(c)
 
     print "Base amount: ", base_name, base_amount
     for c in c_names:

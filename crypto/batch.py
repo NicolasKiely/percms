@@ -119,9 +119,6 @@ def run_backtest(backtest, fout, period=14400):
         ))
 
 
-
-
-
 def POST_backtest(
         logger, base_currency, trade_currencies, exchange_name,
         script_name, dt_start, dt_stop, period=14400
@@ -311,7 +308,11 @@ def POST_eval_portfolios(logger, commit='True'):
     for portfolio in portfolios:
         logger.write('Portfolio %s' % portfolio)
 
-        # Get active balance
         if portfolio.exc == Poloniex:
             logger.write('Poloniex exchange using account %s' % portfolio.key.name)
             portfolio_evaluation.eval_poloniex_portfolio(logger, portfolio, do_commit)
+        else:
+            interface = exchange_interface.get_interface(
+                portfolio.exc.name, portfolio.key,
+            )
+            interface.eval_portfolio(logger, portfolio, commit)
