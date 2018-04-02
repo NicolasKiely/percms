@@ -236,11 +236,11 @@ def edit_exchange(request, dashboard):
     return HttpResponseRedirect(dashboard.reverse_dashboard())
 
 
-def view_weekly_csv(request, pk):
+def view_last_n_days_csv(request, days, pk):
     portfolio = get_object_or_404(models.Portfolio, pk=pk)
 
     # Get records
-    dt_start = timezone.now() - dtt.timedelta(days=7)
+    dt_start = timezone.now() - dtt.timedelta(days=days)
     records = models.Portfolio_History.objects.filter(
         stamp__gte=dt_start,
         portfolio=portfolio
@@ -285,3 +285,13 @@ def view_weekly_csv(request, pk):
                 row.append(0.0)
         writer.writerow(row)
     return response
+
+
+@login_required
+def view_monthly_csv(request, pk):
+    return view_last_n_days_csv(request, 30, pk)
+
+
+@login_required
+def view_weekly_csv(request, pk):
+    return view_last_n_days_csv(request, 7, pk)

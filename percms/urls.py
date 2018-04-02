@@ -22,7 +22,6 @@ urlpatterns = [
     url(r'^percms/docpage/', include('docpage.urls', namespace='docpage')),
     url(r'^percms/files/', include('filemanager.urls', namespace='file')),
     url(r'^percms/project/', include('proj.urls', namespace='project')),
-    url(r'^percms/app/gametracker/', include('gametracker.urls', namespace='gametracker')),
     url(r'^percms/app/crawler/', include('crawler.urls', namespace='crawler')),
     url(r'^percms/app/script/', include('scripting.urls', namespace='script')),
     url(r'^percms/app/ecom/', include('ecom.urls', namespace='ecom')),

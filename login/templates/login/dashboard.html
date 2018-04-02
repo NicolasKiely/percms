@@ -39,11 +39,6 @@
         <th>View App</th>
       </tr>
       <tr>
-        <td>Game-Tracker</td>
-        <td><a href="{% url 'gametracker:dashboard' %}">Manage App</a></td>
-        <td><a href="{% url 'gametracker:view' %}">View App</a></td>
-      </tr>
-      <tr>
         <td>Crawler</td>
         <td><a href="{% url 'crawler:dashboard' %}">Manage App</a></td>
         <td><a href="{% url 'crawler:view' %}">View App</a></td>
@@ -93,7 +88,7 @@
     {% for image in images %}
       <div class='col-sm-2'>
         <a href="{% url 'file:describe' image.id %}">
-          <img class="img-thumbnail" src="{% static image.url %}"></img>
+          <img class="img-thumbnail" src="{% static image.url %}" />
         </a>
       </div>
     {% endfor %}

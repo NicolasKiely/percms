@@ -7,6 +7,9 @@ urlpatterns = [
     dashboard.App_Dashboard.url_view_dashboard(r'^dashboard/$'),
     dashboard.App_Dashboard.custom_url(
         r'weekly_csv/(?P<pk>\d+)/', views.view_weekly_csv, 'weekly_csv'
+    ),
+    dashboard.App_Dashboard.custom_url(
+        'monthly_csv/(?P<pk>\d+)/', views.view_monthly_csv, 'monthly_csv'
     )
 ] \
     + dashboard.Key_Dashboard.create_standard_urls() \

@@ -108,3 +108,5 @@ migrations/
 dj.txt
 startserver.sh
 temp.txt
+
+.idea

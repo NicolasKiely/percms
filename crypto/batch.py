@@ -1,11 +1,11 @@
-import time
-import sys
+# import time
+# import sys
 import traceback
-from django.utils import timezone
-import datetime
-import pandas as pd
+# from django.utils import timezone
+# import datetime
+# import pandas as pd
 import urllib2
-import decimal
+# import decimal
 
 from scripting.utils import get_script_by_name
 from . import models
@@ -20,7 +20,7 @@ import scripting.utils
 
 
 def run_backtest(backtest, fout, period=14400):
-    ''' Run backtest '''
+    """ Run backtest """
     # Initialize runtime
     runtime_factory = crypto_runtime.Runtime_Factory(backtest.pairs.all())
     runtime_factory.load_data(backtest.dt_start, backtest.dt_stop, period=period)
@@ -62,7 +62,7 @@ def run_backtest(backtest, fout, period=14400):
                 exec(backtest.script.source)
             except Exception as ex:
                 trace = traceback.format_exc()
-                raise Backtest_Exception('Script Exception: %s' % trace)
+                raise backtest.Backtest_Exception('Script Exception: %s' % trace)
 
             candle = runtime.data.iloc[-1]
             candle_close = candle['close']
@@ -151,7 +151,7 @@ def POST_backtest(
     try:
         # Get script source to use
         if not script_name:
-            raise Backtest_Exception('Script name not given')
+            raise backtest.Backtest_Exception('Script name not given')
         script, source = get_script_by_name(script_name)
         backtest.script = source
 
@@ -165,7 +165,7 @@ def POST_backtest(
             try:
                 pair = utils.get_currency_pair(exchange_name, base.symbol, trade_name)
             except models.Pair.DoesNotExist:
-                raise Backtest_Exception(
+                raise backtest.Backtest_Exception(
                     'Currency pair %s_%s not found' % (base.symbol, trade_name)
                 )
             backtest.pairs.add(pair)
@@ -192,7 +192,7 @@ def POST_backtest(
             # Finis
             backtest.status=models.BACK_TEST_FINISHED
 
-    except Backtest_Exception as ex:
+    except backtest.Backtest_Exception as ex:
         backtest.error_msg = str(ex)
         backtest.status=models.BACK_TEST_FAILED
 
@@ -200,32 +200,31 @@ def POST_backtest(
         backtest.error_msg = 'Exception %s: %s' % (type(ex), traceback.format_exc())
         backtest.status=models.BACK_TEST_FAILED
 
-
     # Save results
     backtest.finished = True
     backtest.save()
 
 
 def POST_poloniex_candles_update(logger, api_key_name=None):
-    ''' Handler for pulling down candlestick data from poloniex '''
+    """ Handler for pulling down candlestick data from poloniex """
     interface = exchange_interface.Poloniex_Interface(api_key_name)
     interface.update_candles(logger)
 
 
 def POST_bittrex_candles_update(logger):
-    ''' Handler for pulling down exchange candlestick data '''
+    """ Handler for pulling down exchange candlestick data """
     interface = exchange_interface.Bittrex_Interface(None)
     interface.update_candles(logger)
 
 
 def POST_debug_polo_account(logger, api_key_name, pair=None):
-    ''' Posts information about poloniex portfolio
+    """ Posts information about poloniex portfolio
 
     api_key_name:
         Account name
     pair (optional):
         Currency pair to list open orders and trade history
-    '''
+    """
     Poloniex = models.Exchange.objects.get(name='Poloniex')
     try:
         api_key = models.API_Key.objects.get(name=api_key_name)
@@ -253,7 +252,7 @@ def POST_debug_polo_account(logger, api_key_name, pair=None):
 
 
 def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
-    ''' Place manual trade for an account
+    """ Place manual trade for an account
 
     api_key_name:
         Account name
@@ -263,7 +262,7 @@ def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
         Amount to buy
     trade:
         "buy" or "sell" (defaults to "buy")
-    '''
+    """
     Poloniex = models.Exchange.objects.get(name='Poloniex')
     try:
         api_key = models.API_Key.objects.get(name=api_key_name)
@@ -280,7 +279,7 @@ def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
         orders = polo.returnOpenOrders(pair)
         for order in orders:
             order_no = order['orderNumber']
-            print 'Cancelling order #%s' % (order_no)
+            print 'Cancelling order #%s' % order_no
             print polo.cancel(pair, order_no)
 
         if trade.lower() != 'sell':
@@ -291,7 +290,7 @@ def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
 
     except urllib2.HTTPError as ex:
         print 'HTTP error, buy failed'
-        print str(ex) +': '+ ex.read()
+        print str(ex) + ': ' + ex.read()
 
     except Exception as ex:
         print 'Buy failed'
@@ -299,7 +298,7 @@ def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
 
 
 def POST_eval_portfolios(logger, commit='True'):
-    ''' Runs update on active portfolios '''
+    """ Runs update on active portfolios """
     portfolios = models.Portfolio.objects.filter(active=True).all()
     Poloniex = models.Exchange.objects.get(name='Poloniex')
 
