@@ -1,13 +1,11 @@
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token
 import django.shortcuts
-import json
 import percms.settings
 import percms.safesettings
-from django.http import HttpResponse
 
 __GOOGLE_API = 'https://ajax.googleapis.com/ajax'
-__BOOTSTRAP =  'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5'
+__BOOTSTRAP = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5'
 
 # Resolve local vs cdn assets
 if percms.safesettings.USE_LOCAL_ASSETS:
@@ -21,7 +19,7 @@ else:
 
 
 def get_core_config():
-    ''' Returns copy of core page config '''
+    """ Returns copy of core page config """
     return {
         'page': {
             'site': percms.safesettings.SITE_TITLE,
@@ -58,7 +56,7 @@ def get_core_config():
 
 
 def merge_config(source, dest):
-    ''' Merges config items '''
+    """ Merges config items """
     for dest_key, dest_val in dest.iteritems():
         if dest_key in source:
             # Merge conflict
@@ -80,7 +78,7 @@ def merge_config(source, dest):
 
 
 def render(request, template_path, **kwargs):
-    ''' Wrapper for django render function '''
+    """ Wrapper for django render function """
     context = get_core_config()
     merge_config(context, kwargs)
 
@@ -94,15 +92,15 @@ def render(request, template_path, **kwargs):
 
 
 def renderform(request, formcontext):
-    ''' Renders generic form '''
+    """ Renders generic form """
     return render(request, 'common/singleform.html', **formcontext)
 
 
 def view_link(url, args, appended='', text='View'):
-    ''' Helper function for generating view links '''
-    return '<a href="'+ reverse(url, args=args) + appended +'">'+ text +'</a>'
+    """ Helper function for generating view links """
+    return '<a href="' + reverse(url, args=args) + appended + '">' + text + '</a>'
 
 
 def edit_link(url, args, text='Edit'):
-    ''' Helper function for generating edit links '''
-    return '<a href="'+ reverse(url, args=args) +'">'+ text +'</a>'
+    """ Helper function for generating edit links """
+    return '<a href="' + reverse(url, args=args) + '">' + text + '</a>'

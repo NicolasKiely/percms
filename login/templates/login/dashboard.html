@@ -39,21 +39,8 @@
         <th>View App</th>
       </tr>
       <tr>
-        <td>Crawler</td>
-        <td><a href="{% url 'crawler:dashboard' %}">Manage App</a></td>
-        <td><a href="{% url 'crawler:view' %}">View App</a></td>
-      </tr>
-      <tr>
-        <td>Alerts</td>
-        <td><a href="{% url 'alerts:dashboard' %}">Manage App</a></td>
-      </tr>
-      <tr>
         <td>Scripts</td>
         <td><a href="{% url 'script:dashboard' %}">Manage App</a></td>
-      </tr>
-      <tr>
-        <td>Ecom</td>
-        <td><a href="{% url 'ecom:dashboard' %}">Manage App</a></td>
       </tr>
       <tr>
         <td>Crypto</td>
@@ -62,25 +49,6 @@
     </table>
   {% close_box %}
 
-  {% open_box %}
-    {# Projects #}
-    <h2><a href="{% url 'project:editor_list' %}">Recent Projects</a></h2>
-
-    <table class="table table-striped">
-      <tr>
-        <th>Project</th>
-        <th>Edit Project</th>
-        <th>View Project</th>
-      </tr>
-      {% for project in projects %}
-      <tr>
-        <td>[{{ project.category }}] {{ project.title }}</td>
-        <td><a href="{% url 'project:editor' project.id %}">Edit Project</a></td>
-        <td><a href="{{ project.get_view_url }}">View Project</a></td>
-      </tr>
-      {% endfor %}
-    </table>
-  {% close_box %}
 
   {% open_box %}
     {# Images #}

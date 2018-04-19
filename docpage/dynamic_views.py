@@ -1,19 +1,10 @@
-''' Handle dynamic component content for docpages '''
+""" Handle dynamic component content for docpages """
 from .models import DocPage
 from .component_utils import preprocess_text
-from proj.models import Proj
-
-
-def latest_projects(component, args):
-    ''' Returns table of latest projects '''
-    projects = Proj.objects.order_by('-dt_published')[:5]
-    component['table'] = {
-        'rows': [[p.get_view_link(), p.dt_published.date()] for p in projects]
-    }
 
 
 def latest_posts(component, args):
-    ''' Returns table of latest posts '''
+    """ Returns table of latest posts """
     if len(args) > 0:
         page_objects = DocPage.objects.filter(category=args[0])
     else:
@@ -26,7 +17,7 @@ def latest_posts(component, args):
 
 
 def all_posts(component, args):
-    ''' Returns table of all posts '''
+    """ Returns table of all posts """
     if len(args) > 0:
         page_objects = DocPage.objects.filter(category=args[0])
     else:
@@ -39,7 +30,7 @@ def all_posts(component, args):
 
 
 def last_post(component, args):
-    ''' Returns first component of last post '''
+    """ Returns first component of last post """
     # Get recent page and component
     try:
         if len(args) > 0:
@@ -70,7 +61,7 @@ def last_post(component, args):
         return
 
     component['src'] = ''.join([
-        '<h3>Latest Post: '+ page.title +'</h3>',
+        '<h3>Latest Post: ' + page.title + '</h3>',
         '<small>'+component['src']+'</small><br/>',
         page.get_view_link('View more')
     ])
@@ -80,6 +71,5 @@ def last_post(component, args):
 view_table = {
     'latest_posts': latest_posts,
     'last_post': last_post,
-    'latest_projects': latest_projects,
     'all_posts': all_posts
 }
