@@ -1,0 +1,12 @@
+Necessary python packages:
+
+django (1.11)
+pillow (PIL)
+python-bittrex
+pandas
+celery
+django-celery-results
+
+
+Apt packages:
+Rabbitmq-server
