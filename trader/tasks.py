@@ -17,6 +17,10 @@ def evaluate_portfolios(self, commit=True):
     print("Evaluating portfolios!")
     portfolios = crypto.models.Portfolio.objects.filter(active=True).all()
 
+    # Fetch balances from exchanges
+    exchange_id_set = set([p.exc_id for p in portfolios])
+    for exchange_id in exchange_id_set:
+        print("Loading balances from exchange #%s" % exchange_id)
 
     for portfolio in portfolios:
         # Fetch account balances

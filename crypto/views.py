@@ -58,7 +58,7 @@ def add_portfolio(request, dashboard):
     p = request.POST
     script, source = get_script_by_name(p['script'])
     exchange_name = p['exchange']
-    base = models.Currency.objects.get(symbol=p['base'])
+    base, _ = models.Currency.objects.get_or_create(symbol=p['base'])
     portfolio = models.Portfolio(
         script = source,
         exc = models.Exchange.objects.get(name=exchange_name),

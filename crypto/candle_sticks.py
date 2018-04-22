@@ -32,7 +32,12 @@ def save_polo_candle_data(polo, c1, c2, period, data):
     pair, _ = models.Pair.objects.get_or_create(c1=c1, c2=c2, exc=exc)
 
     candle_objs = []
-    max_id = models.Candle_Stick.objects.order_by('-id')[0].id
+
+    try:
+        max_id = models.Candle_Stick.objects.order_by('-id')[0].id
+    except IndexError:
+        max_id = 0
+
     for x in data:
         dt = datetime.datetime.fromtimestamp(x['date'])
         dtz = timezone.make_aware(dt, timezone.get_current_timezone())

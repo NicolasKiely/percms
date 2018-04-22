@@ -7,8 +7,9 @@ from .core import render
 
 
 def dashboard_view_closure(dashboard, func):
-    ''' Closure for binding dashboard to view functions (2nd arg) '''
-    d=dashboard
+    """ Closure for binding dashboard to view functions (2nd arg) """
+    d = dashboard
+
     def inner_func(request, **kwargs):
         return func(request, d, **kwargs)
 
@@ -16,14 +17,14 @@ def dashboard_view_closure(dashboard, func):
 
 
 def dashboard_sublist_view_closure(dashboard, func, field):
-    ''' Closure for binding dashboard and sublist criteria '''
-    d=dashboard
-    f=field
+    """ Closure for binding dashboard and sublist criteria """
+    d = dashboard
+    f = field
+
     def inner_func(request, **kwargs):
         return func(request, d, f, **kwargs)
 
     return inner_func
-
 
 
 def default_view_app_dashboard(request, dashboard):
@@ -38,22 +39,22 @@ def default_view_app_dashboard(request, dashboard):
 
 
 class Dashboard_Panel(object):
-    ''' Custom panel object for dashboards '''
+    """ Custom panel object for dashboards """
     def __init__(self, title, link=None):
         self.title = title
         self.link = link
 
     def render_to_json(self):
-        ''' Returns json panel '''
+        """ Returns json panel """
         if self.link:
-            data = { 'title': self.title, 'link': self.link }
+            data = {'title': self.title, 'link': self.link}
         else:
-            data = { 'title': self.title }
+            data = {'title': self.title}
         return data
 
 
 class App_Dashboard(object):
-    ''' Dashboard manager for app '''
+    """ Dashboard manager for app """
     def __init__(self):
         self.name = ''
         self.namespace = ''
@@ -62,7 +63,7 @@ class App_Dashboard(object):
         self.panels = []
 
     def render(self, request, context):
-        context['title'] = self.name +' Dashboard'
+        context['title'] = self.name + ' Dashboard'
         context['app'] = self.name
         return render(request, 'common/app_dashboard.html', **context)
 
@@ -74,7 +75,7 @@ class App_Dashboard(object):
         return url(path, view_func, name=name)
 
     def url_view_dashboard(self, route):
-        ''' URL for dashboard '''
+        """ URL for dashboard """
         return url(route, self.view_dashboard, name='dashboard')
 
 
@@ -90,7 +91,7 @@ def default_view_model_dashboard(request, dashboard):
 
 @login_required
 def default_view_model_sublist(request, dashboard, field, fk):
-    ''' Default handler for viewing subsets of objects '''
+    """ Default handler for viewing subsets of objects """
     parent = dashboard.get_parent(field)
     parent_obj = get_object_or_404(parent.model, pk=fk)
     context = {
@@ -98,7 +99,7 @@ def default_view_model_sublist(request, dashboard, field, fk):
         'nav': dashboard.edit_link(parent_obj),
         'title': '%s Listing for %s: %s' % (dashboard.name, parent.name, str(parent_obj)),
         'panels': [
-            dashboard.get_sublisting_panel(dashboard.name +'s', '')
+            dashboard.get_sublisting_panel(dashboard.name + 's', '')
         ]
     }
     return dashboard.render_model_set(request, context, field, fk)
@@ -106,20 +107,20 @@ def default_view_model_sublist(request, dashboard, field, fk):
 
 @login_required
 def default_view_model(request, dashboard, pk):
-    ''' Default handler for viewing object '''
+    """ Default handler for viewing object """
     obj = get_object_or_404(dashboard.model, pk=pk)
     return dashboard.view_model(request, obj, {})
 
 
 @login_required
 def default_view_model_editor(request, dashboard, pk):
-    ''' Default handler for viewing object editor '''
+    """ Default handler for viewing object editor """
     obj = get_object_or_404(dashboard.model, pk=pk)
     context = {
         'model_dashboard': dashboard.link_dashboard(),
-        'panels':[
+        'panels': [
             child.get_sublisting_panel(
-                child.name +' Listing', 
+                child.name + ' Listing',
                 child.reverse_sublist(dashboard, pk)
             )
             for child in dashboard.children
@@ -130,7 +131,7 @@ def default_view_model_editor(request, dashboard, pk):
 
 @login_required
 def default_post_model_add(request, dashboard):
-    ''' Default handler for adding an object '''
+    """ Default handler for adding an object """
     obj = dashboard.model_from_post(request.POST)
     obj.save()
     return HttpResponseRedirect(dashboard.reverse_dashboard())
@@ -138,22 +139,23 @@ def default_post_model_add(request, dashboard):
 
 @login_required
 def default_post_model_edit(request, dashboard):
-    ''' Default handler for editting an object '''
+    """ Default handler for editting an object """
     obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
     dashboard.edit_object_from_post(obj, request.POST)
     obj.save()
     return HttpResponseRedirect(dashboard.reverse_dashboard())
 
+
 @login_required
 def default_post_model_delete(request, dashboard):
-    ''' Default handler for deleting object '''
+    """ Default handler for deleting object """
     obj = get_object_or_404(dashboard.model, pk=request.POST['pk'])
     obj.delete()
     return HttpResponseRedirect(dashboard.reverse_dashboard())
 
 
 class Model_Dashboard(object):
-    ''' Dashboard manager for models '''
+    """ Dashboard manager for models """
     def __init__(self, app, model):
         self.app = app
         self.name = ''
@@ -176,7 +178,7 @@ class Model_Dashboard(object):
         self.parents = {}
 
     def child_of(self, parent, field):
-        ''' Make model child of other dashboard '''
+        """ Make model child of other dashboard """
         parent.children.append(self)
         self.parents[field] = parent
 
@@ -184,7 +186,7 @@ class Model_Dashboard(object):
         return self.parents[field]
 
     def model_from_post(self, POST):
-        ''' Create new model instance from POST variables '''
+        """ Create new model instance from POST variables """
         fields = {}
         for key, val in POST.iteritems():
             if key=='csrfmiddlewaretoken' or key=='pk':
@@ -194,11 +196,11 @@ class Model_Dashboard(object):
         return self.model(**fields)
 
     def edit_object_from_post(self, obj, POST):
-        ''' Edits object given POST variables '''
+        """ Edits object given POST variables """
         fields = {}
         dict_obj = obj.__dict__
         for key, val in POST.iteritems():
-            if key=='csrfmiddlewaretoken' or key=='pk':
+            if key == 'csrfmiddlewaretoken' or key == 'pk':
                 continue
             else:
                 dict_obj[key] = val
@@ -207,51 +209,51 @@ class Model_Dashboard(object):
         return [str(x)]
 
     def get_listing_panel(self, panel_title, **filters):
-        ''' Panel listing structure '''
+        """ Panel listing structure """
         return {
             'title': panel_title,
             'table': {
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    [self.edit_link(x) +' | '+ self.view_link(x),]
+                    [self.edit_link(x) + ' | ' + self.view_link(x)]
                     for x in self.model.objects.filter(**filters).order_by('-pk')[:50]
                 ]
             }
         }
 
     def get_sublisting_panel(self, panel_title, title_link, **filters):
-        ''' Panel listing as child '''
+        """ Panel listing as child """
         return {
-            'title': self.name +' Listing',
+            'title': self.name + ' Listing',
             'link': title_link,
             'table': {
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    [self.edit_link(x) +' | '+ self.view_link(x),]
+                    [self.edit_link(x) + ' | ' + self.view_link(x)]
                     for x in self.model.objects.filter(**filters).order_by('-pk')[:5]
                 ]
             }
         }
 
     def get_dashboard_panel(self, **filters):
-        ''' Panel structure for dashboard '''
+        """ Panel structure for dashboard """
         return {
-            'title': self.name +' Management',
+            'title': self.name + ' Management',
             'link': self.reverse_dashboard(),
             'table': {
                 'headers': self.listing_headers + ['URL'],
                 'rows': [
                     self.get_listing_record(x) +
-                    [self.edit_link(x) +' | '+ self.view_link(x)]
+                    [self.edit_link(x) + ' | ' + self.view_link(x)]
                     for x in self.model.objects.filter(**filters).order_by('-pk')[:5]
                 ]
             }
         }
 
     def render_model_set(self, request, context, field=None, fk=None):
-        ''' Model set manager page '''
+        """ Model set manager page """
         context['title'] = context.get('title', self.name + ' Manager')
         context['model_name'] = self.name
         context['app_dashboard'] = self.app.reverse_dashboard()
@@ -261,19 +263,19 @@ class Model_Dashboard(object):
             form_fields = self.model().to_form_fields(field, fk)
 
         context['form'] = {
-            'action': self.app.namespace +':add_'+ self.namespace,
+            'action': self.app.namespace + ':add_' + self.namespace,
             'fields': form_fields
         }
         return render(request, self.model_set_editor_template, **context)
 
     def render_model(self, request, obj, context):
-        ''' Model editor page '''
-        context['title'] = self.name +' Editor'
+        """ Model editor page """
+        context['title'] = self.name + ' Editor'
         context['name'] = str(obj)
         context['model'] = self.name
         context['object'] = obj
         context['form'] = {
-            'action': self.app.namespace +':edit_'+ self.namespace,
+            'action': self.app.namespace + ':edit_' + self.namespace,
             'fields': obj.to_form_fields()
         }
 
@@ -281,7 +283,7 @@ class Model_Dashboard(object):
         return render(request, self.model_editor_template, **context)
 
     def view_model(self, request, obj, context):
-        ''' Public view of object '''
+        """ Public view of object """
         context['title'] = self.name + ' View'
         context['name'] = str(obj)
         context['model'] = self.name
@@ -289,44 +291,44 @@ class Model_Dashboard(object):
         return render(request, self.model_view_template, **context)
 
     def url_view_dashboard(self, route):
-        ''' URL for dashboard '''
+        """ URL for dashboard """
         return url(route, self.view_dashboard, name=self.namespace+'_dashboard')
 
     def url_view_public(self, route):
-        ''' URL for general view '''
+        """ URL for general view """
         return url(route, self.view_public, name=self.namespace+'_view')
 
     def url_view_editor(self, route):
-        ''' URL for editor '''
+        """ URL for editor """
         return url(route, self.view_editor, name=self.namespace+'_editor')
 
     def url_view_sublist(self, route, field):
-        ''' URL for sublist view '''
+        """ URL for sublist view """
         return url(
             route, dashboard_sublist_view_closure(self, self.view_sublist, field),
             name='sublist_%s_%s' % (self.namespace, field)
         )
 
     def url_post_add(self, route):
-        ''' URL for add '''
+        """ URL for add """
         return url(route, self.post_add, name='add_'+self.namespace)
 
     def url_post_edit(self, route):
-        ''' URL for edit '''
+        """ URL for edit """
         return url(route, self.post_edit, name='edit_'+self.namespace)
 
     def url_post_delete(self, route):
-        ''' URL for delete '''
+        """ URL for delete """
         return url(route, self.post_delete, name='delete_'+self.namespace)
 
     def create_standard_urls(self):
-        url = '^'+ self.namespace +'/%s$'
+        url = '^' + self.namespace + '/%s$'
         sublist_urls = [
             self.url_view_sublist(
                 r'^%s/sublist-%s/%s$' % (self.namespace, k, '(?P<fk>\d)/[\w\.]*'),
                 k
             )
-            for k,v in self.parents.iteritems()
+            for k, v in self.parents.iteritems()
         ]
         return [
             self.url_view_dashboard(url % 'dashboard/'),
@@ -338,7 +340,7 @@ class Model_Dashboard(object):
         ] + sublist_urls
 
     def reverse_dashboard(self):
-        ''' Reverse URL lookup for model set manager '''
+        """ Reverse URL lookup for model set manager """
         return reverse(self.app.namespace+':'+self.namespace+'_dashboard')
 
     def reverse_editor(self, *args):
@@ -348,11 +350,11 @@ class Model_Dashboard(object):
         return reverse(self.app.namespace+':'+self.namespace+'_view', args=args)
 
     def reverse_delete(self):
-        ''' Reverse URL lookup for delete model post '''
+        """ Reverse URL lookup for delete model post """
         return reverse(self.app.namespace+':delete_'+self.namespace)
 
     def reverse_sublist(self, parent, value):
-        ''' Reverse URL lookup for filtering listing by parent model '''
+        """ Reverse URL lookup for filtering listing by parent model """
         parent_field = [k for k,v in self.parents.iteritems() if v==parent][0]
         return reverse(
             '%s:sublist_%s_%s' % (self.app.namespace, self.namespace, parent_field),

@@ -1,8 +1,9 @@
-import urllib2
+""" DEPRECATED: use exchange.package """
+
 import traceback
 import datetime
 from django.utils import timezone
-from bittrex.bittrex import Bittrex, API_V2_0, TICKINTERVAL_ONEMIN, TICKINTERVAL_HOUR
+from bittrex.bittrex import Bittrex, API_V2_0, TICKINTERVAL_HOUR
 from . import models
 from . import backtest
 from . import poloniex_api
@@ -19,7 +20,7 @@ def calculate_buy_amount(base_amount, ticker, total_amount, position_limit, buy_
 
 
 def get_interface(exchange_name, *args, **kwargs):
-    ''' Fetches interface by exchange name '''
+    """ Fetches interface by exchange name """
     exc = exchange_name.lower()
     if exc == 'poloniex':
         return Poloniex_Interface(*args, **kwargs)
@@ -38,9 +39,9 @@ class Not_Implemented(Exception):
 
 
 class Exchange_Interface(object):
-    ''' Abstract interface for handling exchanges '''
+    """ Abstract interface for handling exchanges """
     def use_key(self, key):
-        ''' Sets key '''
+        """ Sets key """
         if (type(key) is str) or (type(key) is unicode):
             self.api_key = models.API_Key.objects.get(name=key)
         elif type(key) is models.API_Key:
@@ -49,33 +50,33 @@ class Exchange_Interface(object):
             self.api_key = None
 
     def get_key_str(self):
-        ''' Returns key # '''
+        """ Returns key # """
         if self.api_key:
             return str(self.api_key.key)
         else:
             return ''
 
     def get_key_secret(self):
-        ''' Returns key secret '''
+        """ Returns key secret """
         if self.api_key:
             return str(self.api_key.secret)
         else:
             return ''
 
     def get_balance(self):
-        ''' Returns account balance '''
+        """ Returns account balance """
         raise Not_Implemented(self.get_balance)
 
-    def update_candles(self):
-        ''' Update candlestick data '''
+    def update_candles(self, logger):
+        """ Update candlestick data """
         raise Not_Implemented(self.update_candles)
 
     def get_ticker_prices(self, base_name, pair_names):
-        ''' Returns ticker prices '''
+        """ Returns ticker prices """
         raise Not_Implemented(self.get_ticker_prices)
 
     def eval_portfolio(self, logger, portfolio, commit):
-        ''' Evaluates a portfolio '''
+        """ Evaluates a portfolio """
         # Initialize pair name variables
         portfolio_pairs = portfolio.pairs.all()
         c_names = [p.c2 for p in portfolio_pairs]
@@ -105,7 +106,7 @@ class Exchange_Interface(object):
             elif fv > 0:
                 if c in c_name_set:
                     balances[c] = fv
-                    total_amount += fv * ticker_prices[base_name+'_'+c]
+                    total_amount += fv * ticker_prices[base_name + '_' + c]
 
         # Initialize runtime
         runtime_factory = crypto_runtime.Runtime_Factory(portfolio.pairs.all())
@@ -123,7 +124,7 @@ class Exchange_Interface(object):
         history_record.save()
         for c in c_names:
             amt = balances[c]
-            last_price = ticker_prices[base_name+'_'+c]
+            last_price = ticker_prices[base_name + '_' + c]
             position_record = models.Portfolio_Position_History(
                 history=history_record, pair=pair_lookup[c],
                 amount_held=amt, value_held=amt*last_price
@@ -149,11 +150,11 @@ class Exchange_Interface(object):
 
             except Exception as ex:
                 trace = traceback.format_exc()
-                print trace
+                print(trace)
                 raise backtest.Backtest_Exception('Script Exception: %s' % trace)
 
             candle = runtime.data.iloc[-1]
-            last_price = ticker_prices[base_name+'_'+c_name]
+            last_price = ticker_prices[base_name + '_' + c_name]
 
             if runtime.is_stoploss_enabled():
                 stoplosses[c_name] = runtime.get_stoploss()
@@ -181,7 +182,7 @@ class Exchange_Interface(object):
                 portfolio=portfolio, pair=pair_lookup[c_name]
             )
             pos_record.position = p
-            if (c_name in stoplosses) and (p=='LONG' or bal>0):
+            if (c_name in stoplosses) and (p == 'LONG' or bal > 0):
                 pos_record.stoploss = stoplosses[c_name]
             else:
                 pos_record.stoploss = None
@@ -192,24 +193,24 @@ class Exchange_Interface(object):
                 continue
 
             if bal > 0:
-                pair_name = base_name +'_'+ c_name
-                print 'Sell '+ c_name +' for '+ str(bal)
-                ##cancel_old_orders(polo, pair_name)
+                pair_name = base_name + '_' + c_name
+                print('Sell ' + c_name + ' for ' + str(bal))
+                # cancel_old_orders(polo, pair_name)
                 sell_price = 0.999*ticker_prices[pair_name]
 
                 if commit:
-                    ##q = polo.sell(str(pair_name), str(sell_price), str(bal))
+                    # q = polo.sell(str(pair_name), str(sell_price), str(bal))
                     q = {'orderNumber': 'test'}
                 else:
                     q = {'orderNumber': 'test'}
                 logger.log('Sell Order Placed', '\n'.join([
-                    'Order #: '+ str(q['orderNumber']),
-                    'Sell Price: '+ str(sell_price),
-                    'Sell Amount: '+ str(bal),
+                    'Order #: ' + str(q['orderNumber']),
+                    'Sell Price: ' + str(sell_price),
+                    'Sell Amount: ' + str(bal),
                     '',
-                    'Current '+ base_name +' Amt: '+ str(base_amount),
-                    'Total Portfolio Value: '+ str(total_amount),
-                    'Base to release: '+ str(sell_price*bal)
+                    'Current ' + base_name + ' Amt: ' + str(base_amount),
+                    'Total Portfolio Value: ' + str(total_amount),
+                    'Base to release: ' + str(sell_price*bal)
                 ]))
 
         for c_name in c_names:
@@ -218,38 +219,38 @@ class Exchange_Interface(object):
             if p != 'LONG':
                 continue
 
-            pair_name = base_name +'_'+ c_name
+            pair_name = base_name + '_' + c_name
             buy_amt, buy_price = calculate_buy_amount(
                 base_amount, ticker_prices[pair_name], total_amount,
                 portfolio.position_limit, portfolio.buy_limit
             )
             if base_amount > 0 and buy_amt > 0.0:
-                print 'Buy %s of %s @ %s' % (buy_amt, c_name, buy_price)
+                print('Buy %s of %s @ %s' % (buy_amt, c_name, buy_price))
 
-                #cancel_old_orders(polo, pair_name)
+                # cancel_old_orders(polo, pair_name)
                     
                 if commit:
-                    #q = polo.buy(str(pair_name), str(buy_price), str(buy_amt))
+                    # q = polo.buy(str(pair_name), str(buy_price), str(buy_amt))
                     q = {'orderNumber': 'test'}
                 else:
                     q = {'orderNumber': 'test'}
 
                 logger.log('Buy Order Placed', '\n'.join([
-                    'Order #: '+ str(q['orderNumber']),
-                    'Buy Price: '+ str(buy_price),
-                    'Buy Amount: '+ str(buy_amt),
+                    'Order #: ' + str(q['orderNumber']),
+                    'Buy Price: ' + str(buy_price),
+                    'Buy Amount: ' + str(buy_amt),
                     '',
-                    'Current '+ base_name +' Amt: '+ str(base_amount),
-                    'Total Portfolio Value: '+ str(total_amount),
-                    'Base to commit: '+ str(buy_price*buy_amt)
+                    'Current ' + base_name + ' Amt: ' + str(base_amount),
+                    'Total Portfolio Value: ' + str(total_amount),
+                    'Base to commit: ' + str(buy_price*buy_amt)
                 ]))
                 break
 
 
 class Poloniex_Interface(Exchange_Interface):
-    ''' Poloniex Interface '''
+    """ Poloniex Interface """
     def __init__(self, key):
-        ''' Initializes and returns interface to poloniex '''
+        """ Initializes and returns interface to poloniex """
         self.use_key(key)
         self.connection = poloniex_api.poloniex(
             self.get_key_str(), self.get_key_secret()
@@ -263,7 +264,7 @@ class Poloniex_Interface(Exchange_Interface):
 
 
 class Bittrex_Interface(Exchange_Interface):
-    ''' Bittrex Interface '''
+    """ Bittrex Interface """
     def __init__(self, key):
         self.use_key(key)
         self.connection = Bittrex(
@@ -277,7 +278,7 @@ class Bittrex_Interface(Exchange_Interface):
             balance = record['Balance']['Balance']
             currency = record['Currency']['Currency']
             if balance > 0.0:
-                balances[ currency ] = balance
+                balances[currency] = balance
         return balances
         
     def update_candles(self, logger):
@@ -287,7 +288,7 @@ class Bittrex_Interface(Exchange_Interface):
         ticker_prices = {}
         for pair_name in pair_names:
             latest_candle = self.connection.get_latest_candle(
-                base_name +'-'+ pair_name, TICKINTERVAL_HOUR
+                base_name + '-' + pair_name, TICKINTERVAL_HOUR
             )['result'][0]
             ticker_prices[pair_name] = float(latest_candle['C'])
         return ticker_prices
