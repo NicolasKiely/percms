@@ -10,3 +10,4 @@ django-celery-results
 
 Apt packages:
 Rabbitmq-server
+redis

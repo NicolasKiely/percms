@@ -275,26 +275,26 @@ def POST_manual_polo_trade(logger, api_key_name, pair, amount, trade='buy'):
 
     try:
         price = float(pair_ticker['last'])
-        print price
+        print(price)
         orders = polo.returnOpenOrders(pair)
         for order in orders:
             order_no = order['orderNumber']
-            print 'Cancelling order #%s' % order_no
-            print polo.cancel(pair, order_no)
+            print('Cancelling order #%s' % order_no)
+            print(polo.cancel(pair, order_no))
 
         if trade.lower() != 'sell':
             q = polo.buy(str(pair), str(price*1.001), str(amount))
         else:
             q = polo.sell(str(pair), str(price*0.999), str(amount))
-        print q
+        print(q)
 
     except urllib2.HTTPError as ex:
-        print 'HTTP error, buy failed'
-        print str(ex) + ': ' + ex.read()
+        print('HTTP error, buy failed')
+        print(str(ex) + ': ' + ex.read())
 
     except Exception as ex:
-        print 'Buy failed'
-        print ex
+        print('Buy failed')
+        print(ex)
 
 
 def POST_eval_portfolios(logger, commit='True'):
