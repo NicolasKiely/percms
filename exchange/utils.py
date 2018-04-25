@@ -2,7 +2,14 @@
 import exchange.Poloniex
 
 
-def get_interface(inteface_name, api_key):
-    lname = inteface_name.lower()
-    if lname == 'poloniex':
-        return exchange.Poloniex.Poloniex(api_key)
+EXCHANGE_MAP = {
+    'poloniex': exchange.Poloniex.Poloniex
+}
+
+
+def get_interface(interface_name, api_key):
+    return EXCHANGE_MAP[interface_name.lower()](api_key)
+
+
+def get_interface_class(interface_name):
+    return EXCHANGE_MAP[interface_name.lower()]

@@ -1,9 +1,13 @@
 from abc import abstractmethod
+import time
 import crypto.models
 
 
 class Interface(object):
     """ Exchange Interface """
+    #: Maximum requests per second (soft limit). Set <1 to disable
+    _max_request_rate = 5
+
     def __init__(self, api_key):
         """ Initializes with given api key """
         if (type(api_key) is str) or (type(api_key) is unicode):
@@ -44,6 +48,29 @@ class Interface(object):
         """ Fetches balance from exchange"""
         pass
 
+    def sleep(self, old_time=0):
+        """ Sleeps between request to stay below limit """
+        if self._max_request_rate <= 0:
+            # No rate set
+            return
+
+        current_time = time.time()
+        if old_time:
+            # Track elapsed time
+            delta = current_time - old_time
+
+            if delta < 0:
+                # Catch any weird cases causing old time to be in the future
+                delta = 0
+
+            # Get the wait period
+            default_wait_period = 1. / self._max_request_rate
+
+            # Deduct existing delta from default wait period
+            sleep_period = default_wait_period - delta
+            if sleep_period > 0:
+                self.sleep(sleep_period)
+
 
 class Balances(object):
     """ Instance of asset balances for an account """
@@ -61,7 +88,10 @@ class Balances(object):
             return 0.0
 
     def __str__(self):
-        return '\n'.join(['%s: %s' % (k, v) for k, v in self.balances.items()])
+        return '\n'.join([
+            '%s: %s' % (k, v) for k, v in self.balances.items()
+            if v
+        ])
 
     def __iter__(self):
         return self.balances.items()
