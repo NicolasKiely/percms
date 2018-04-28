@@ -1,8 +1,10 @@
 from django.contrib import admin
 from . import models
 
+
 class Candle_Stick_Admin(admin.ModelAdmin):
     ordering = ('-stamp',)
+
 
 # Register your models here.
 admin.site.register(models.API_Key)

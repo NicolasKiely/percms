@@ -2,25 +2,62 @@
 from __future__ import absolute_import, unicode_literals
 import time
 from celery import group
+from django.utils import timezone as tz
 from percms.celery import app
 from exchange.utils import get_interface_class
+import crypto.utils
 import crypto.models
+import exchange.models
 
 
-@app.task(bind=True)
-def load_exchange_balances(self, exchange_id, portfolio_ids):
+@app.task()
+def load_exchange_tickers(exchange_id, portfolio_id, do_sleep=False):
+    """ Fetches and saves exchange tickers
+
+    :param exchange_id: ID of exchange to pull data from
+    :param portfolio_id: ID used for connection to exchange
+    :param do_sleep: If true, applies rate limiting pause
+    """
+    exc = crypto.models.Exchange.objects.get(pk=exchange_id)
+    portfolio = crypto.models.Portfolio.objects.get(pk=portfolio_id)
+    interface = get_interface_class(exc.name)(portfolio.key)
+    if do_sleep:
+        interface.sleep()
+    print("Loading ticker prices from exchange %s" % str(exchange))
+    tickers = interface.get_ticker()
+
+    now = tz.now()
+    for pair, value in tickers.items():
+        c_pair = crypto.utils.get_currency_pair(exc, pair[0], pair[1])
+        try:
+            # Get existing ticker
+            t = exchange.models.Ticker.objects.get(pair=c_pair)
+        except exchange.models.Ticker.DoesNotExist:
+            t = exchange.models.Ticker(pair=c_pair)
+
+        # Update ticker
+        t.pair = c_pair
+        t.last = value
+        t.stamp = now
+        t.save()
+
+    # Save to database
+    print(tickers)
+
+
+@app.task()
+def load_exchange_balances(exchange_id, portfolio_ids, do_sleep=False):
     """ Fetchs and saves exchange balances from given exchange
 
-    :param self: Task instance
     :param exchange_id: ID of exchange to pull data from
     :param portfolio_ids: List of portfolio IDs
-    :return: None
+    :param do_sleep: If true, applies initial rate limiting pause
     """
     exchange = crypto.models.Exchange.objects.get(pk=exchange_id)
     interface_class = get_interface_class(exchange.name)
     print("Loading balances from exchange %s" % str(exchange))
 
-    first = True
+    first = not do_sleep
     t = 0
     for portfolio_id in portfolio_ids:
         # Fetch connection to exchange for a given account
@@ -53,8 +90,15 @@ def evaluate_portfolios(commit=True):
         else:
             exchange_map[portfolio.exc_id] = [portfolio.id]
 
-    # Fetch balances from exchanges
+    # Fetch tickers from exchanges
     results = group(
-        load_exchange_balances.s(ex_id, p_ids) for ex_id, p_ids in exchange_map.items()
+        load_exchange_tickers.s(ex_id, exchange_map[ex_id][0])
+        for ex_id in exchange_map.keys()
+    )()
+    results.get(timeout=30)
+
+    # Synchornously fetch balances from exchanges
+    results = group(
+        load_exchange_balances.s(ex_id, p_ids, True) for ex_id, p_ids in exchange_map.items()
     )()
     results.get(timeout=30)

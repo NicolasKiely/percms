@@ -48,7 +48,12 @@ class Interface(object):
         """ Fetches balance from exchange"""
         pass
 
-    def sleep(self, old_time=0):
+    @abstractmethod
+    def get_ticker(self):
+        """ Fetches ticker price from exchange """
+        pass
+
+    def sleep(self, old_time=0.0):
         """ Sleeps between request to stay below limit """
         if self._max_request_rate <= 0:
             # No rate set
@@ -72,26 +77,66 @@ class Interface(object):
                 self.sleep(sleep_period)
 
 
-class Balances(object):
-    """ Instance of asset balances for an account """
+class Currency_Values(object):
     def __init__(self):
-        self.balances = {}
+        """ Holder of currency values """
+        #: Mapping of assets to floating values
+        self._assets = {}
 
-    def __setitem__(self, asset, balance):
-        self.balances[asset.upper()] = float(balance)
+    def __setitem__(self, asset, value):
+        self._assets[asset.upper()] = float(value)
 
     def __getitem__(self, asset):
         uasset = asset.upper()
-        if uasset in self.balances:
-            return self.balances[uasset]
+        if uasset in self._assets:
+            return self._assets[uasset]
         else:
             return 0.0
 
+    def items(self):
+        return self._assets.items()
+
     def __str__(self):
         return '\n'.join([
-            '%s: %s' % (k, v) for k, v in self.balances.items()
-            if v
+            '%s: %s' % (asset, value)
+            for asset, value in self._assets.items()
+            if value
         ])
 
-    def __iter__(self):
-        return self.balances.items()
+
+class Pair_Values(object):
+    def __init__(self, parser):
+        """ Holder of asset pair values """
+        #: Mapping of pair to float values
+        self._assets = {}
+        #: Parser of input string into pair
+        self._parser = parser
+
+    def parser(self, obj):
+        """ Conditionally parse if string """
+        t_obj = type(obj)
+        if t_obj is str or t_obj is unicode:
+            results = self._parser(obj.upper())
+            return results[0], results[1]
+        else:
+            return obj
+
+    def __setitem__(self, assets, value):
+        self._assets[self.parser(assets)] = float(value)
+
+    def __getitem__(self, assets):
+        results = self.parser(assets)
+        if results in self._assets:
+            return self._assets[results]
+        else:
+            return 0.0
+
+    def items(self):
+        return self._assets.items()
+
+    def __str__(self):
+        return '\n'.join([
+            '%s: %s' % (asset, value)
+            for asset, value in self._assets.items()
+            if value
+        ])
