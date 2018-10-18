@@ -21,6 +21,6 @@ print 'Querying %s' % url
 response = urllib2.urlopen(url, data=post_data)
 msg = json.loads(response.read())
 
-print 'Status: '+ msg['status']
+print 'Status: ' + msg['status']
 print msg['message']
 

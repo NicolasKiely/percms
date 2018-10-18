@@ -1,5 +1,4 @@
-''' Background server for running batch processes '''
-import sys
+""" Background server for running batch processes """
 import os
 import BaseHTTPServer
 import percms.settings
@@ -21,7 +20,7 @@ work_queue = Queue.Queue(10)
 
 
 def load_modules(batch_modules, do_reload):
-    ''' Loads modules '''
+    """ Loads modules """
     callbacks = {}
 
     # Load batch handler methods from modules
@@ -40,12 +39,13 @@ def load_modules(batch_modules, do_reload):
 
 class Worker_Thread(threading.Thread):
     current_job = None
+
     def run(self):
         try:
             logger = scripting.utils.Logging_Runtime('Batch_Server')
             while True:
                 func, args = work_queue.get()
-                if func==None and args==None:
+                if func is None and args is None:
                     # Exit condition
                     break
                 # Call handler on args
@@ -80,13 +80,12 @@ CALLBACKS = load_modules(BATCH_MODULES, False)
 port = percms.settings.BATCH_PORT
 bind_address = ('127.0.0.1', batch_interface.PORT)
 
-            
 
 print '\n'.join(['Loading '+s for s in CALLBACKS.keys()])
 
 
 class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
-    ''' Handler function for batch requests '''
+    """ Handler function for batch requests """
     def do_POST(req):
         output = {'status': 'success', 'message': ''}
         response_code = 200
@@ -100,7 +99,7 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             message = 'Functions: '
             for k, v in CALLBACKS.iteritems():
                 doc = v.__doc__ if v.__doc__ else ''
-                message += '\n'+ k + '\n\t'+ doc.replace('\n', '\n\t')
+                message += '\n' + k + '\n\t' + doc.replace('\n', '\n\t')
 
             output['message'] = message
 
@@ -133,7 +132,7 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             try:
                 handler = CALLBACKS[req_path]
 
-            except KeyError as ex:
+            except KeyError:
                 response_code = 404
                 output = {'status': 'error', 'message': 'Command not found'}
 
@@ -142,9 +141,8 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
                 request = req.rfile.read(req_len)
                 post_args = urlparse.parse_qs(request, keep_blank_values=True) 
 
-                args = {k: v[0] for k,v in post_args.iteritems() if v and len(v)}
+                args = {k: v[0] for k, v in post_args.iteritems() if v and len(v)}
             
-
         req.send_response(response_code)
         req.send_header('Content-type', 'application/json')
         req.end_headers()
@@ -152,11 +150,9 @@ class Batch_Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         if response_code == 200 and handler:
             try:
-                #handler(**args)
-                work_queue.put( (handler, args) )
+                work_queue.put((handler, args))
             except Exception as ex:
                 print '%s: %s' % (type(ex), ex)
-
 
 
 Batch_Handler.protocol_version = 'HTTP/1.0'
@@ -164,8 +160,6 @@ server = BaseHTTPServer.HTTPServer(bind_address, Batch_Handler)
 
 num_workers = 1
 workers = [Worker_Thread() for i in range(0, num_workers)]
-#worker = Worker_Thread()
-#worker.start()
 for worker in workers:
     worker.start()
 
@@ -173,7 +167,7 @@ try:
     server.serve_forever()
 except KeyboardInterrupt:
     print '\nShutting Down'
-    work_queue.put( (None, None) )
+    work_queue.put((None, None))
     for worker in workers:
         worker.join()
 

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Widget Editor</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: #9CC;
+            padding: 20px;
+            margin: 0;
+            width: 100%;
+            height: 10%;
+            box-sizing: border-box;
+        }
+
+        section {
+            height: 90%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            box-sizing: border-box;
+        }
+        section:after {
+            content: "";
+            clear: both;
+        }
+
+        nav {
+            background-color: #7BD;
+            width: 20%;
+            margin: 0;
+            float: left;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        article {
+            background-color: #EFFFFF;
+            width: 80%;
+            float: left;
+            margin: 0;
+            height: 100%;
+            padding: 10px;
+            overflow: scroll;
+            box-sizing: border-box;
+        }
+
+        div.widget {
+            background-color: #F99;
+            float: left;
+            height: 90%;
+            padding: 20px;
+            margin: 10px;
+            box-sizing: border-box;
+            border-radius: 20px;
+            border-collapse: collapse;
+            border: solid #030 3px;
+        }
+
+        .action {
+            display: block;
+            float: bottom;
+            width: 100%;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border: solid #080 2px;
+            text-align: center;
+        }
+
+        .action-inactive {
+            background-color: #264;
+        }
+
+        .action-active {
+            background-color: #3D9;
+        }
+
+        .add-action:before {
+            content: '+';
+            border: solid black 1px;
+            border-radius: 100%;
+            margin-right: 5px;
+            width: 10px;
+            height: 10px;
+            text-align: center;
+            color: white;
+            background-color: black;
+        }
+
+        /*
+        Original Widget Style
+        div.widget {
+            border: solid #030 3px;
+            border-collapse: collapse;
+            border-radius: 20px;
+            padding: 5px;
+            height: 40px;
+            display: inline;
+        }
+        */
+
+        /*
+        div.widget:after {
+            content: '+';
+            border: solid black 1px;
+            border-radius: 100%;
+            width: 10px;
+            height: 10px;
+            text-align: center;
+            color: white;
+            background-color: black;
+        }
+        */
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h2>Editor Header</h2>
+    </header>
+
+    <!-- Editor Bar -->
+    <section>
+        <nav>
+            <b>Editor Tools</b>
+        </nav>
+
+        <!-- Widget Editor -->
+        <article>
+            <div class="widget">
+                <h3>Buy</h3>
+            </div>
+
+            <div class="widget">
+                <h3>Logic Signal</h3>
+                <u>Signal if All</u>
+
+                <span class="action action-inactive">Condition 1</span>
+
+                <span class="action action-active">Condition 2</span>
+
+                <span class="action action-inactive">Condition 3</span>
+
+                <button class="add-action">Add Condition</button>
+            </div>
+
+            <div class="widget">
+                <h3>Condition 2</h3>
+                <u>Comparison</u>
+
+                <span class="action action-active">LHS</span>
+                <span class="action action-inactive">RHS</span>
+            </div>
+
+            <div class="widget">
+                <h3>Data</h3>
+
+                <div class="action-input">
+                    <label for="action-data-time">Period</label>
+                    <select id="action-data-time">
+                        <option>5 Min</option>
+                        <option>10 Min</option>
+                        <option>30 Min</option>
+                        <option>1 Hr</option>
+                        <option>4 Hr</option>
+                    </select>
+                </div>
+
+                <div class="action-input">
+                    <label for="action-data-value">Value</label>
+                    <select id="action-data-value">
+                        <option>CLOSE</option>
+                        <option>OPEN</option>
+                        <option selected="selected">HIGH</option>
+                        <option>LOW</option>
+                    </select>
+                </div>
+            </div>
+        </article>
+    </section>
+</body>
+</html>
