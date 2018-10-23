@@ -46,7 +46,7 @@
         }
 
         article {
-            background-color: #EFFFFF;
+            background-color: #112060;
             width: 80%;
             float: left;
             margin: 0;
@@ -148,11 +148,11 @@
                 <h3>Logic Signal</h3>
                 <u>Signal if All</u>
 
-                <span class="action action-inactive">Condition 1</span>
+                <span class="action action-inactive" onclick="action_click(this)">Condition 1</span>
 
-                <span class="action action-active">Condition 2</span>
+                <span class="action action-active" onclick="action_click(this)">Condition 2</span>
 
-                <span class="action action-inactive">Condition 3</span>
+                <span class="action action-inactive" onclick="action_click(this)">Condition 3</span>
 
                 <button class="add-action">Add Condition</button>
             </div>
@@ -173,7 +173,7 @@
                     <select id="action-data-time">
                         <option>5 Min</option>
                         <option>10 Min</option>
-                        <option>30 Min</option>
+                        <option selected="selected">30 Min</option>
                         <option>1 Hr</option>
                         <option>4 Hr</option>
                     </select>
@@ -191,5 +191,19 @@
             </div>
         </article>
     </section>
+
+
+    <script>
+        /** Called on click */
+        function action_click(el){
+            console.log(el);
+            //console.log(el.getAttribute('class'));
+            el.setAttribute('class', 'action action-active');
+            var elChildren = el.parent().children();
+            for (var i=0; i<elChildren.length; i++){
+
+            }
+        }
+    </script>
 </body>
 </html>
