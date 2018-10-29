@@ -14,12 +14,20 @@
         }
 
         header {
-            background-color: #9CC;
+            background-color: #0080FF;
             padding: 20px;
             margin: 0;
             width: 100%;
             height: 10%;
             box-sizing: border-box;
+        }
+
+        div.header-bar {
+            background-color: #FFA545;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 6px;
         }
 
         section {
@@ -36,7 +44,7 @@
         }
 
         nav {
-            background-color: #7BD;
+            background-color: #FFF;
             width: 20%;
             margin: 0;
             float: left;
@@ -46,7 +54,7 @@
         }
 
         article {
-            background-color: #112060;
+            background-color: #3F51B5;
             width: 80%;
             float: left;
             margin: 0;
@@ -57,15 +65,30 @@
         }
 
         div.widget {
-            background-color: #F99;
+            background-color: #ADD8E6;
             float: left;
             height: 90%;
-            padding: 20px;
             margin: 10px;
             box-sizing: border-box;
             border-radius: 20px;
             border-collapse: collapse;
-            border: solid #030 3px;
+            /* border: solid #030 3px; */
+        }
+
+        div.widget-header {
+            background-color: #BEEDFD;
+            box-sizing: border-box;
+            padding: 20px;
+            /*width: 100%;*/
+            text-align: center;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        div.widget-body {
+            background-color: #ADD8E6;
+            float: top;
+            padding: 20px;
         }
 
         .action {
@@ -129,64 +152,83 @@
 <body>
     <!-- Header -->
     <header>
-        <h2>Editor Header</h2>
+        <h2>WolfGen Automated Trading</h2>
     </header>
+    <div class="header-bar"></div>
 
     <!-- Editor Bar -->
     <section>
         <nav>
-            <b>Editor Tools</b>
+            <b>Algorithm Name</b>
         </nav>
 
         <!-- Widget Editor -->
         <article>
             <div class="widget">
-                <h3>Buy</h3>
+                <div class="widget-header">
+                    <h3>Buy</h3>
+                    <span class="widget-subheader">Signal</span>
+                </div>
+                <div class="widget-body"></div>
             </div>
 
             <div class="widget">
-                <h3>Logic Signal</h3>
-                <u>Signal if All</u>
-
-                <span class="action action-inactive" onclick="action_click(this)">Condition 1</span>
-
-                <span class="action action-active" onclick="action_click(this)">Condition 2</span>
-
-                <span class="action action-inactive" onclick="action_click(this)">Condition 3</span>
-
-                <button class="add-action">Add Condition</button>
-            </div>
-
-            <div class="widget">
-                <h3>Condition 2</h3>
-                <u>Comparison</u>
-
-                <span class="action action-active">LHS</span>
-                <span class="action action-inactive">RHS</span>
-            </div>
-
-            <div class="widget">
-                <h3>Data</h3>
-
-                <div class="action-input">
-                    <label for="action-data-time">Period</label>
-                    <select id="action-data-time">
-                        <option>5 Min</option>
-                        <option>10 Min</option>
-                        <option selected="selected">30 Min</option>
-                        <option>1 Hr</option>
-                        <option>4 Hr</option>
-                    </select>
+                <div class="widget-header">
+                    <h3>Logic Signal</h3>
+                    <u>Signal if All</u>
                 </div>
 
-                <div class="action-input">
-                    <label for="action-data-value">Value</label>
-                    <select id="action-data-value">
-                        <option>CLOSE</option>
-                        <option>OPEN</option>
-                        <option selected="selected">HIGH</option>
-                        <option>LOW</option>
-                    </select>
+                <div class="widget-body">
+                    <span class="action action-inactive" onclick="action_click(this)">Condition 1</span>
+
+                    <span class="action action-active" onclick="action_click(this)">Condition 2</span>
+
+                    <span class="action action-inactive" onclick="action_click(this)">Condition 3</span>
+
+                    <button class="add-action">Add Condition</button>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>Condition 2</h3>
+                    <u>Comparison</u>
+                </div>
+
+                <div class="widget-body">
+                    <span class="action action-active">LHS</span>
+                    <span class="action action-inactive">RHS</span>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>Data</h3>
+                    <span class="widget-subheader">Currency</span>
+                </div>
+
+                <div class="widget-body">
+                    <div class="action-input">
+                        <label for="action-data-time">Period</label>
+                        <select id="action-data-time">
+                            <option>5 Min</option>
+                            <option>10 Min</option>
+                            <option selected="selected">30 Min</option>
+                            <option>1 Hr</option>
+                            <option>4 Hr</option>
+                        </select>
+                    </div>
+
+                    <div class="action-input">
+                        <label for="action-data-value">Value</label>
+                        <select id="action-data-value">
+                            <option>CLOSE</option>
+                            <option>OPEN</option>
+                            <option selected="selected">HIGH</option>
+                            <option>LOW</option>
+                        </select>
+                    </div>
+
                 </div>
             </div>
         </article>
@@ -199,8 +241,8 @@
             console.log(el);
             //console.log(el.getAttribute('class'));
             el.setAttribute('class', 'action action-active');
-            var elChildren = el.parent().children();
-            for (var i=0; i<elChildren.length; i++){
+            let elChildren = el.parent().children();
+            for (let i=0; i<elChildren.length; i++){
 
             }
         }
