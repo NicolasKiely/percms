@@ -1,147 +1,193 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Widget Editor</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Widget Editor</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, serif;
-        }
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, serif;
+    }
 
-        /* Page header bar */
-        header {
-            background-color: #4060D0;
-            padding: 20px;
-            margin: 0;
-            width: 100%;
-            height: 10%;
-            box-sizing: border-box;
-            font-family: "Times New Roman", serif;
-            font-size: 120%;
-            color: #EEE;
-        }
+    /* ----- ----- Header ----- ----- */
+    /* Page header bar */
+    header {
+      background-color: #4060D0;
+      padding: 20px;
+      margin: 0;
+      width: 100%;
+      height: 10%;
+      box-sizing: border-box;
+      font-family: "Times New Roman", serif;
+      font-size: 120%;
+      color: #EEE;
+    }
 
-        /* Raised case title */
-        span.hcase {
-            font-size: 160%;
-        }
+    /* Raised case title */
+    span.hcase {
+      font-size: 160%;
+    }
 
-        div.header-bar {
-            /* background-color: #FFA545; */
-            background-image: linear-gradient(
-                #0080FF, #EEE
-            );
-            width: 100%;
-            box-sizing: border-box;
-            margin: 0;
-            padding: 1px;
-        }
+    div.header-bar {
+      /* background-color: #FFA545; */
+      background-image: linear-gradient(
+        #0080FF, #EEE
+      );
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 1px;
+    }
 
-        /* Side bar + workspace */
-        section {
-            height: 90%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            position: fixed;
-            box-sizing: border-box;
-        }
-        section:after {
-            content: "";
-            clear: both;
-        }
+    /* ----- ----- Side Bar ----- ----- */
+    /* Side bar + workspace */
+    section {
+      height: 90%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      position: fixed;
+      box-sizing: border-box;
+    }
+    section:after {
+      content: "";
+      clear: both;
+    }
 
-        /* Side bar */
-        nav {
-            background-color: #FFF;
-            width: 20%;
-            margin: 0;
-            float: left;
-            height: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
+    /* Side bar */
+    nav {
+      background-color: #FFF;
+      width: 20%;
+      margin: 0;
+      float: left;
+      height: 100%;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* Workspace */
-        article {
-            /*background-color: #3F51B5;*/
-            background-color: #EEEEF8;
-            width: 80%;
-            float: left;
-            margin: 0;
-            height: 100%;
-            padding: 10px;
-            overflow: scroll;
-            box-sizing: border-box;
-        }
+    div.sidebar-block {
+      background: transparent;
+      border-bottom: solid #EEE 1px;
+      margin: 0;
+    }
 
-        div.widget {
-            /*background-color: #ADD8E6;*/
-            background-color: #FFF;
-            float: left;
-            height: 90%;
-            margin: 10px;
-            box-sizing: border-box;
-            border-radius: 5px;
-            border-collapse: collapse;
-            border: #DDD 2px solid;
-            padding: 0;
-            min-width: 130px;
-            /* border: solid #030 3px; */
-        }
+    div.sidebar-title {
+      padding-left: 20px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      font-weight: bold;
+    }
 
-        div.widget-header {
-            /* background-color: #BEEDFD; */
-            background-color: #DDD;
-            box-sizing: border-box;
-            padding: 5px;
-            /*width: 100%;*/
-            text-align: center;
-        }
+    div.sidebar-indicator {
+      border: solid #555 1px;
+      border-radius: 8px;
+      width: 8px;
+      height: 8px;
+      margin-top: 4px;
+      margin-right: 5px;
+      display: block;
+      float: left;
 
-        div.widget-body {
-            /* background-color: #ADD8E6; */
-            float: top;
-            padding: 20px;
-        }
+      background-image: radial-gradient(
+          #FFF, #444
+      );
+    }
 
-        .action {
-            display: block;
-            float: bottom;
-            width: 100%;
-            padding-top: 20px;
-            padding-bottom: 20px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            border: solid #080 2px;
-            text-align: center;
-        }
+    /* Active sidebar title */
+    div.sidebar-block-active div.sidebar-title{
+      background: #DDD;
+      margin: 0;
+    }
 
-        .action-inactive {
-            background-color: #264;
-        }
+    /* Active sidebar indicator */
+    div.sidebar-block-active div.sidebar-indicator {
+      background-image: radial-gradient(
+        #ED4, #420
+      );
+    }
 
-        .action-active {
-            background-color: #3D9;
-        }
 
-        .add-action:before {
-            content: '+';
-            border: solid black 1px;
-            border-radius: 100%;
-            margin-right: 5px;
-            width: 10px;
-            height: 10px;
-            text-align: center;
-            color: white;
-            background-color: black;
-        }
-    </style>
+    /* ----- ----- Workspace ----- ----- */
+
+    /* Workspace */
+    article {
+      /*background-color: #3F51B5;*/
+      background-color: #EEEEF8;
+      width: 80%;
+      float: left;
+      margin: 0;
+      height: 100%;
+      padding: 10px;
+      overflow: scroll;
+      box-sizing: border-box;
+    }
+
+    div.widget {
+      /*background-color: #ADD8E6;*/
+      background-color: #FFF;
+      float: left;
+      height: 90%;
+      margin: 10px;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border-collapse: collapse;
+      border: #DDD 2px solid;
+      padding: 0;
+      min-width: 130px;
+      /* border: solid #030 3px; */
+    }
+
+    div.widget-header {
+      /* background-color: #BEEDFD; */
+      background-color: #DDD;
+      box-sizing: border-box;
+      padding: 5px;
+      /*width: 100%;*/
+      text-align: center;
+    }
+
+    div.widget-body {
+      /* background-color: #ADD8E6; */
+      float: top;
+      padding: 20px;
+    }
+
+    .action {
+      display: block;
+      float: bottom;
+      width: 100%;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      border: solid #080 2px;
+      text-align: center;
+    }
+
+    .action-inactive {
+      background-color: #264;
+    }
+
+    .action-active {
+      background-color: #3D9;
+    }
+
+    .add-action:before {
+      content: '+';
+      border: solid black 1px;
+      border-radius: 100%;
+      margin-right: 5px;
+      width: 10px;
+      height: 10px;
+      text-align: center;
+      color: white;
+      background-color: black;
+    }
+  </style>
 </head>
 <body>
   <!-- Header -->
@@ -157,16 +203,19 @@
     <nav>
       <div class="sidebar-block">
         <div class="sidebar-title">
+          <div class="sidebar-indicator"></div>
           Home
         </div>
       </div>
-      <div class="sidebar-block">
+      <div class="sidebar-block sidebar-block-active">
         <div class="sidebar-title">
+          <div class="sidebar-indicator"></div>
           Editor
         </div>
       </div>
       <div class="sidebar-block">
         <div class="sidebar-title">
+          <div class="sidebar-indicator"></div>
           Backtest
         </div>
       </div>
