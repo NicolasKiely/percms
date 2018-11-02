@@ -144,104 +144,123 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <span class="hcase">W</span>OLF<span class="hcase">G</span>EN
-        <span class="hcase">A</span>UTOMATED
-        <span class="hcase">T</span>RADING
-    </header>
-    <div class="header-bar"></div>
+  <!-- Header -->
+  <header>
+    <span class="hcase">W</span>OLF<span class="hcase">G</span>EN
+    <span class="hcase">A</span>UTOMATED
+    <span class="hcase">T</span>RADING
+  </header>
+  <div class="header-bar"></div>
 
-    <!-- Editor Bar -->
-    <section>
-        <nav>
-            <b>Algorithm Name</b>
-        </nav>
+  <!-- Editor Bar -->
+  <section>
+    <nav>
+      <div class="sidebar-block">
+        <div class="sidebar-title">
+          Home
+        </div>
+      </div>
+      <div class="sidebar-block">
+        <div class="sidebar-title">
+          Editor
+        </div>
+      </div>
+      <div class="sidebar-block">
+        <div class="sidebar-title">
+          Backtest
+        </div>
+      </div>
+    </nav>
 
-        <!-- Widget Editor -->
-        <article>
-            <div class="widget">
-                <div class="widget-header">
-                    <h3>Buy</h3>
-                    <span class="widget-subheader">Signal</span>
-                </div>
-                <div class="widget-body"></div>
+      <!-- Widget Editor -->
+      <article>
+        <div class="widget">
+          <div class="widget-header">
+            <h3>Buy</h3>
+            <span class="widget-subheader">Signal</span>
+          </div>
+          <div class="widget-body"></div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-header">
+            <h3>Logic Signal</h3>
+            <u>Signal if All</u>
+          </div>
+
+          <div class="widget-body">
+            <span class="action action-inactive" onclick="action_click(this)">
+              Condition 1
+            </span>
+
+            <span class="action action-active" onclick="action_click(this)">
+              Condition 2
+            </span>
+
+            <span class="action action-inactive" onclick="action_click(this)">
+              Condition 3
+            </span>
+
+            <button class="add-action">Add Condition</button>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-header">
+            <h3>Condition 2</h3>
+            <u>Comparison</u>
+          </div>
+
+          <div class="widget-body">
+            <span class="action action-active">LHS</span>
+            <span class="action action-inactive">RHS</span>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-header">
+            <h3>Data</h3>
+            <span class="widget-subheader">Currency</span>
+          </div>
+
+          <div class="widget-body">
+            <div class="action-input">
+              <label for="action-data-time">Period</label>
+              <select id="action-data-time">
+                <option>5 Min</option>
+                <option>10 Min</option>
+                <option selected="selected">30 Min</option>
+                <option>1 Hr</option>
+                <option>4 Hr</option>
+              </select>
             </div>
 
-            <div class="widget">
-                <div class="widget-header">
-                    <h3>Logic Signal</h3>
-                    <u>Signal if All</u>
-                </div>
-
-                <div class="widget-body">
-                    <span class="action action-inactive" onclick="action_click(this)">Condition 1</span>
-
-                    <span class="action action-active" onclick="action_click(this)">Condition 2</span>
-
-                    <span class="action action-inactive" onclick="action_click(this)">Condition 3</span>
-
-                    <button class="add-action">Add Condition</button>
-                </div>
+            <div class="action-input">
+              <label for="action-data-value">Value</label>
+              <select id="action-data-value">
+                <option>CLOSE</option>
+                <option>OPEN</option>
+                <option selected="selected">HIGH</option>
+                <option>LOW</option>
+              </select>
             </div>
-
-            <div class="widget">
-                <div class="widget-header">
-                    <h3>Condition 2</h3>
-                    <u>Comparison</u>
-                </div>
-
-                <div class="widget-body">
-                    <span class="action action-active">LHS</span>
-                    <span class="action action-inactive">RHS</span>
-                </div>
-            </div>
-
-            <div class="widget">
-                <div class="widget-header">
-                    <h3>Data</h3>
-                    <span class="widget-subheader">Currency</span>
-                </div>
-
-                <div class="widget-body">
-                    <div class="action-input">
-                        <label for="action-data-time">Period</label>
-                        <select id="action-data-time">
-                            <option>5 Min</option>
-                            <option>10 Min</option>
-                            <option selected="selected">30 Min</option>
-                            <option>1 Hr</option>
-                            <option>4 Hr</option>
-                        </select>
-                    </div>
-
-                    <div class="action-input">
-                        <label for="action-data-value">Value</label>
-                        <select id="action-data-value">
-                            <option>CLOSE</option>
-                            <option>OPEN</option>
-                            <option selected="selected">HIGH</option>
-                            <option>LOW</option>
-                        </select>
-                    </div>
-
-                </div>
-            </div>
-        </article>
-    </section>
+          </div>
+        </div>
+      </article>
+  </section>
 
 
-    <script>
-        /** Called on click */
-        function action_click(el){
-            console.log(el);
-            //console.log(el.getAttribute('class'));
-            el.setAttribute('class', 'action action-active');
-            let elChildren = el.parent().children();
-            for (let i=0; i<elChildren.length; i++){
+  <script>
+    /** Called on click */
+    function action_click(el){
+      console.log(el);
+      //console.log(el.getAttribute('class'));
+      el.setAttribute('class', 'action action-active');
+      let elChildren = el.parent().children();
+      for (let i=0; i<elChildren.length; i++){
 
-            }
-        }
-    </script>
+      }
+    }
+  </script>
 </body>
 </html>
