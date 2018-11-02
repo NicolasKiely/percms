@@ -6,30 +6,43 @@
     <title>Widget Editor</title>
 
     <style>
-
         body {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: Arial, Helvetica, serif;
         }
 
+        /* Page header bar */
         header {
-            background-color: #0080FF;
+            background-color: #4060D0;
             padding: 20px;
             margin: 0;
             width: 100%;
             height: 10%;
             box-sizing: border-box;
+            font-family: "Times New Roman", serif;
+            font-size: 120%;
+            color: #EEE;
+        }
+
+        /* Raised case title */
+        span.hcase {
+            font-size: 160%;
         }
 
         div.header-bar {
-            background-color: #FFA545;
+            /* background-color: #FFA545; */
+            background-image: linear-gradient(
+                #0080FF, #EEE
+            );
             width: 100%;
             box-sizing: border-box;
             margin: 0;
-            padding: 6px;
+            padding: 1px;
         }
 
+        /* Side bar + workspace */
         section {
             height: 90%;
             width: 100%;
@@ -43,6 +56,7 @@
             clear: both;
         }
 
+        /* Side bar */
         nav {
             background-color: #FFF;
             width: 20%;
@@ -53,8 +67,10 @@
             box-sizing: border-box;
         }
 
+        /* Workspace */
         article {
-            background-color: #3F51B5;
+            /*background-color: #3F51B5;*/
+            background-color: #EEEEF8;
             width: 80%;
             float: left;
             margin: 0;
@@ -65,28 +81,31 @@
         }
 
         div.widget {
-            background-color: #ADD8E6;
+            /*background-color: #ADD8E6;*/
+            background-color: #FFF;
             float: left;
             height: 90%;
             margin: 10px;
             box-sizing: border-box;
-            border-radius: 20px;
+            border-radius: 5px;
             border-collapse: collapse;
+            border: #DDD 2px solid;
+            padding: 0;
+            min-width: 130px;
             /* border: solid #030 3px; */
         }
 
         div.widget-header {
-            background-color: #BEEDFD;
+            /* background-color: #BEEDFD; */
+            background-color: #DDD;
             box-sizing: border-box;
-            padding: 20px;
+            padding: 5px;
             /*width: 100%;*/
             text-align: center;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
         }
 
         div.widget-body {
-            background-color: #ADD8E6;
+            /* background-color: #ADD8E6; */
             float: top;
             padding: 20px;
         }
@@ -122,37 +141,14 @@
             color: white;
             background-color: black;
         }
-
-        /*
-        Original Widget Style
-        div.widget {
-            border: solid #030 3px;
-            border-collapse: collapse;
-            border-radius: 20px;
-            padding: 5px;
-            height: 40px;
-            display: inline;
-        }
-        */
-
-        /*
-        div.widget:after {
-            content: '+';
-            border: solid black 1px;
-            border-radius: 100%;
-            width: 10px;
-            height: 10px;
-            text-align: center;
-            color: white;
-            background-color: black;
-        }
-        */
     </style>
 </head>
 <body>
     <!-- Header -->
     <header>
-        <h2>WolfGen Automated Trading</h2>
+        <span class="hcase">W</span>OLF<span class="hcase">G</span>EN
+        <span class="hcase">A</span>UTOMATED
+        <span class="hcase">T</span>RADING
     </header>
     <div class="header-bar"></div>
 
