@@ -106,12 +106,32 @@
     /* Active sidebar indicator */
     div.sidebar-block-active div.sidebar-indicator {
       background-image: radial-gradient(
-        #ED4, #420
+        #4DF, #226
       );
     }
 
 
     /* ----- ----- Workspace ----- ----- */
+
+    span.widget-title {
+      font-weight: bold;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    span.widget-title-left {
+      text-align: left;
+    }
+
+    span.widget-title-right {
+      float: right;
+    }
+
+    div.widget-title-active {
+      color: #25A;
+      border-bottom: solid 1px #25A;
+      display: inline-block;
+    }
 
     /* Workspace */
     article {
@@ -137,7 +157,7 @@
       border-collapse: collapse;
       border: #DDD 2px solid;
       padding: 0;
-      min-width: 130px;
+      min-width: 160px;
       /* border: solid #030 3px; */
     }
 
@@ -145,9 +165,7 @@
       /* background-color: #BEEDFD; */
       background-color: #DDD;
       box-sizing: border-box;
-      padding: 5px;
-      /*width: 100%;*/
-      text-align: center;
+      padding: 15px;
     }
 
     div.widget-body {
@@ -225,19 +243,27 @@
       <article>
         <div class="widget">
           <div class="widget-header">
-            <h3>Buy</h3>
-            <span class="widget-subheader">Signal</span>
+            <span class="widget-title widget-title-left widget-title-active">
+              BUY
+            </span>
+
+            <span class="widget-title widget-title-right">
+              SELL
+            </span>
           </div>
           <div class="widget-body"></div>
         </div>
 
         <div class="widget">
           <div class="widget-header">
-            <h3>Logic Signal</h3>
-            <u>Signal if All</u>
+            <span class="widget-title widget-title-left">
+              LOGIC SIGNAL
+            </span>
           </div>
 
           <div class="widget-body">
+            <span>Signal if All</span>
+
             <span class="action action-inactive" onclick="action_click(this)">
               Condition 1
             </span>
@@ -256,11 +282,13 @@
 
         <div class="widget">
           <div class="widget-header">
-            <h3>Condition 2</h3>
-            <u>Comparison</u>
+            <span class="widget-title widget-title-left">
+              Condition 2
+            </span>
           </div>
 
           <div class="widget-body">
+            <span>Comparison</span>
             <span class="action action-active">LHS</span>
             <span class="action action-inactive">RHS</span>
           </div>
@@ -268,11 +296,14 @@
 
         <div class="widget">
           <div class="widget-header">
-            <h3>Data</h3>
-            <span class="widget-subheader">Currency</span>
+            <span class="widget-title widget-title-left">
+              DATA
+            </span>
           </div>
 
           <div class="widget-body">
+            <span class="widget-subheader">Currency</span>
+
             <div class="action-input">
               <label for="action-data-time">Period</label>
               <select id="action-data-time">
