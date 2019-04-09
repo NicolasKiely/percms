@@ -146,6 +146,13 @@
       box-sizing: border-box;
     }
 
+    div.widget-group {
+      float: left;
+      display: inline-block;
+      overflow: auto;
+      height: 100%;
+    }
+
     div.widget {
       /*background-color: #ADD8E6;*/
       background-color: #FFF;
@@ -178,25 +185,36 @@
       display: block;
       float: bottom;
       width: 100%;
-      padding-top: 20px;
-      padding-bottom: 20px;
+      padding-top: 5px;
+      padding-bottom: 5px;
       margin-top: 5px;
       margin-bottom: 5px;
-      border: solid #080 2px;
       text-align: center;
+      border-radius: 30px;
     }
 
     .action-inactive {
-      background-color: #264;
+      background-color: #444;
+      color: #AAC;
+    }
+
+    .action-inactive:hover {
+      background-color: #557;
+      font-weight: bold;
+      color: #EEF;
+      cursor: pointer;
     }
 
     .action-active {
-      background-color: #3D9;
+      background-color: #35E;
+      color: #EEF;
+      font-weight: bold;
     }
 
     .add-action:before {
       content: '+';
       border: solid black 1px;
+      padding: 0 4px 2px;
       border-radius: 100%;
       margin-right: 5px;
       width: 10px;
@@ -272,60 +290,61 @@
               Condition 2
             </span>
 
-            <span class="action action-inactive" onclick="action_click(this)">
-              Condition 3
-            </span>
-
-            <button class="add-action">Add Condition</button>
+            <button class="add-action" onclick="action_add(this)">Add Condition</button>
           </div>
         </div>
 
-        <div class="widget">
-          <div class="widget-header">
+        <div class="widget-group"></div>
+
+        <div class="widget-group">
+          <div class="widget">
+            <div class="widget-header">
             <span class="widget-title widget-title-left">
               Condition 2
             </span>
+            </div>
+
+            <div class="widget-body">
+              <span>Comparison</span>
+              <span class="action action-active" onclick="action_click(this)">LHS</span>
+              <span class="action action-inactive" onclick="action_click(this)">RHS</span>
+            </div>
           </div>
 
-          <div class="widget-body">
-            <span>Comparison</span>
-            <span class="action action-active">LHS</span>
-            <span class="action action-inactive">RHS</span>
-          </div>
-        </div>
-
-        <div class="widget">
-          <div class="widget-header">
+          <div class="widget">
+            <div class="widget-header">
             <span class="widget-title widget-title-left">
               DATA
             </span>
-          </div>
-
-          <div class="widget-body">
-            <span class="widget-subheader">Currency</span>
-
-            <div class="action-input">
-              <label for="action-data-time">Period</label>
-              <select id="action-data-time">
-                <option>5 Min</option>
-                <option>10 Min</option>
-                <option selected="selected">30 Min</option>
-                <option>1 Hr</option>
-                <option>4 Hr</option>
-              </select>
             </div>
 
-            <div class="action-input">
-              <label for="action-data-value">Value</label>
-              <select id="action-data-value">
-                <option>CLOSE</option>
-                <option>OPEN</option>
-                <option selected="selected">HIGH</option>
-                <option>LOW</option>
-              </select>
+            <div class="widget-body">
+              <span class="widget-subheader">Currency</span>
+
+              <div class="action-input">
+                <label for="action-data-time">Period</label>
+                <select id="action-data-time">
+                  <option>5 Min</option>
+                  <option>10 Min</option>
+                  <option selected="selected">30 Min</option>
+                  <option>1 Hr</option>
+                  <option>4 Hr</option>
+                </select>
+              </div>
+
+              <div class="action-input">
+                <label for="action-data-value">Value</label>
+                <select id="action-data-value">
+                  <option>CLOSE</option>
+                  <option>OPEN</option>
+                  <option selected="selected">HIGH</option>
+                  <option>LOW</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
+
       </article>
   </section>
 
@@ -333,13 +352,40 @@
   <script>
     /** Called on click */
     function action_click(el){
-      console.log(el);
-      //console.log(el.getAttribute('class'));
-      el.setAttribute('class', 'action action-active');
-      let elChildren = el.parent().children();
+      let elChildren = el.parentNode.children;
+      let widgetGroupNum = 0;
+      let j=0;
       for (let i=0; i<elChildren.length; i++){
+        let elChild = elChildren[i];
+        if (!elChild.classList.contains('action'))
+          continue; // Skip if not action
 
+        // Reset all actions in widget to be inactive
+        if (elChild.classList.contains('action-active'))
+          elChild.setAttribute('class', 'action action-inactive');
+
+        // Track ordinal position of action in list
+        if (el === elChild)
+          widgetGroupNum = j;
+        j++;
       }
+      // Set current action button as active
+      el.setAttribute('class', 'action action-active');
+
+      let widgetGroup = el.parentNode.parentNode.nextElementSibling;
+      for(j=0; widgetGroup; widgetGroup=widgetGroup.nextElementSibling, j++){
+        if (widgetGroupNum === j){
+          // Widget group for active action; display
+          widgetGroup.style.display = 'inline-block';
+        } else {
+          // Widget group for inactive action; hide
+          widgetGroup.style.display = 'none';
+        }
+      }
+    }
+
+    function action_add(el){
+
     }
   </script>
 </body>
